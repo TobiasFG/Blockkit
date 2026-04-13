@@ -13,6 +13,7 @@ Agent note: if you have not read `AGENTS.md` at the repo root yet, do that first
 - `shadcn-svelte/cli.md` — CLI usage for shadcn-svelte.
 - `shadcn-svelte/components.json.md` — Component registry configuration.
 - `cms/dashboard.md` — CMS dashboard purpose, editor-facing copy conventions, and current scope.
+- `cms/authentication.md` — CMS auth flow, required env vars, route guard architecture, and current access model.
 - `cms/edit-page.md` — CMS edit page behavior, constraints, and draft SEO metadata fields.
 - `cms/reusable-block-library.md` — Content library behavior, storage model, route naming, and editor constraints.
 - `cms/page-content-model.md` — Initial typed page content shape, block registry, and validation rules.

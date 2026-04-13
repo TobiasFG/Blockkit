@@ -1,4 +1,5 @@
 import { json } from '@sveltejs/kit';
+import { requireAuthenticatedUser } from '$lib/server/auth';
 import { getReusableBlockPageReferences, removeReusableBlockReferencesFromPages } from '$lib/server/PagesController.server';
 import {
 	createBlockFolder,
@@ -29,7 +30,9 @@ const getSidebarState = async () => ({
 	reusableBlockPageReferences: await getReusableBlockPageReferences()
 });
 
-export const POST = async ({ request }) => {
+export const POST = async ({ request, locals }) => {
+		await requireAuthenticatedUser(locals, { api: true });
+
 		const payload = (await request.json()) as Partial<SidebarActionPayload>;
 
 		if (!payload.intent) {

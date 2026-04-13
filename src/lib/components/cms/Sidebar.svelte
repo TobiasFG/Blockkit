@@ -5,6 +5,7 @@
     import { goto } from "$app/navigation";
     import { resolveRoute } from "$app/paths";
     import { page } from "$app/stores";
+    import type { User } from "@supabase/supabase-js";
     import { pagesStore } from "$lib/client/pagesStore";
     import { blockFoldersStore, reusableBlocksStore } from "$lib/client/reusableBlocksStore";
     import type { BlockFolder, Page, ReusableBlock } from "$lib/types";
@@ -21,10 +22,11 @@
         collectReusableBlockFolderAncestors,
     } from "./reusableBlocksTree";
 
-    let { pages, blockFolders, reusableBlocks, mobileOpen, onClose } = $props<{
+    let { pages, blockFolders, reusableBlocks, user, mobileOpen, onClose } = $props<{
         pages: Page[];
         blockFolders: BlockFolder[];
         reusableBlocks: ReusableBlock[];
+        user: User;
         mobileOpen: boolean;
         onClose: () => void;
     }>();
@@ -69,6 +71,12 @@
         const cleaned = slug.replace(/^\//, "");
         return cleaned.length === 0 ? "/" : `/${cleaned}`;
     };
+    const displayName = $derived(
+        user.user_metadata?.full_name ||
+            user.user_metadata?.name ||
+            user.email?.split("@")[0] ||
+            "Editor",
+    );
 
     const isActive = (href: string) => $page.url.pathname === href;
     const currentPages = $derived(browser ? ($pagesStore ?? pages) : pages);
@@ -487,12 +495,31 @@
             </div>
         </nav>
 
-        <div class="border-t border-slate-200 p-3 text-xs text-slate-500">
-            <span class="font-medium text-slate-700">{currentPages.length}</span>
-            page{currentPages.length === 1 ? "" : "s"}
-            <span class="mx-1.5 text-slate-300">•</span>
-            <span class="font-medium text-slate-700">{currentReusableBlocks.length}</span>
-            content item{currentReusableBlocks.length === 1 ? "" : "s"}
+        <div class="border-t border-slate-200 p-3">
+            <div class="rounded-2xl border border-slate-200 bg-slate-50 p-3">
+                <div class="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">
+                    Signed in
+                </div>
+                <div class="mt-2 text-sm font-semibold text-slate-900">{displayName}</div>
+                <div class="truncate text-xs text-slate-500">{user.email}</div>
+
+                <div class="mt-3 text-xs text-slate-500">
+                    <span class="font-medium text-slate-700">{currentPages.length}</span>
+                    page{currentPages.length === 1 ? "" : "s"}
+                    <span class="mx-1.5 text-slate-300">•</span>
+                    <span class="font-medium text-slate-700">{currentReusableBlocks.length}</span>
+                    content item{currentReusableBlocks.length === 1 ? "" : "s"}
+                </div>
+
+                <form method="POST" action="/auth?/signOut" class="mt-3">
+                    <button
+                        type="submit"
+                        class="inline-flex w-full items-center justify-center rounded-md border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-100"
+                    >
+                        Log out
+                    </button>
+                </form>
+            </div>
         </div>
     </div>
 {/snippet}

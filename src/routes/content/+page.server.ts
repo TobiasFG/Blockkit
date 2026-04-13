@@ -1,4 +1,5 @@
 import { listBlockDefinitions } from '$lib/blocks/registry';
+import { requireAuthenticatedUser } from '$lib/server/auth';
 import { getPagesReferencingReusableBlock, removeReusableBlockReferencesFromPages } from '$lib/server/PagesController.server';
 import {
 	createBlockFolder,
@@ -36,7 +37,13 @@ const getPagesReferencingReusableBlockMap = async (
 };
 
 export const actions = {
-	createBlockFolder: async ({ request }) => {
+	createBlockFolder: async (event) => {
+		await requireAuthenticatedUser(event.locals, {
+			pathname: event.url.pathname,
+			search: event.url.search
+		});
+
+		const { request } = event;
 		const formData = await request.formData();
 		const name = String(formData.get('name') ?? '').trim();
 		const parentIdRaw = String(formData.get('parentId') ?? '').trim();
@@ -58,7 +65,13 @@ export const actions = {
 		}
 	},
 
-	createReusableBlock: async ({ request }) => {
+	createReusableBlock: async (event) => {
+		await requireAuthenticatedUser(event.locals, {
+			pathname: event.url.pathname,
+			search: event.url.search
+		});
+
+		const { request } = event;
 		const formData = await request.formData();
 		const name = String(formData.get('name') ?? '').trim();
 		const blockType = String(formData.get('blockType') ?? '').trim();
@@ -86,7 +99,13 @@ export const actions = {
 		}
 	},
 
-	deleteBlockFolder: async ({ request }) => {
+	deleteBlockFolder: async (event) => {
+		await requireAuthenticatedUser(event.locals, {
+			pathname: event.url.pathname,
+			search: event.url.search
+		});
+
+		const { request } = event;
 		const formData = await request.formData();
 		const id = String(formData.get('id') ?? '').trim();
 
@@ -109,7 +128,13 @@ export const actions = {
 		}
 	},
 
-	deleteReusableBlock: async ({ request }) => {
+	deleteReusableBlock: async (event) => {
+		await requireAuthenticatedUser(event.locals, {
+			pathname: event.url.pathname,
+			search: event.url.search
+		});
+
+		const { request } = event;
 		const formData = await request.formData();
 		const id = String(formData.get('id') ?? '').trim();
 

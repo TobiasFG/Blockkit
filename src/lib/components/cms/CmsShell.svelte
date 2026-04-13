@@ -1,12 +1,14 @@
 <script lang="ts">
 	import type { BlockFolder, Page, ReusableBlock } from '$lib/types';
+	import type { User } from '@supabase/supabase-js';
 	import type { Snippet } from 'svelte';
 	import Sidebar from './Sidebar.svelte';
 
-	let { pages, blockFolders, reusableBlocks, children } = $props<{
+	let { pages, blockFolders, reusableBlocks, user, children } = $props<{
 		pages: Page[];
 		blockFolders: BlockFolder[];
 		reusableBlocks: ReusableBlock[];
+		user: User;
 		children: Snippet;
 	}>();
 	let mobileOpen = $state(false);
@@ -21,6 +23,7 @@
 		pages={pages}
 		blockFolders={blockFolders}
 		reusableBlocks={reusableBlocks}
+		user={user}
 		mobileOpen={mobileOpen}
 		onClose={closeMobile}
 	/>

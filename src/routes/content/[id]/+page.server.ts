@@ -1,5 +1,6 @@
 import { listBlockDefinitions } from '$lib/blocks/registry';
 import { parseSubmittedReusableBlockContent } from '$lib/reusableBlockEditor';
+import { requireAuthenticatedUser } from '$lib/server/auth';
 import {
 	getBlockFolders,
 	getReusableBlockById,
@@ -36,7 +37,13 @@ export const load: PageServerLoad = async ({ params }) => {
 };
 
 export const actions = {
-	updateReusableBlock: async ({ request, params }) => {
+	updateReusableBlock: async (event) => {
+		await requireAuthenticatedUser(event.locals, {
+			pathname: event.url.pathname,
+			search: event.url.search
+		});
+
+		const { request, params } = event;
 		const formData = await request.formData();
 		const current = await getReusableBlockById(params.id);
 
@@ -69,7 +76,13 @@ export const actions = {
 		}
 	},
 
-	publishReusableBlock: async ({ params }) => {
+	publishReusableBlock: async (event) => {
+		await requireAuthenticatedUser(event.locals, {
+			pathname: event.url.pathname,
+			search: event.url.search
+		});
+
+		const { params } = event;
 		const current = await getReusableBlockById(params.id);
 
 		if (!current) {
@@ -88,7 +101,13 @@ export const actions = {
 		}
 	},
 
-	updateFolderFromBlockEditor: async ({ request }) => {
+	updateFolderFromBlockEditor: async (event) => {
+		await requireAuthenticatedUser(event.locals, {
+			pathname: event.url.pathname,
+			search: event.url.search
+		});
+
+		const { request } = event;
 		const formData = await request.formData();
 		const id = String(formData.get('id') ?? '').trim();
 		const name = String(formData.get('name') ?? '').trim();

@@ -2,6 +2,7 @@ import { fail, type Actions } from '@sveltejs/kit';
 
 import { pageHasDraftChanges } from '$lib/pageStatus';
 import { validatePageSlug } from '$lib/pageSlug';
+import { requireAuthenticatedUser } from '$lib/server/auth';
 import { createPage, deletePage, getPages, pageExists } from '$lib/server/PagesController.server';
 import type { Page } from '$lib/types';
 
@@ -20,6 +21,11 @@ const getDashboardPages = async () => sortDashboardPages(await getPages());
 
 export const actions = {
 	createPage: async (event) => {
+		await requireAuthenticatedUser(event.locals, {
+			pathname: event.url.pathname,
+			search: event.url.search
+		});
+
 		const formData = await event.request.formData();
 		const slugResult = validatePageSlug(String(formData.get('slug') ?? ''));
 
@@ -49,6 +55,11 @@ export const actions = {
 	},
 
 	deletePage: async (event) => {
+		await requireAuthenticatedUser(event.locals, {
+			pathname: event.url.pathname,
+			search: event.url.search
+		});
+
 		const formData = await event.request.formData();
 		const slug = formData.get('slug') as string;
 

@@ -6,6 +6,7 @@ import {
 	ROOT_PAGE_SLUG,
 	validatePageSlug
 } from '$lib/pageSlug';
+import { requireAuthenticatedUser } from '$lib/server/auth';
 import {
 	getDraftVersionById,
 	getPageBySlugVariants,
@@ -36,7 +37,13 @@ export const load: PageServerLoad = async ({ params }) => {
 };
 
 export const actions = {
-	updatePage: async ({ request, params }) => {
+	updatePage: async (event) => {
+		await requireAuthenticatedUser(event.locals, {
+			pathname: event.url.pathname,
+			search: event.url.search
+		});
+
+		const { request, params } = event;
 		const formData = await request.formData();
 		const title = String(formData.get('title') ?? '').trim();
 		const slugResult = validatePageSlug(String(formData.get('slug') ?? ''));

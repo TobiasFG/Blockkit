@@ -9,7 +9,7 @@
     let { data, children }: LayoutProps = $props();
 
     $effect(() => {
-        if (browser) {
+        if (browser && !data.isAuthRoute) {
             pagesStore.set(data.pages ?? []);
             blockFoldersStore.set(data.blockFolders ?? []);
             reusableBlocksStore.set(data.reusableBlocks ?? []);
@@ -17,6 +17,15 @@
     });
 </script>
 
-<CmsShell pages={data.pages} blockFolders={data.blockFolders} reusableBlocks={data.reusableBlocks}>
+{#if data.isAuthRoute}
     {@render children()}
-</CmsShell>
+{:else}
+    <CmsShell
+        pages={data.pages ?? []}
+        blockFolders={data.blockFolders ?? []}
+        reusableBlocks={data.reusableBlocks ?? []}
+        user={data.user!}
+    >
+        {@render children()}
+    </CmsShell>
+{/if}
