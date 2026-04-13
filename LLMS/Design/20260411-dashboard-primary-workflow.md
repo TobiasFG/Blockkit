@@ -16,9 +16,11 @@ This brief assumes the primary workflow is page management and page entry into e
 # Proposed Defaults
 - Make `Pages` the dominant dashboard section and first visible action cluster.
 - Keep page creation directly available on the dashboard.
-- Demote reusable-block management to a secondary dashboard section or a dedicated route entry, depending on final review.
-- Remove folder administration and other structural maintenance from the main dashboard scan path.
+- Move reusable-block management off the dashboard into a dedicated library route and use the dashboard only to link into that surface.
+- Remove folder administration and other structural maintenance from the dashboard scan path entirely.
 - Treat the sidebar `Blocks` section as the durable navigation entry point into shared-content management.
+- Order the main dashboard page list draft-first, then by recent updates, so unfinished editorial work stays visible before lower-priority maintenance.
+- Use a more assertive visual hierarchy than the current scaffold so the page workflow is unmistakably primary.
 
 # Layout Strategy
 - Start with a narrow, high-signal intro that frames the dashboard as the place to choose or create a page.
@@ -28,11 +30,10 @@ This brief assumes the primary workflow is page management and page entry into e
 
 # Review Points
 - Confirm that page management is the primary landing workflow, not reusable-block management or mixed operations.
-- Decide whether reusable blocks stay on the dashboard in a reduced form or move to a dedicated library route entirely.
-- Decide whether folder administration belongs only in the dedicated shared-content surface and sidebar context menus.
+- Reusable blocks should move to a dedicated library route entirely.
+- Folder administration should belong only in the dedicated shared-content surface and sidebar context menus.
 
 # Open Questions
-- Should the dashboard include recent pages, recently updated pages, or draft pages as an ordering aid?
 - If reusable blocks move off the dashboard, where should editors create a new reusable block from without adding friction?
 - Does the product want a separate route for reusable-block library management before implementation begins?
 
@@ -50,3 +51,10 @@ This brief assumes the primary workflow is page management and page entry into e
 - Dashboard: page list, page creation, and lightweight shared-content entry points only.
 - Sidebar `Blocks`: navigation into reusable-block editing and lightweight structural actions.
 - Shared-content surface if needed: folder administration, reusable-block creation, and other lower-frequency library tasks.
+
+# Approved Decisions
+- Reusable blocks move to a dedicated library route.
+- `Add shared content` moves to the library route and sidebar, not the dashboard.
+- Folder administration stays in the library route and sidebar context flows, not the dashboard.
+- Dashboard ordering should prioritize draft work first, then recent updates.
+- Visual treatment should be assertive enough that the page workflow clearly dominates the landing screen.

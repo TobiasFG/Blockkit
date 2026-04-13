@@ -132,6 +132,27 @@ export const addReusableBlockReference = (
 	return next;
 };
 
+export const insertReusableBlockReferenceAtIndex = (
+	content: PageContent,
+	reusableBlockId: string,
+	id: string,
+	index: number
+): PageContent => {
+	const next = createEditablePageContent(content);
+	const reference: ReusableBlockReference = {
+		id,
+		type: 'reusable',
+		reusableBlockId
+	};
+
+	if (index < 0 || index > next.blocks.length) {
+		return next;
+	}
+
+	next.blocks.splice(index, 0, reference);
+	return next;
+};
+
 export const removeBlockAtPath = (content: PageContent, path: BlockPath): PageContent => {
 	const next = createEditablePageContent(content);
 	const parentList = getBlockParentList(next.blocks, path);
@@ -147,7 +168,7 @@ export const moveBlock = (content: PageContent, from: BlockPath, toIndex: number
 	if (!parentList) return next;
 
 	const fromIndex = from[from.length - 1];
-	if (toIndex < 0 || toIndex >= parentList.length || toIndex === fromIndex) {
+	if (toIndex < 0 || toIndex > parentList.length || toIndex === fromIndex) {
 		return next;
 	}
 

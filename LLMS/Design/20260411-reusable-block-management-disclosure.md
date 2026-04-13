@@ -15,19 +15,19 @@ The goal is not to remove capability. It is to stop making every editor parse li
 
 # Proposed Defaults
 - Collapse or relocate folder administration out of the main dashboard flow.
-- Keep one visible entry point for `Add shared content`, but move advanced structural setup behind a secondary control or dedicated library surface.
+- Remove `Add shared content` from the dashboard and keep creation inside the dedicated library surface and sidebar entry points.
 - Treat folder management as contextual to the library, not as a peer to page creation.
 - Preserve sidebar context actions for quick structural maintenance so the capability still exists near the library tree.
+- Use the dedicated library route as the main reusable-block management surface instead of keeping a reduced dashboard management panel.
 
 # Review Points
-- Whether reusable-block creation should remain on the dashboard at all or move to the library surface once that exists.
-- Whether folder creation should be available only contextually from the sidebar and library surface.
-- Whether the dashboard should show a shortened list of reusable blocks or only a summary plus a link into the library.
+- Reusable-block creation should move to the library surface.
+- Folder creation should be available only contextually from the sidebar and library surface.
+- The dashboard should show only a summary plus a link into the library.
 
 # Open Questions
 - Do editors need folder reassignment on the dashboard, or is that better kept inside block editing and library management?
 - Should the reusable-block dashboard section show recent items, pinned items, or drafts only if it remains visible?
-- Would a dedicated reusable-block library route replace enough dashboard complexity to make additional disclosure unnecessary?
 
 # Risks
 - Over-collapsing library actions could slow advanced users if the secondary path is not obvious.
@@ -38,3 +38,9 @@ The goal is not to remove capability. It is to stop making every editor parse li
 - Align dashboard and sidebar labels so shared-content entry points use one consistent vocabulary.
 - Update reusable-block documentation once the final surface ownership is approved.
 - Include the resulting library interactions in the later accessibility and reduced-motion audit.
+
+# Approved Decisions
+- Reusable-block management moves to a dedicated library route.
+- `Add shared content` lives in the library route and sidebar only.
+- Folder administration stays contextual to the library route and sidebar, not the dashboard.
+- Dashboard should reduce shared-content presence to a summary entry point rather than inline management controls.

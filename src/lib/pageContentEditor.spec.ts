@@ -4,6 +4,7 @@ import {
 	addBlockAtPath,
 	addReusableBlockReference,
 	createEditablePageContent,
+	insertReusableBlockReferenceAtIndex,
 	moveBlock,
 	parseSubmittedPageContent,
 	removeBlockAtPath,
@@ -94,6 +95,11 @@ describe('page content editor helpers', () => {
 			type: 'reusable',
 			reusableBlockId: 'block-1'
 		});
+	});
+
+	it('inserts reusable block references at a specific top-level index', () => {
+		const next = insertReusableBlockReferenceAtIndex(BASE_CONTENT, 'block-1', 'ref-1', 1);
+		expect(next.blocks.map((block) => block.id)).toEqual(['hero-1', 'ref-1', 'section-1']);
 	});
 
 	it('validates reusable block references against known ids and nesting rules', () => {

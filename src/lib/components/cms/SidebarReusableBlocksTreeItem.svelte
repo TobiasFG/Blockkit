@@ -1,5 +1,7 @@
 <script lang="ts">
+	import { ContextMenu, DropdownMenu } from 'bits-ui';
 	import SidebarReusableBlocksTreeItem from './SidebarReusableBlocksTreeItem.svelte';
+	import { setReusableBlockDragData } from './reusableBlockInsertion';
 	import type { ReusableBlocksTreeNode } from './reusableBlocksTree';
 
 	type Props = {
@@ -9,8 +11,12 @@
 		closedNodes: Record<string, boolean>;
 		onToggle: (id: string) => void;
 		onClose: () => void;
-		onOpenFolderContextMenu: (event: MouseEvent, folderId: string, folderName: string) => void;
-		onOpenBlockContextMenu: (event: MouseEvent, blockId: string, blockName: string) => void;
+		canInsertIntoPage: boolean;
+		canDragIntoPage: boolean;
+		onCreateSubfolder: (folderId: string, folderName: string) => void;
+		onDeleteFolder: (folderId: string, folderName: string) => void;
+		onDeleteBlock: (blockId: string, blockName: string) => void;
+		onInsertBlockIntoPage: (blockId: string) => void;
 	};
 
 	let {
@@ -20,8 +26,12 @@
 		closedNodes,
 		onToggle,
 		onClose,
-		onOpenFolderContextMenu,
-		onOpenBlockContextMenu
+		canInsertIntoPage,
+		canDragIntoPage,
+		onCreateSubfolder,
+		onDeleteFolder,
+		onDeleteBlock,
+		onInsertBlockIntoPage
 	}: Props = $props();
 
 	const hasChildren = $derived(node.folders.length > 0 || node.blocks.length > 0);
@@ -32,17 +42,50 @@
 {#if node.folder}
 	<div class="space-y-1">
 		<div class="flex items-center gap-1">
-			<button
-				type="button"
-				class="flex min-w-0 flex-1 items-center gap-2 rounded-md py-2 pr-3 text-sm text-slate-700"
-				style={`padding-left: ${depth * 1.25 + 0.75}rem`}
-				oncontextmenu={(event) => onOpenFolderContextMenu(event, node.folder!.id, node.folder!.name)}
-			>
-				<span class="truncate font-medium">{node.folder.name}</span>
-				<span class="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-slate-500">
-					Folder
-				</span>
-			</button>
+			<ContextMenu.Root>
+				<ContextMenu.Trigger
+					class="flex min-w-0 flex-1 items-center gap-2 rounded-md py-2 pr-3 text-sm text-slate-700"
+					style={`padding-left: ${depth * 1.25 + 0.75}rem`}
+				>
+					<span class="truncate font-medium">{node.folder.name}</span>
+					<span class="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-slate-500">
+						Folder
+					</span>
+				</ContextMenu.Trigger>
+				<ContextMenu.Content class="z-50 min-w-44 rounded-xl border border-slate-200 bg-white p-1.5 shadow-lg">
+					<ContextMenu.Item
+						class="rounded-lg px-2 py-2 text-sm text-slate-700 outline-none transition focus:bg-slate-100"
+						onSelect={() => onCreateSubfolder(node.folder!.id, node.folder!.name)}
+					>
+						Create subfolder
+					</ContextMenu.Item>
+					<ContextMenu.Item
+						class="rounded-lg px-2 py-2 text-sm text-red-700 outline-none transition focus:bg-red-50"
+						onSelect={() => onDeleteFolder(node.folder!.id, node.folder!.name)}
+					>
+						Delete folder
+					</ContextMenu.Item>
+				</ContextMenu.Content>
+			</ContextMenu.Root>
+			<DropdownMenu.Root>
+				<DropdownMenu.Trigger class="inline-flex h-8 items-center justify-center rounded-md border border-slate-200 bg-white px-2 text-[10px] font-semibold uppercase tracking-wide text-slate-600 transition hover:border-slate-300 hover:bg-slate-50 hover:text-slate-900">
+					Actions
+				</DropdownMenu.Trigger>
+				<DropdownMenu.Content class="z-50 min-w-44 rounded-xl border border-slate-200 bg-white p-1.5 shadow-lg">
+					<DropdownMenu.Item
+						class="rounded-lg px-2 py-2 text-sm text-slate-700 outline-none transition focus:bg-slate-100"
+						onSelect={() => onCreateSubfolder(node.folder!.id, node.folder!.name)}
+					>
+						Create subfolder
+					</DropdownMenu.Item>
+					<DropdownMenu.Item
+						class="rounded-lg px-2 py-2 text-sm text-red-700 outline-none transition focus:bg-red-50"
+						onSelect={() => onDeleteFolder(node.folder!.id, node.folder!.name)}
+					>
+						Delete folder
+					</DropdownMenu.Item>
+				</DropdownMenu.Content>
+			</DropdownMenu.Root>
 
 			{#if hasChildren}
 				<button
@@ -75,36 +118,95 @@
 						{closedNodes}
 						{onToggle}
 						{onClose}
-						{onOpenFolderContextMenu}
-						{onOpenBlockContextMenu}
+						{canInsertIntoPage}
+						{canDragIntoPage}
+						{onCreateSubfolder}
+						{onDeleteFolder}
+						{onDeleteBlock}
+						{onInsertBlockIntoPage}
 					/>
 				{/each}
 
 				{#each node.blocks as block (block.id)}
-					<a
-						href={`/blocks/${block.id}`}
+					<div
 						class={[
-							'flex min-w-0 items-center justify-between gap-3 rounded-md py-2 pr-3 text-sm transition',
+							'flex min-w-0 items-center justify-between gap-2 rounded-md py-2 pr-3 text-sm transition',
 							activeBlockId === block.id
 								? 'bg-slate-100 text-slate-900'
 								: 'text-slate-700 hover:bg-slate-100'
 						].join(' ')}
 						style={`padding-left: ${(depth + 1) * 1.25 + 0.75}rem`}
-						onclick={onClose}
-						oncontextmenu={(event) => onOpenBlockContextMenu(event, block.id, block.name)}
 					>
-						<span class="min-w-0 flex-1 truncate font-medium">{block.name}</span>
-						<div class="flex shrink-0 items-center gap-1.5">
-							{#if !block.is_published || block.has_unpublished_changes}
-								<span class="rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-amber-800">
-									Draft
-								</span>
-							{/if}
-							<span class="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-slate-500">
-								{block.block_type}
-							</span>
-						</div>
-					</a>
+						<ContextMenu.Root>
+							<ContextMenu.Trigger class="flex min-w-0 flex-1">
+								<a
+									href={`/blocks/${block.id}`}
+									class="flex min-w-0 flex-1 items-center justify-between gap-3"
+									draggable={canInsertIntoPage && canDragIntoPage}
+									onclick={onClose}
+									ondragstart={(event) => setReusableBlockDragData(event, block.id)}
+								>
+									<span class="min-w-0 flex-1 truncate font-medium">{block.name}</span>
+									<div class="flex shrink-0 items-center gap-1.5">
+										{#if !block.is_published || block.has_unpublished_changes}
+											<span class="rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-amber-800">
+												Draft
+											</span>
+										{/if}
+										<span class="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-slate-500">
+											{block.block_type}
+										</span>
+									</div>
+								</a>
+							</ContextMenu.Trigger>
+							<ContextMenu.Content class="z-50 min-w-44 rounded-xl border border-slate-200 bg-white p-1.5 shadow-lg">
+								{#if canInsertIntoPage}
+									<ContextMenu.Item
+										class="rounded-lg px-2 py-2 text-sm text-slate-700 outline-none transition focus:bg-slate-100"
+										onSelect={() => onInsertBlockIntoPage(block.id)}
+									>
+										Insert into page
+									</ContextMenu.Item>
+								{/if}
+								<ContextMenu.Item
+									class="rounded-lg px-2 py-2 text-sm text-red-700 outline-none transition focus:bg-red-50"
+									onSelect={() => onDeleteBlock(block.id, block.name)}
+								>
+									Delete reusable block
+								</ContextMenu.Item>
+							</ContextMenu.Content>
+						</ContextMenu.Root>
+						<DropdownMenu.Root>
+							<DropdownMenu.Trigger class="shrink-0 rounded-md border border-slate-200 bg-white px-2 py-1 text-[10px] font-semibold uppercase tracking-wide text-slate-600 transition hover:border-slate-300 hover:bg-slate-50 hover:text-slate-900">
+								Actions
+							</DropdownMenu.Trigger>
+							<DropdownMenu.Content class="z-50 min-w-44 rounded-xl border border-slate-200 bg-white p-1.5 shadow-lg">
+								{#if canInsertIntoPage}
+									<DropdownMenu.Item
+										class="rounded-lg px-2 py-2 text-sm text-slate-700 outline-none transition focus:bg-slate-100"
+										onSelect={() => onInsertBlockIntoPage(block.id)}
+									>
+										Insert into page
+									</DropdownMenu.Item>
+								{/if}
+								<DropdownMenu.Item
+									class="rounded-lg px-2 py-2 text-sm text-red-700 outline-none transition focus:bg-red-50"
+									onSelect={() => onDeleteBlock(block.id, block.name)}
+								>
+									Delete reusable block
+								</DropdownMenu.Item>
+							</DropdownMenu.Content>
+						</DropdownMenu.Root>
+						{#if canInsertIntoPage}
+							<button
+								type="button"
+								class="shrink-0 rounded-md border border-slate-200 bg-white px-2 py-1 text-[10px] font-semibold uppercase tracking-wide text-slate-600 transition hover:border-slate-300 hover:bg-slate-50 hover:text-slate-900"
+								onclick={() => onInsertBlockIntoPage(block.id)}
+							>
+								Add
+							</button>
+						{/if}
+					</div>
 				{/each}
 			</div>
 		{/if}

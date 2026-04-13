@@ -16,9 +16,10 @@ The feature should speed up a common editing flow, but it must stay accessible t
 # Proposed Defaults
 - Treat the sidebar reusable block row as draggable only when the current route is a page editor.
 - Expose a visible page-editor drop zone tied to the top-level `BlockListEditor` list.
-- Default a successful drop to append at the end of the top-level page block list unless the user drops between explicit insertion targets.
+- Support explicit between-row insertion targets in the first pass.
 - Keep the existing `Add reusable block…` select in place as the baseline insertion path.
-- Add a sidebar quick action such as `Insert into page` or `Add to page` for the currently open page editor as the keyboard and touch equivalent.
+- Add both a visible sidebar insertion action and a row-menu insertion action for the currently open page editor as the keyboard and touch equivalent.
+- Enable drag on wide pointer-capable page-editor layouts and rely on action-based insertion on touch/mobile layouts.
 
 # Interaction Model
 1. Editor opens `/edit/[...slug]` with the CMS sidebar visible.
@@ -28,9 +29,9 @@ The feature should speed up a common editing flow, but it must stay accessible t
 5. Keyboard/touch users can invoke the non-drag insertion action from the sidebar or continue using the existing page-editor select.
 
 # Review Points
-- Whether insertion should support explicit between-row drop targets in the first pass or append-only insertion to reduce complexity.
-- Whether the keyboard fallback belongs in the sidebar row menu, as a visible button, or both.
-- Whether drag affordance should be limited to desktop/pointer-capable contexts while mobile relies entirely on action-based insertion.
+- Insertion should support explicit between-row drop targets in the first pass.
+- Keyboard/touch fallback should exist as both a visible button and a row-menu action.
+- Drag affordance should be limited to wide pointer-capable contexts while mobile relies on action-based insertion.
 
 # Open Questions
 - Should page-editor insertion from the sidebar auto-scroll to the inserted reusable block row after insertion?
@@ -51,3 +52,9 @@ The feature should speed up a common editing flow, but it must stay accessible t
 - Favor a shared page-editor insertion API or store over direct DOM manipulation between sidebar and editor.
 - Reuse existing page-content validation so inserted references still go through the same save path as select-created references.
 - Document both drag and non-drag insertion paths in `LLMS/Documentation/cms/edit-page.md` and related sidebar docs when implemented.
+
+# Approved Decisions
+- First pass should support between-row insertion targets.
+- Keep both fallback paths: visible sidebar insertion action and row-menu insertion action.
+- Enable drag only on wide pointer-capable layouts and keep touch/mobile action-based.
+- Folder and library IA changes should not remove the reusable-block sidebar tree from page-edit routes.

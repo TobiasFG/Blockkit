@@ -5,6 +5,7 @@
 	import { type BlockDefinition, type BlockFieldDefinition } from '$lib/blocks/registry';
 	import BlockListEditor from '$lib/components/cms/BlockListEditor.svelte';
 	import type { BlockListLocation, BlockPath } from '$lib/pageContentEditor';
+	import { createDefaultBlockInstance } from '$lib/reusableBlocks';
 	import {
 		addNestedReusableBlockAtPath,
 		createEditableReusableBlockContent,
@@ -20,10 +21,10 @@
 
 	let { data }: PageProps = $props();
 
-	let block = $state<ReusableBlock>(data.block);
-	let blockFolders = $state<BlockFolder[]>(data.blockFolders);
-	let definitions = $state<BlockDefinition[]>(data.blockDefinitions);
-	let contentDraft = $state(createEditableReusableBlockContent(data.block.content));
+	let block = $state<ReusableBlock>({} as ReusableBlock);
+	let blockFolders = $state<BlockFolder[]>([]);
+	let definitions = $state<BlockDefinition[]>([]);
+	let contentDraft = $state(createDefaultBlockInstance('text', 'placeholder-reusable-block'));
 	let validationErrors = $state<Record<string, string>>({});
 	let draggingPath = $state<string | null>(null);
 	let successMessage = $state('');
@@ -87,6 +88,10 @@
 		);
 	};
 
+	const insertReusableReference = () => {
+		// Reusable block editors do not allow nested reusable references.
+	};
+
 	const handleRemoveBlock = (path: BlockPath) => {
 		contentDraft = syncValidation(removeNestedReusableBlockAtPath(contentDraft, path));
 	};
@@ -109,7 +114,7 @@
 			</p>
 		</div>
 		<a
-			href="/#create-block"
+			href="/blocks"
 			class="inline-flex items-center rounded-md border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 transition hover:border-slate-300 hover:bg-slate-50"
 		>
 			Back to library
@@ -365,6 +370,7 @@
 											description="Nested blocks"
 											errors={validationErrors}
 											{draggingPath}
+											onInsertReusableBlockReference={insertReusableReference}
 											onAddBlock={handleAddBlock}
 											onRemoveBlock={handleRemoveBlock}
 											onMoveBlock={handleMoveBlock}

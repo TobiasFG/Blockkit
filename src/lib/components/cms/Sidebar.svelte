@@ -1,5 +1,7 @@
 <script lang="ts">
     import { browser } from "$app/environment";
+    import { ContextMenu, DropdownMenu } from "bits-ui";
+    import { onMount } from "svelte";
     import { goto } from "$app/navigation";
     import { resolveRoute } from "$app/paths";
     import { page } from "$app/stores";
@@ -7,6 +9,10 @@
     import { blockFoldersStore, reusableBlocksStore } from "$lib/client/reusableBlocksStore";
     import type { BlockFolder, Page, ReusableBlock } from "$lib/types";
     import ActionModal from "./ActionModal.svelte";
+    import {
+        requestReusableBlockInsert,
+        setReusableBlockDragData,
+    } from "./reusableBlockInsertion";
     import SidebarPageTreeItem from "./SidebarPageTreeItem.svelte";
     import SidebarReusableBlocksTreeItem from "./SidebarReusableBlocksTreeItem.svelte";
     import { buildSidebarTree, collectAncestorSlugs } from "./sidebarTree";
@@ -24,19 +30,6 @@
     }>();
 
     let closedNodes = $state<Record<string, boolean>>({});
-    let contextMenu = $state<
-        | {
-                x: number;
-                y: number;
-                title: string;
-                items: Array<{
-                    label: string;
-                    tone?: "default" | "danger";
-                    action: () => void | Promise<void>;
-                }>;
-          }
-        | null
-    >(null);
     let actionNotice = $state<
         | {
                 tone: "success" | "error";
@@ -45,6 +38,7 @@
         | null
     >(null);
     let actionPending = $state(false);
+    let canDragReusableBlocks = $state(false);
     let modalState = $state<
         | {
                 kind: "createFolder";
@@ -88,10 +82,12 @@
         currentPages.find((entry: Page) => isActive(editHref(entry.slug)))?.slug ?? null,
     );
     const activeReusableBlockId = $derived(
-        currentReusableBlocks.find((entry: ReusableBlock) =>
-            isActive(`/blocks/${entry.id}`),
-        )?.id ?? null,
+        currentReusableBlocks.find((entry: ReusableBlock) => isActive(`/blocks/${entry.id}`))?.id ??
+            null,
     );
+    const isBlocksLibraryActive = $derived(isActive("/blocks"));
+    const isPageEditorRoute = $derived($page.url.pathname.startsWith("/edit/"));
+    const canInsertIntoCurrentPage = $derived(isPageEditorRoute);
     const pageTree = $derived(buildSidebarTree(currentPages));
     const reusableBlocksTree = $derived(
         buildReusableBlocksTree(currentBlockFolders, currentReusableBlocks),
@@ -102,10 +98,6 @@
             ...closedNodes,
             [slug]: !closedNodes[slug],
         };
-    };
-
-    const closeContextMenu = () => {
-        contextMenu = null;
     };
 
     const closeModal = () => {
@@ -148,7 +140,6 @@
             }
 
             applySidebarState(result);
-            closeContextMenu();
             actionNotice = {
                 tone: "success",
                 text:
@@ -179,7 +170,6 @@
     };
 
     const openCreateFolderModal = (parentId: string | null, parentName: string) => {
-        closeContextMenu();
         modalState = {
             kind: "createFolder",
             parentId,
@@ -189,7 +179,6 @@
     };
 
     const openDeleteFolderModal = (id: string, name: string) => {
-        closeContextMenu();
         modalState = {
             kind: "deleteFolder",
             id,
@@ -198,7 +187,6 @@
     };
 
     const openDeleteBlockModal = (id: string, name: string) => {
-        closeContextMenu();
         modalState = {
             kind: "deleteBlock",
             id,
@@ -206,57 +194,35 @@
         };
     };
 
-    const openContextMenu = (
-        event: MouseEvent,
-        title: string,
-        items: Array<{
-            label: string;
-            tone?: "default" | "danger";
-            action: () => void | Promise<void>;
-        }>,
-    ) => {
-        event.preventDefault();
-        actionNotice = null;
+    const insertBlockIntoCurrentPage = (blockId: string) => {
+        const inserted = requestReusableBlockInsert(blockId);
+        actionNotice = inserted
+            ? {
+                  tone: "success",
+                  text: "Reusable block added to current page draft.",
+              }
+            : {
+                  tone: "error",
+                  text: "Open a page editor first to insert a reusable block.",
+              };
+        if (inserted) {
+            onClose();
+        }
+    };
 
-        contextMenu = {
-            x: event.clientX,
-            y: event.clientY,
-            title,
-            items,
+    onMount(() => {
+        const mediaQuery = window.matchMedia("(pointer: fine) and (hover: hover) and (min-width: 1024px)");
+        const updateDragMode = () => {
+            canDragReusableBlocks = mediaQuery.matches;
         };
-    };
 
-    const openFolderContextMenu = (
-        event: MouseEvent,
-        folderId: string,
-        folderName: string,
-    ) => {
-        openContextMenu(event, folderName, [
-            {
-                label: "Create subfolder",
-                action: () => openCreateFolderModal(folderId, folderName),
-            },
-            {
-                label: "Delete folder",
-                tone: "danger",
-                action: () => openDeleteFolderModal(folderId, folderName),
-            },
-        ]);
-    };
+        updateDragMode();
+        mediaQuery.addEventListener("change", updateDragMode);
 
-    const openBlockContextMenu = (
-        event: MouseEvent,
-        blockId: string,
-        blockName: string,
-    ) => {
-        openContextMenu(event, blockName, [
-            {
-                label: "Delete reusable block",
-                tone: "danger",
-                action: () => openDeleteBlockModal(blockId, blockName),
-            },
-        ]);
-    };
+        return () => {
+            mediaQuery.removeEventListener("change", updateDragMode);
+        };
+    });
 
     $effect(() => {
         for (const slug of collectAncestorSlugs(pageTree, activePageSlug ?? "/")) {
@@ -285,28 +251,6 @@
         }
     });
 
-    $effect(() => {
-        if (!browser || !contextMenu) {
-            return;
-        }
-
-        const handleWindowClick = () => closeContextMenu();
-        const handleEscape = (event: KeyboardEvent) => {
-            if (event.key === "Escape") {
-                closeContextMenu();
-            }
-        };
-
-        window.addEventListener("click", handleWindowClick);
-        window.addEventListener("contextmenu", handleWindowClick);
-        window.addEventListener("keydown", handleEscape);
-
-        return () => {
-            window.removeEventListener("click", handleWindowClick);
-            window.removeEventListener("contextmenu", handleWindowClick);
-            window.removeEventListener("keydown", handleEscape);
-        };
-    });
 </script>
 
 {#snippet NavContent()}
@@ -399,21 +343,23 @@
                 <div
                     class="flex items-center justify-between px-3 text-xs font-semibold uppercase tracking-wide text-slate-500"
                 >
-                    <span>Blocks</span>
+                    <a
+                        href="/blocks"
+                        class={[
+                            "transition hover:text-slate-700",
+                            isBlocksLibraryActive ? "text-slate-900" : "text-slate-500",
+                        ].join(" ")}
+                        onclick={onClose}
+                    >
+                        Blocks
+                    </a>
                     <div class="flex items-center gap-1">
                         <a
-                            href="/#create-block-folder"
+                            href="/blocks#create-block-folder"
                             class="rounded px-1.5 py-0.5 text-[10px] font-semibold text-slate-500 transition hover:bg-slate-100 hover:text-slate-700"
                             onclick={onClose}
                         >
                             Folder
-                        </a>
-                        <a
-                            href="/#create-block"
-                            class="rounded px-1.5 py-0.5 text-[10px] font-semibold text-slate-500 transition hover:bg-slate-100 hover:text-slate-700"
-                            onclick={onClose}
-                        >
-                            Block
                         </a>
                     </div>
                 </div>
@@ -431,35 +377,93 @@
                                 {closedNodes}
                                 onToggle={toggleNode}
                                 {onClose}
-                                onOpenFolderContextMenu={openFolderContextMenu}
-                                onOpenBlockContextMenu={openBlockContextMenu}
+                                canInsertIntoPage={canInsertIntoCurrentPage}
+                                canDragIntoPage={canDragReusableBlocks}
+                                onCreateSubfolder={openCreateFolderModal}
+                                onDeleteFolder={openDeleteFolderModal}
+                                onDeleteBlock={openDeleteBlockModal}
+                                onInsertBlockIntoPage={insertBlockIntoCurrentPage}
                             />
                         {/each}
                         {#each reusableBlocksTree.blocks as block (block.id)}
-                            <a
-                                href={`/blocks/${block.id}`}
+                            <div
                                 class={[
-                                    "flex min-w-0 items-center justify-between gap-3 rounded-md px-3 py-2 text-sm transition",
+                                    "flex min-w-0 items-center justify-between gap-2 rounded-md px-3 py-2 text-sm transition",
                                     activeReusableBlockId === block.id
                                         ? "bg-slate-100 text-slate-900"
                                         : "text-slate-700 hover:bg-slate-100",
                                 ].join(" ")}
-                                onclick={onClose}
-                                oncontextmenu={(event) =>
-                                    openBlockContextMenu(event, block.id, block.name)}
                             >
-                                <span class="min-w-0 flex-1 truncate font-medium">{block.name}</span>
-                                <div class="flex shrink-0 items-center gap-1.5">
-                                    {#if !block.is_published || block.has_unpublished_changes}
-                                        <span class="rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-amber-800">
-                                            Draft
-                                        </span>
-                                    {/if}
-                                    <span class="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-slate-500">
-                                        {block.block_type}
-                                    </span>
-                                </div>
-                            </a>
+                                <ContextMenu.Root>
+                                    <ContextMenu.Trigger class="flex min-w-0 flex-1">
+                                        <a
+                                            href={`/blocks/${block.id}`}
+                                            class="flex min-w-0 flex-1 items-center justify-between gap-3"
+                                            draggable={canInsertIntoCurrentPage && canDragReusableBlocks}
+                                            onclick={onClose}
+                                            ondragstart={(event) => setReusableBlockDragData(event, block.id)}
+                                        >
+                                            <span class="min-w-0 flex-1 truncate font-medium">{block.name}</span>
+                                            <div class="flex shrink-0 items-center gap-1.5">
+                                                {#if !block.is_published || block.has_unpublished_changes}
+                                                    <span class="rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-amber-800">
+                                                        Draft
+                                                    </span>
+                                                {/if}
+                                                <span class="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-slate-500">
+                                                    {block.block_type}
+                                                </span>
+                                            </div>
+                                        </a>
+                                    </ContextMenu.Trigger>
+                                    <ContextMenu.Content class="z-50 min-w-44 rounded-xl border border-slate-200 bg-white p-1.5 shadow-lg">
+                                        {#if canInsertIntoCurrentPage}
+                                            <ContextMenu.Item
+                                                class="rounded-lg px-2 py-2 text-sm text-slate-700 outline-none transition focus:bg-slate-100"
+                                                onSelect={() => insertBlockIntoCurrentPage(block.id)}
+                                            >
+                                                Insert into page
+                                            </ContextMenu.Item>
+                                        {/if}
+                                        <ContextMenu.Item
+                                            class="rounded-lg px-2 py-2 text-sm text-red-700 outline-none transition focus:bg-red-50"
+                                            onSelect={() => openDeleteBlockModal(block.id, block.name)}
+                                        >
+                                            Delete reusable block
+                                        </ContextMenu.Item>
+                                    </ContextMenu.Content>
+                                </ContextMenu.Root>
+                                <DropdownMenu.Root>
+                                    <DropdownMenu.Trigger class="shrink-0 rounded-md border border-slate-200 bg-white px-2 py-1 text-[10px] font-semibold uppercase tracking-wide text-slate-600 transition hover:border-slate-300 hover:bg-slate-50 hover:text-slate-900">
+                                        Actions
+                                    </DropdownMenu.Trigger>
+                                    <DropdownMenu.Content class="z-50 min-w-44 rounded-xl border border-slate-200 bg-white p-1.5 shadow-lg">
+                                        {#if canInsertIntoCurrentPage}
+                                            <DropdownMenu.Item
+                                                class="rounded-lg px-2 py-2 text-sm text-slate-700 outline-none transition focus:bg-slate-100"
+                                                onSelect={() => insertBlockIntoCurrentPage(block.id)}
+                                            >
+                                                Insert into page
+                                            </DropdownMenu.Item>
+                                        {/if}
+                                        <DropdownMenu.Item
+                                            class="rounded-lg px-2 py-2 text-sm text-red-700 outline-none transition focus:bg-red-50"
+                                            onSelect={() => openDeleteBlockModal(block.id, block.name)}
+                                        >
+                                            Delete reusable block
+                                        </DropdownMenu.Item>
+                                    </DropdownMenu.Content>
+                                </DropdownMenu.Root>
+                                {#if canInsertIntoCurrentPage}
+                                    <button
+                                        type="button"
+                                        class="shrink-0 rounded-md border border-slate-200 bg-white px-2 py-1 text-[10px] font-semibold uppercase tracking-wide text-slate-600 transition hover:border-slate-300 hover:bg-slate-50 hover:text-slate-900"
+                                        onclick={() => insertBlockIntoCurrentPage(block.id)}
+                                    >
+                                        Add
+                                    </button>
+                                {/if}
+                            </div>
                         {/each}
                     {/if}
 
@@ -626,37 +630,6 @@
         </div>
     {/if}
 </ActionModal>
-
-{#if contextMenu}
-    <div
-        class="fixed z-[70] min-w-52 rounded-xl border border-slate-200 bg-white p-1.5 shadow-2xl"
-        style={`left: ${contextMenu.x}px; top: ${contextMenu.y}px;`}
-        role="menu"
-        tabindex="-1"
-        aria-label={`${contextMenu.title} actions`}
-        onmousedown={(event) => event.stopPropagation()}
-        oncontextmenu={(event) => event.preventDefault()}
-    >
-        <div class="px-2 py-1.5 text-xs font-semibold uppercase tracking-wide text-slate-500">
-            {contextMenu.title}
-        </div>
-        {#each contextMenu.items as item}
-            <button
-                type="button"
-                class={[
-                    "flex w-full items-center rounded-lg px-3 py-2 text-left text-sm transition",
-                    item.tone === "danger"
-                        ? "text-red-700 hover:bg-red-50"
-                        : "text-slate-700 hover:bg-slate-100",
-                ].join(" ")}
-                disabled={actionPending}
-                onclick={() => void item.action()}
-            >
-                {item.label}
-            </button>
-        {/each}
-    </div>
-{/if}
 
 <!-- Desktop -->
 <aside

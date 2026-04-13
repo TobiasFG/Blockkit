@@ -20,9 +20,10 @@ This design sets visual defaults and review questions, not final implementation 
 - Favor flatter list and panel treatments over repeated standalone cards.
 - Keep motion subtle and state-driven, with reduced-motion support treated as a first-class constraint.
 - Define shared heading, body, metadata, and mono/status text treatments before more page-specific styling work lands.
+- Push hierarchy more assertively than the current scaffold through typography scale, layout weighting, and surface contrast while staying editor-first rather than decorative.
 
 # Review Points
-- Confirm how assertive the visual system should be within the stated utilitarian/subtle direction.
+- The visual system should be assertive within the utilitarian/subtle direction.
 - Decide whether the CMS should feel closer to an editorial workspace, an operations console, or a hybrid of the two.
 - Decide how dark mode should express depth and focus without defaulting to generic dark-admin styling.
 
@@ -40,3 +41,7 @@ This design sets visual defaults and review questions, not final implementation 
 - Once approved, use this direction to guide the dashboard workflow reframe and reusable-block-management redesign.
 - Capture resulting tokens, theme rules, and surface patterns in CMS documentation after implementation starts.
 - Use the approved direction as the baseline for future accessibility and reduced-motion audits.
+
+# Approved Decisions
+- Visual direction should be assertive rather than scaffold-like.
+- Strong hierarchy should come from layout, typography, and surface contrast, not ornamental decoration.

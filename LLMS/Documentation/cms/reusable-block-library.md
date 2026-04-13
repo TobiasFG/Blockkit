@@ -1,15 +1,17 @@
 Purpose: describe the reusable block library that lets editors create content instances from code-defined block types and organize them in folders.
 
 # Overview
-Reusable blocks are editor-created instances of block definitions from `src/lib/blocks/registry.ts`. They live separately from pages and appear in a dedicated `Blocks` section in the CMS sidebar.
-Reusable blocks now use a draft/publish workflow so the editor can save block changes without changing the live shared version immediately.
+Reusable blocks are editor-created instances of block definitions from `src/lib/blocks/registry.ts`. They live separately from pages and are managed from the dedicated `/blocks` library route.
+Reusable blocks use a draft/publish workflow so the editor can save block changes without changing the live shared version immediately.
 
 # How to use
-- Open the CMS home page and use `Add a folder` to add optional folder structure for reusable blocks.
-- Use `Add shared content` to pick a registered block type and create a named reusable block entry.
-- Open a reusable block from the home page or sidebar to edit its name, folder, and supported fields.
+- Open `/blocks` from the CMS sidebar to manage reusable blocks and folders.
+- Use the folder form on `/blocks` to add optional folder structure for reusable blocks.
+- Use the shared-content form on `/blocks` to pick a registered block type and create a named reusable block entry.
+- Open a reusable block from `/blocks` or the sidebar tree to edit its name, folder, and supported fields.
 - Use `Save draft` to update the editable draft version.
 - Use `Publish` when the current draft should become the live reusable block version used by page references.
+- When a page editor is open, use the sidebar `Add` action or the row context menu to insert the reusable block into the current page without leaving the library tree.
 
 # Behavior
 - Reusable blocks are stored independently from page content.
@@ -17,7 +19,9 @@ Reusable blocks now use a draft/publish workflow so the editor can save block ch
 - Reusable block names are human-friendly labels and do not need to be unique.
 - Reusable blocks keep a stable top-level id while their content is versioned as draft/published rows.
 - Newly created reusable blocks start unpublished until the first explicit publish.
-- The sidebar and dashboard library show lightweight status badges for unpublished blocks and blocks with unpublished draft changes.
+- The sidebar shows lightweight status badges for unpublished blocks and blocks with unpublished draft changes.
+- The `/blocks` library route shows the same status badges and exposes creation controls for folders and shared content.
+- The sidebar keeps structural folder actions nearby and now acts as the reusable-block source for page-editor insertion actions and drag/drop.
 - Container-style reusable blocks can edit nested `blocks` fields inline in the `/blocks/[id]` editor.
 - Nested block lists support the same add, remove, drag-and-drop, and Up/Down reordering controls used on the page editor.
 - Pages can reference reusable blocks as top-level page-content nodes from the page editor.
