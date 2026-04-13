@@ -46,7 +46,7 @@
     let draggingPath = $state<string | null>(null);
     let canDragBlocks = $state(false);
     let loadedSnapshot = $state<LoadedSnapshot | null>(null);
-    let seoExpanded = $state(false);
+    let activeTab = $state<"identity" | "content" | "discovery">("content");
 
     const serializedContent = $derived(JSON.stringify(content));
     const hasValidationErrors = $derived(Object.keys(contentErrors).length > 0);
@@ -94,7 +94,6 @@
         };
         reusableBlocks = data.reusableBlocks ?? [];
         contentErrors = {};
-        seoExpanded = false;
     });
 
     onMount(() => {
@@ -180,7 +179,6 @@
         content = createEditablePageContent(loadedSnapshot.content);
         contentErrors = {};
         draggingPath = null;
-        seoExpanded = false;
         resetMessages();
     };
 </script>
@@ -294,120 +292,319 @@
                 <div
                     class="grid gap-10 xl:grid-cols-[minmax(0,1fr)_22rem] xl:items-start"
                 >
-                    <div class="space-y-12">
-                        <section class="space-y-5">
-                            <div class="space-y-2">
-                                <p class={captionClass}>Page identity</p>
-                                <h2
-                                    class="text-[1.65rem] font-semibold tracking-[-0.035em] text-stone-950"
-                                >
-                                    Title and route
-                                </h2>
-                                <p
-                                    class="max-w-[62ch] text-base leading-7 text-stone-600"
-                                >
-                                    Choose page name people will recognize.
-                                    Change page link only if needed.
-                                </p>
-                            </div>
-
+                    <div class="space-y-8">
+                        <div class="border-b border-stone-200 pb-4">
                             <div
-                                class="grid gap-5 lg:grid-cols-[minmax(0,1.35fr)_minmax(18rem,0.85fr)]"
+                                class="inline-flex w-full flex-wrap gap-2 rounded-[1.5rem] bg-stone-100/80 p-1.5"
                             >
-                                <div class="space-y-2">
-                                    <label
-                                        for="title"
-                                        class="text-sm font-medium text-stone-800"
-                                        >Title</label
-                                    >
-                                    <input
-                                        id="title"
-                                        type="text"
-                                        name="title"
-                                        required
-                                        bind:value={title}
-                                        class={inputClass}
-                                    />
-                                </div>
-
-                                <div class="space-y-2">
-                                    <label
-                                        for="slug"
-                                        class="text-sm font-medium text-stone-800"
-                                        >Route slug</label
-                                    >
-                                    <label
-                                        for="slug"
-                                        class="text-sm font-medium text-stone-800"
-                                        >Page link</label
-                                    >
-                                    <input
-                                        id="slug"
-                                        type="text"
-                                        name="slug"
-                                        required
-                                        bind:value={slug}
-                                        disabled={page.slug === "/"}
-                                        class={`${inputClass} font-mono text-[13px]`}
-                                    />
-                                    <p class="text-sm leading-6 text-stone-500">
-                                        {#if page.slug === "/"}
-                                            Home page always uses `/`.
-                                        {:else}
-                                            Use links like `/about` or
-                                            `/about/team`.
-                                        {/if}
-                                    </p>
-                                </div>
-                            </div>
-                        </section>
-
-                        <section class="space-y-5">
-                            <div class="space-y-2">
-                                <p class={captionClass}>Page body</p>
-                                <h2
-                                    class="text-[1.65rem] font-semibold tracking-[-0.035em] text-stone-950"
+                                <button
+                                    type="button"
+                                    class={`min-h-11 rounded-[1.1rem] px-4 py-2 text-sm font-medium transition focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-stone-200/70 ${
+                                        activeTab === "identity"
+                                            ? "bg-white text-stone-950 shadow-[0_1px_0_rgba(41,37,36,0.06)]"
+                                            : "text-stone-600 hover:bg-stone-50 hover:text-stone-900"
+                                    }`}
+                                    onclick={() => {
+                                        activeTab = "identity";
+                                    }}
+                                >
+                                    Identity
+                                </button>
+                                <button
+                                    type="button"
+                                    class={`min-h-11 rounded-[1.1rem] px-4 py-2 text-sm font-medium transition focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-stone-200/70 ${
+                                        activeTab === "content"
+                                            ? "bg-white text-stone-950 shadow-[0_1px_0_rgba(41,37,36,0.06)]"
+                                            : "text-stone-600 hover:bg-stone-50 hover:text-stone-900"
+                                    }`}
+                                    onclick={() => {
+                                        activeTab = "content";
+                                    }}
                                 >
                                     Content
-                                </h2>
+                                </button>
+                                <button
+                                    type="button"
+                                    class={`min-h-11 rounded-[1.1rem] px-4 py-2 text-sm font-medium transition focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-stone-200/70 ${
+                                        activeTab === "discovery"
+                                            ? "bg-white text-stone-950 shadow-[0_1px_0_rgba(41,37,36,0.06)]"
+                                            : "text-stone-600 hover:bg-stone-50 hover:text-stone-900"
+                                    }`}
+                                    onclick={() => {
+                                        activeTab = "discovery";
+                                    }}
+                                >
+                                    Discovery &amp; Sharing
+                                </button>
                             </div>
+                        </div>
 
-                            <div class="border-t border-stone-200 pt-5">
-                                <BlockListEditor
-                                    blocks={content.blocks}
-                                    location={{
-                                        parentPath: null,
-                                        fieldKey: null,
-                                    }}
-                                    allowedTypes={null}
-                                    errors={contentErrors}
-                                    {draggingPath}
-                                    {canDragBlocks}
-                                    allowInlineBlockCreation={false}
-                                    onAddBlock={addBlock}
-                                    onInsertReusableBlockReference={insertReusableReference}
-                                    onRemoveBlock={removeBlock}
-                                    onMoveBlock={reorderBlock}
-                                    onUpdateField={updateField}
-                                    {reusableBlocks}
-                                    onStartDrag={(path) => {
-                                        draggingPath = path.join(".");
-                                    }}
-                                    onEndDrag={() => {
-                                        draggingPath = null;
-                                    }}
-                                />
-
-                                {#if Object.keys(contentErrors).length > 0}
-                                    <div
-                                        class="mt-5 rounded-2xl border border-red-300/70 bg-red-50 px-4 py-3 text-sm text-red-900"
+                        {#if activeTab === "identity"}
+                            <section class="space-y-5">
+                                <div class="space-y-2">
+                                    <p class={captionClass}>Identity</p>
+                                    <h2
+                                        class="text-[1.65rem] font-semibold tracking-[-0.035em] text-stone-950"
                                     >
-                                        Some content still needs attention
-                                        before you can save.
+                                        Page name and link
+                                    </h2>
+                                    <p
+                                        class="max-w-[62ch] text-base leading-7 text-stone-600"
+                                    >
+                                        Choose page name people will recognize.
+                                        Change page link only if needed.
+                                    </p>
+                                </div>
+
+                                <div
+                                    class="grid gap-5 lg:grid-cols-[minmax(0,1.35fr)_minmax(18rem,0.85fr)]"
+                                >
+                                    <div class="space-y-2">
+                                        <label
+                                            for="title"
+                                            class="text-sm font-medium text-stone-800"
+                                            >Title</label
+                                        >
+                                        <input
+                                            id="title"
+                                            type="text"
+                                            name="title"
+                                            required
+                                            bind:value={title}
+                                            class={inputClass}
+                                        />
                                     </div>
-                                {/if}
-                            </div>
-                        </section>
+
+                                    <div class="space-y-2">
+                                        <label
+                                            for="slug"
+                                            class="text-sm font-medium text-stone-800"
+                                            >Page link</label
+                                        >
+                                        <input
+                                            id="slug"
+                                            type="text"
+                                            name="slug"
+                                            required
+                                            bind:value={slug}
+                                            disabled={page.slug === "/"}
+                                            class={`${inputClass} font-mono text-[13px]`}
+                                        />
+                                        <p class="text-sm leading-6 text-stone-500">
+                                            {#if page.slug === "/"}
+                                                Home page always uses `/`.
+                                            {:else}
+                                                Use links like `/about` or
+                                                `/about/team`.
+                                            {/if}
+                                        </p>
+                                    </div>
+                                </div>
+                            </section>
+                        {/if}
+
+                        {#if activeTab === "content"}
+                            <section class="space-y-5">
+                                <div class="space-y-2">
+                                    <p class={captionClass}>Content</p>
+                                    <h2
+                                        class="text-[1.65rem] font-semibold tracking-[-0.035em] text-stone-950"
+                                    >
+                                        Page content
+                                    </h2>
+                                </div>
+
+                                <div class="border-t border-stone-200 pt-5">
+                                    <BlockListEditor
+                                        blocks={content.blocks}
+                                        location={{
+                                            parentPath: null,
+                                            fieldKey: null,
+                                        }}
+                                        allowedTypes={null}
+                                        errors={contentErrors}
+                                        {draggingPath}
+                                        {canDragBlocks}
+                                        allowInlineBlockCreation={false}
+                                        onAddBlock={addBlock}
+                                        onInsertReusableBlockReference={insertReusableReference}
+                                        onRemoveBlock={removeBlock}
+                                        onMoveBlock={reorderBlock}
+                                        onUpdateField={updateField}
+                                        {reusableBlocks}
+                                        onStartDrag={(path) => {
+                                            draggingPath = path.join(".");
+                                        }}
+                                        onEndDrag={() => {
+                                            draggingPath = null;
+                                        }}
+                                    />
+
+                                    {#if Object.keys(contentErrors).length > 0}
+                                        <div
+                                            class="mt-5 rounded-2xl border border-red-300/70 bg-red-50 px-4 py-3 text-sm text-red-900"
+                                        >
+                                            Some content still needs attention
+                                            before you can save.
+                                        </div>
+                                    {/if}
+                                </div>
+                            </section>
+                        {/if}
+
+                        {#if activeTab === "discovery"}
+                            <section class="space-y-5">
+                                <div class="space-y-2">
+                                    <p class={captionClass}>
+                                        Discovery &amp; sharing
+                                    </p>
+                                    <h2
+                                        class="text-[1.65rem] font-semibold tracking-[-0.035em] text-stone-950"
+                                    >
+                                        Search and sharing
+                                    </h2>
+                                    <p
+                                        class="max-w-[62ch] text-base leading-7 text-stone-600"
+                                    >
+                                        Optional. Change this only if search
+                                        results or shared links should show
+                                        different text or image.
+                                    </p>
+                                </div>
+
+                                <div class="space-y-4 border-t border-stone-200 pt-5">
+                                    <div class="space-y-2">
+                                        <label
+                                            for="seoTitle"
+                                            class="text-sm font-medium text-stone-800"
+                                            >Title for search</label
+                                        >
+                                        <input
+                                            id="seoTitle"
+                                            type="text"
+                                            name="seoTitle"
+                                            bind:value={seo.title}
+                                            class={inputClass}
+                                        />
+                                        <p
+                                            class="text-sm leading-6 text-stone-500"
+                                        >
+                                            Optional. Leave empty to use page
+                                            title.
+                                        </p>
+                                    </div>
+
+                                    <div class="space-y-2">
+                                        <label
+                                            for="seoDescription"
+                                            class="text-sm font-medium text-stone-800"
+                                        >
+                                            Description for search
+                                        </label>
+                                        <textarea
+                                            id="seoDescription"
+                                            name="seoDescription"
+                                            rows="4"
+                                            bind:value={seo.description}
+                                            class={inputClass}
+                                        ></textarea>
+                                        <p
+                                            class="text-sm leading-6 text-stone-500"
+                                        >
+                                            Short summary people may see under
+                                            page title.
+                                        </p>
+                                    </div>
+
+                                    <div class="space-y-2">
+                                        <label
+                                            for="canonicalUrl"
+                                            class="text-sm font-medium text-stone-800"
+                                        >
+                                            Preferred link
+                                        </label>
+                                        <input
+                                            id="canonicalUrl"
+                                            type="url"
+                                            name="canonicalUrl"
+                                            bind:value={seo.canonicalUrl}
+                                            class={inputClass}
+                                        />
+                                    </div>
+
+                                    <div class="space-y-2">
+                                        <label
+                                            for="ogImageUrl"
+                                            class="text-sm font-medium text-stone-800"
+                                        >
+                                            Image for sharing
+                                        </label>
+                                        <input
+                                            id="ogImageUrl"
+                                            type="url"
+                                            name="ogImageUrl"
+                                            bind:value={seo.ogImageUrl}
+                                            class={inputClass}
+                                        />
+                                    </div>
+
+                                    <div class="space-y-3">
+                                        <label
+                                            for="noIndex"
+                                            class="flex items-start gap-3 rounded-2xl border border-stone-300/80 bg-stone-50 px-4 py-3 text-sm text-stone-700"
+                                        >
+                                            <input
+                                                id="noIndex"
+                                                type="checkbox"
+                                                name="noIndex"
+                                                bind:checked={seo.noIndex}
+                                                class="mt-0.5 h-4 w-4 rounded border-stone-400 text-stone-950 focus:ring-stone-300"
+                                            />
+                                            <span>
+                                                <span
+                                                    class="block font-medium text-stone-950"
+                                                    >Hide from search
+                                                    results</span
+                                                >
+                                                <span
+                                                    class="mt-1 block leading-6 text-stone-500"
+                                                >
+                                                    Use for pages that should
+                                                    not show up in search.
+                                                </span>
+                                            </span>
+                                        </label>
+
+                                        <label
+                                            for="noFollow"
+                                            class="flex items-start gap-3 rounded-2xl border border-stone-300/80 bg-stone-50 px-4 py-3 text-sm text-stone-700"
+                                        >
+                                            <input
+                                                id="noFollow"
+                                                type="checkbox"
+                                                name="noFollow"
+                                                bind:checked={seo.noFollow}
+                                                class="mt-0.5 h-4 w-4 rounded border-stone-400 text-stone-950 focus:ring-stone-300"
+                                            />
+                                            <span>
+                                                <span
+                                                    class="block font-medium text-stone-950"
+                                                    >Do not pass link
+                                                    signals</span
+                                                >
+                                                <span
+                                                    class="mt-1 block leading-6 text-stone-500"
+                                                >
+                                                    Use only if links on this
+                                                    page should not affect
+                                                    search ranking.
+                                                </span>
+                                            </span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </section>
+                        {/if}
                     </div>
 
                     <aside
@@ -504,167 +701,6 @@
                                         {errorMessage}
                                     </div>
                                 {/if}
-                            </section>
-
-                            <section
-                                class="space-y-4 border-b border-stone-200 pb-8"
-                            >
-                                <details bind:open={seoExpanded} class="group">
-                                    <summary
-                                        class="flex cursor-pointer list-none items-start justify-between gap-4 rounded-[1.25rem] text-left outline-none transition marker:hidden focus-visible:ring-4 focus-visible:ring-stone-200/70"
-                                    >
-                                        <div class="space-y-1">
-                                            <p class={captionClass}>
-                                                Discovery and sharing
-                                            </p>
-                                            <h3
-                                                class="text-[1.15rem] font-semibold tracking-[-0.03em] text-stone-950"
-                                            >
-                                                Search and sharing
-                                            </h3>
-                                        </div>
-                                        <div
-                                            class="rounded-full border border-stone-300 bg-stone-50 px-3 py-1 text-[10px] font-medium uppercase tracking-[0.16em] text-stone-600 transition group-open:bg-stone-950 group-open:text-stone-50"
-                                        >
-                                            {seoExpanded ? "Hide" : "Edit"}
-                                        </div>
-                                    </summary>
-
-                                    <div
-                                        class="mt-4 space-y-4 border-t border-stone-200 pt-4"
-                                    >
-                                        <div class="space-y-2">
-                                            <label
-                                                for="seoTitle"
-                                                class="text-sm font-medium text-stone-800"
-                                                >Title for search</label
-                                            >
-                                            <input
-                                                id="seoTitle"
-                                                type="text"
-                                                name="seoTitle"
-                                                bind:value={seo.title}
-                                                class={inputClass}
-                                            />
-                                            <p
-                                                class="text-sm leading-6 text-stone-500"
-                                            >
-                                                Optional. Leave empty to use
-                                                page title.
-                                            </p>
-                                        </div>
-
-                                        <div class="space-y-2">
-                                            <label
-                                                for="seoDescription"
-                                                class="text-sm font-medium text-stone-800"
-                                            >
-                                                Description for search
-                                            </label>
-                                            <textarea
-                                                id="seoDescription"
-                                                name="seoDescription"
-                                                rows="4"
-                                                bind:value={seo.description}
-                                                class={inputClass}
-                                            ></textarea>
-                                            <p
-                                                class="text-sm leading-6 text-stone-500"
-                                            >
-                                                Short summary people may see
-                                                under page title.
-                                            </p>
-                                        </div>
-
-                                        <div class="space-y-2">
-                                            <label
-                                                for="canonicalUrl"
-                                                class="text-sm font-medium text-stone-800"
-                                            >
-                                                Preferred link
-                                            </label>
-                                            <input
-                                                id="canonicalUrl"
-                                                type="url"
-                                                name="canonicalUrl"
-                                                bind:value={seo.canonicalUrl}
-                                                class={inputClass}
-                                            />
-                                        </div>
-
-                                        <div class="space-y-2">
-                                            <label
-                                                for="ogImageUrl"
-                                                class="text-sm font-medium text-stone-800"
-                                            >
-                                                Image for sharing
-                                            </label>
-                                            <input
-                                                id="ogImageUrl"
-                                                type="url"
-                                                name="ogImageUrl"
-                                                bind:value={seo.ogImageUrl}
-                                                class={inputClass}
-                                            />
-                                        </div>
-
-                                        <div class="space-y-3">
-                                            <label
-                                                for="noIndex"
-                                                class="flex items-start gap-3 rounded-2xl border border-stone-300/80 bg-stone-50 px-4 py-3 text-sm text-stone-700"
-                                            >
-                                                <input
-                                                    id="noIndex"
-                                                    type="checkbox"
-                                                    name="noIndex"
-                                                    bind:checked={seo.noIndex}
-                                                    class="mt-0.5 h-4 w-4 rounded border-stone-400 text-stone-950 focus:ring-stone-300"
-                                                />
-                                                <span>
-                                                    <span
-                                                        class="block font-medium text-stone-950"
-                                                        >Hide from search
-                                                        results</span
-                                                    >
-                                                    <span
-                                                        class="mt-1 block leading-6 text-stone-500"
-                                                    >
-                                                        Use for pages that
-                                                        should not show up in
-                                                        search.
-                                                    </span>
-                                                </span>
-                                            </label>
-
-                                            <label
-                                                for="noFollow"
-                                                class="flex items-start gap-3 rounded-2xl border border-stone-300/80 bg-stone-50 px-4 py-3 text-sm text-stone-700"
-                                            >
-                                                <input
-                                                    id="noFollow"
-                                                    type="checkbox"
-                                                    name="noFollow"
-                                                    bind:checked={seo.noFollow}
-                                                    class="mt-0.5 h-4 w-4 rounded border-stone-400 text-stone-950 focus:ring-stone-300"
-                                                />
-                                                <span>
-                                                    <span
-                                                        class="block font-medium text-stone-950"
-                                                        >Do not pass link
-                                                        signals</span
-                                                    >
-                                                    <span
-                                                        class="mt-1 block leading-6 text-stone-500"
-                                                    >
-                                                        Use only if links on
-                                                        this page should not
-                                                        affect search ranking.
-                                                    </span>
-                                                </span>
-                                            </label>
-                                        </div>
-                                    </div>
-                                </details>
                             </section>
 
                             <section class="space-y-3">

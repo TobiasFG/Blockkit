@@ -4,8 +4,8 @@ Purpose: describe the current page edit screen and its editing capabilities.
 The edit page lives at `/edit/[...slug]` and lets you update a page title, page slug, draft SEO metadata, and draft page content. The root page slug remains fixed as `/`.
 
 The current layout treats the page body as the primary editing region:
-- The main column holds page identity fields and the content editor.
-- A secondary side rail holds draft state, save/reset actions, SEO settings, and page record details.
+- The main column uses tabs for Identity, Content, and Discovery & Sharing.
+- A secondary side rail holds draft state, save/reset actions, and page record details.
 - The page relies on section spacing, dividers, and a dedicated side rail instead of wrapping the whole editor in one large parent card.
 - On smaller screens the layout collapses to one column, but the same priority order stays intact.
 
@@ -13,7 +13,7 @@ The current layout treats the page body as the primary editing region:
 - From the CMS home list, click Edit on a page card.
 - Update the Title field, adjust the Slug if needed, then compose page content in the main content region.
 - Use the draft panel in the side rail as the primary source of save state and validation state, then save or reset the current draft there.
-- Open the collapsible search appearance section in the side rail only when you need search or sharing metadata.
+- Open the `Discovery & Sharing` tab when you need search or sharing metadata.
 - Create and edit content in `/content`, not inside the page editor.
 - Use the content picker at the top of the Content section to insert top-level live references to existing content items.
 - Use the Content sidebar `Add` action or `Insert into page` context-menu action to append selected content into current page draft.
