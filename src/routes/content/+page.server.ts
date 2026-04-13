@@ -81,7 +81,7 @@ export const actions = {
 				reusableBlockPageReferences: await getPagesReferencingReusableBlockMap()
 			};
 		} catch (error) {
-			console.error('Error creating reusable block:', error);
+			console.error('Error creating content:', error);
 			return fail(500, { error: 'Failed to create shared content' });
 		}
 	},
@@ -114,7 +114,7 @@ export const actions = {
 		const id = String(formData.get('id') ?? '').trim();
 
 		if (!id) {
-			return fail(400, { error: 'Reusable block id is required' });
+			return fail(400, { error: 'Content id is required' });
 		}
 
 		try {
@@ -127,8 +127,8 @@ export const actions = {
 				pagesReferencingDeletedBlock
 			};
 		} catch (error) {
-			console.error('Error deleting reusable block:', error);
-			return fail(500, { error: 'Failed to delete reusable block' });
+			console.error('Error deleting content:', error);
+			return fail(500, { error: 'Failed to delete content' });
 		}
 	}
 } satisfies Actions;

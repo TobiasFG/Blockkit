@@ -103,7 +103,7 @@
 						class="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white px-4 py-3 shadow-[0_12px_36px_-28px_rgba(15,23,42,0.45)]"
 						style={`margin-left: ${(depth + 1) * 1.1}rem`}
 					>
-						<a href={`/blocks/${block.id}`} class="min-w-0 flex-1">
+						<a href={`/content/${block.id}`} class="min-w-0 flex-1">
 							<div class="flex items-center gap-2">
 								<span class="truncate font-medium text-slate-900">{block.name}</span>
 								{#if !block.is_published || block.has_unpublished_changes}

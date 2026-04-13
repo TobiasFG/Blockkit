@@ -140,7 +140,7 @@
 						<ContextMenu.Root>
 							<ContextMenu.Trigger class="flex min-w-0 flex-1">
 								<a
-									href={`/blocks/${block.id}`}
+									href={`/content/${block.id}`}
 									class="flex min-w-0 flex-1 items-center justify-between gap-3"
 									draggable={canInsertIntoPage && canDragIntoPage}
 									onclick={onClose}
@@ -172,7 +172,7 @@
 									class="rounded-lg px-2 py-2 text-sm text-red-700 outline-none transition focus:bg-red-50"
 									onSelect={() => onDeleteBlock(block.id, block.name)}
 								>
-									Delete reusable block
+										Delete content
 								</ContextMenu.Item>
 							</ContextMenu.Content>
 						</ContextMenu.Root>
@@ -193,7 +193,7 @@
 									class="rounded-lg px-2 py-2 text-sm text-red-700 outline-none transition focus:bg-red-50"
 									onSelect={() => onDeleteBlock(block.id, block.name)}
 								>
-									Delete reusable block
+										Delete content
 								</DropdownMenu.Item>
 							</DropdownMenu.Content>
 						</DropdownMenu.Root>

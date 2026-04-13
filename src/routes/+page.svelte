@@ -85,7 +85,7 @@
 						Pages first. Shared content lives in the library.
 					</h1>
 					<p class="max-w-2xl text-base leading-7 text-slate-300">
-						Open the page that needs attention, draft the next one, and leave reusable blocks to the dedicated library.
+						Open page that needs attention, draft next one, leave content creation to dedicated Content library.
 					</p>
 				</div>
 				<p class="text-sm text-slate-400">Home stays at `/`.</p>
@@ -271,21 +271,21 @@
 	<section class="grid gap-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">
 		<div class="space-y-2">
 			<p class="text-xs font-semibold uppercase tracking-[0.24em] text-slate-500">Shared content</p>
-			<h2 class="text-xl font-semibold tracking-tight text-slate-900">Reusable blocks live in the library</h2>
+			<h2 class="text-xl font-semibold tracking-tight text-slate-900">Content lives in Content library</h2>
 			<p class="max-w-2xl text-sm leading-6 text-slate-600">
-				The dashboard no longer manages folders or shared-content creation. Open the library to create, organize, and edit reusable blocks.
+				Dashboard no longer manages folders or content creation. Open Content to create, organize, and edit shared content.
 			</p>
 		</div>
 		<div class="flex flex-col gap-3 sm:flex-row lg:items-center lg:justify-end">
 			<div class="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3">
-				<div class="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">Reusable blocks</div>
+				<div class="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">Content items</div>
 				<div class="text-2xl font-semibold text-slate-900">{reusableBlockCount}</div>
 			</div>
 			<a
-				href="/blocks"
+				href="/content"
 				class="inline-flex items-center justify-center rounded-md bg-slate-900 px-4 py-2 text-sm font-medium text-white transition hover:bg-slate-800"
 			>
-				Open library
+				Open Content
 			</a>
 		</div>
 	</section>

@@ -73,7 +73,7 @@
 	const inputClass =
 		'w-full rounded-2xl border border-stone-300/80 bg-white px-4 py-3 text-sm text-stone-900 shadow-[0_1px_0_rgba(41,37,36,0.04)] outline-none transition placeholder:text-stone-400 focus:border-stone-500 focus:ring-4 focus:ring-stone-200/70 disabled:bg-stone-100 disabled:text-stone-500';
 
-	const captionClass = 'text-[11px] font-semibold uppercase tracking-[0.3em] text-stone-500';
+	const captionClass = 'text-[10px] font-medium uppercase tracking-[0.24em] text-stone-500';
 
 	$effect(() => {
 		page = data.page ?? null;
@@ -99,7 +99,7 @@
 		};
 		const unregisterReusableInsert = registerReusableBlockInsertHandler(({ reusableBlockId }) => {
 			insertReusableReference(reusableBlockId, content.blocks.length);
-			successMessage = 'Reusable block added to the page draft.';
+			successMessage = 'Content added to page draft.';
 			errorMessage = '';
 		});
 
@@ -236,18 +236,18 @@
 						<div class="max-w-3xl space-y-3">
 							<p class={captionClass}>Page editor</p>
 							<div class="space-y-2">
-								<h1 class="max-w-2xl text-4xl font-black tracking-[-0.04em] text-stone-950">
+								<h1 class="max-w-2xl text-[2.6rem] font-semibold tracking-[-0.045em] text-stone-950 sm:text-5xl">
 									{title || page.title}
 								</h1>
-								<p class="max-w-2xl text-sm leading-6 text-stone-600">
-									Shape draft content first. Route settings and search metadata stay close, but out of the way.
+								<p class="max-w-[62ch] text-base leading-7 text-stone-600">
+									Add page content here. Page name, link, and search settings are below.
 								</p>
 							</div>
 						</div>
 
 						<a
 							href="/"
-							class="inline-flex items-center rounded-full border border-stone-300 bg-white px-4 py-2 text-sm font-medium text-stone-700 transition hover:border-stone-400 hover:bg-stone-50"
+							class="inline-flex items-center rounded-full border border-stone-300 bg-white px-4 py-2 text-sm font-medium text-stone-700 transition hover:border-stone-400 hover:bg-stone-50 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-stone-200/70"
 						>
 							Back to pages
 						</a>
@@ -259,17 +259,17 @@
 						<section class="space-y-5">
 							<div class="space-y-2">
 									<p class={captionClass}>Page identity</p>
-								<h2 class="text-2xl font-black tracking-[-0.03em] text-stone-950">
+								<h2 class="text-[1.65rem] font-semibold tracking-[-0.035em] text-stone-950">
 									Title and route
 								</h2>
-								<p class="max-w-2xl text-sm leading-6 text-stone-600">
-									Keep naming clear for editors. Use route changes sparingly because they affect where this page lives.
+								<p class="max-w-[62ch] text-base leading-7 text-stone-600">
+									Choose page name people will recognize. Change page link only if needed.
 								</p>
 							</div>
 
 							<div class="grid gap-5 lg:grid-cols-[minmax(0,1.35fr)_minmax(18rem,0.85fr)]">
 								<div class="space-y-2">
-									<label for="title" class="text-sm font-semibold text-stone-800">Title</label>
+									<label for="title" class="text-sm font-medium text-stone-800">Title</label>
 									<input
 										id="title"
 										type="text"
@@ -281,7 +281,8 @@
 								</div>
 
 								<div class="space-y-2">
-									<label for="slug" class="text-sm font-semibold text-stone-800">Route slug</label>
+									<label for="slug" class="text-sm font-medium text-stone-800">Route slug</label>
+									<label for="slug" class="text-sm font-medium text-stone-800">Page link</label>
 									<input
 										id="slug"
 										type="text"
@@ -291,11 +292,11 @@
 										disabled={page.slug === '/'}
 										class={`${inputClass} font-mono text-[13px]`}
 									/>
-									<p class="text-xs leading-5 text-stone-500">
+										<p class="text-sm leading-6 text-stone-500">
 										{#if page.slug === '/'}
-											The root page always uses `/`.
+											Home page always uses `/`.
 										{:else}
-											Use `/segment` or nested paths like `/about/team`.
+											Use links like `/about` or `/about/team`.
 										{/if}
 									</p>
 								</div>
@@ -304,10 +305,10 @@
 
 						<section class="space-y-5">
 							<div class="space-y-2">
-									<p class={captionClass}>Page body</p>
-								<h2 class="text-2xl font-black tracking-[-0.03em] text-stone-950">Content</h2>
-								<p class="max-w-2xl text-sm leading-6 text-stone-600">
-									Build draft page body from registered blocks. Reuse shared content only when it should stay linked across pages.
+								<p class={captionClass}>Page body</p>
+								<h2 class="text-[1.65rem] font-semibold tracking-[-0.035em] text-stone-950">Content</h2>
+								<p class="max-w-[62ch] text-base leading-7 text-stone-600">
+									Add saved content to this page. To change content itself, open Content library.
 								</p>
 							</div>
 
@@ -316,11 +317,10 @@
 									blocks={content.blocks}
 									location={{ parentPath: null, fieldKey: null }}
 									allowedTypes={null}
-									title="Draft blocks"
-									description="Add, reorder, and refine content blocks."
 									errors={contentErrors}
 									{draggingPath}
 									{canDragBlocks}
+									allowInlineBlockCreation={false}
 									onAddBlock={addBlock}
 									onInsertReusableBlockReference={insertReusableReference}
 									onRemoveBlock={removeBlock}
@@ -337,7 +337,7 @@
 
 								{#if Object.keys(contentErrors).length > 0}
 									<div class="mt-5 rounded-2xl border border-red-300/70 bg-red-50 px-4 py-3 text-sm text-red-900">
-										Content has validation errors. Review marked block fields before saving.
+										Some content still needs attention before you can save.
 									</div>
 								{/if}
 							</div>
@@ -349,23 +349,23 @@
 							<section class="space-y-4 border-b border-stone-200 pb-8">
 								<div class="space-y-2">
 										<p class={captionClass}>Draft panel</p>
-									<h2 class="text-xl font-black tracking-[-0.03em] text-stone-950">Save and review</h2>
+									<h2 class="text-[1.35rem] font-semibold tracking-[-0.03em] text-stone-950">Save and review</h2>
 								</div>
 
 								<div class="space-y-3">
 									<div class="flex items-center justify-between gap-3">
-										<span class="text-sm font-medium text-stone-600">Current route</span>
-										<span class="font-mono text-[11px] uppercase tracking-[0.14em] text-stone-900">{displaySlug(page.slug)}</span>
+										<span class="text-sm text-stone-600">Page link</span>
+										<span class="font-mono text-xs tabular-nums tracking-[0.02em] text-stone-900">{displaySlug(page.slug)}</span>
 									</div>
 									<div class="flex items-center justify-between gap-3">
-										<span class="text-sm font-medium text-stone-600">Draft state</span>
-										<span class="text-sm font-semibold text-stone-950">
+										<span class="text-sm text-stone-600">Draft state</span>
+										<span class="text-sm font-medium text-stone-950">
 											{hasUnsavedChanges ? 'Unsaved changes' : 'Up to date'}
 										</span>
 									</div>
 									<div class="flex items-center justify-between gap-3">
-										<span class="text-sm font-medium text-stone-600">Validation</span>
-										<span class={`text-sm font-semibold ${hasValidationErrors ? 'text-red-900' : 'text-emerald-900'}`}>
+										<span class="text-sm text-stone-600">Validation</span>
+										<span class={`text-sm font-medium ${hasValidationErrors ? 'text-red-900' : 'text-emerald-900'}`}>
 											{hasValidationErrors ? 'Needs attention' : 'Ready to save'}
 										</span>
 									</div>
@@ -374,7 +374,7 @@
 								<div class="space-y-3">
 									<button
 										type="submit"
-										class="inline-flex w-full items-center justify-center rounded-full bg-stone-950 px-5 py-3 text-sm font-semibold text-stone-50 transition hover:bg-stone-800 disabled:cursor-not-allowed disabled:opacity-70"
+											class="inline-flex min-h-11 w-full items-center justify-center rounded-full bg-stone-950 px-5 py-3 text-sm font-semibold text-stone-50 transition hover:bg-stone-800 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-stone-300/70 disabled:cursor-not-allowed disabled:opacity-70"
 										disabled={formSubmitting}
 									>
 										{formSubmitting ? 'Saving...' : 'Save changes'}
@@ -382,7 +382,7 @@
 									{#if hasUnsavedChanges}
 										<button
 											type="button"
-											class="inline-flex w-full items-center justify-center rounded-full border border-stone-300 bg-white px-5 py-3 text-sm font-medium text-stone-700 transition hover:border-stone-400 hover:bg-stone-50"
+												class="inline-flex min-h-11 w-full items-center justify-center rounded-full border border-stone-300 bg-white px-5 py-3 text-sm font-medium text-stone-700 transition hover:border-stone-400 hover:bg-stone-50 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-stone-200/70"
 											onclick={resetDraft}
 										>
 											Reset draft
@@ -405,24 +405,24 @@
 
 							<section class="space-y-4 border-b border-stone-200 pb-8">
 								<details bind:open={seoExpanded} class="group">
-									<summary class="flex cursor-pointer list-none items-start justify-between gap-4 rounded-[1.25rem] text-left outline-none marker:hidden">
+									<summary class="flex cursor-pointer list-none items-start justify-between gap-4 rounded-[1.25rem] text-left outline-none transition marker:hidden focus-visible:ring-4 focus-visible:ring-stone-200/70">
 										<div class="space-y-1">
 											<p class={captionClass}>Discovery and sharing</p>
-											<h3 class="text-lg font-black tracking-[-0.03em] text-stone-950">
-												Search appearance
+											<h3 class="text-[1.15rem] font-semibold tracking-[-0.03em] text-stone-950">
+												Search and sharing
 											</h3>
-											<p class="max-w-[24ch] text-sm leading-5 text-stone-600">
-												Optional. Open when you need Google or link-preview control.
+											<p class="max-w-[28ch] text-sm leading-6 text-stone-600">
+												Optional. Use this if you want different text or image in search and shares.
 											</p>
 										</div>
-										<div class="rounded-full border border-stone-300 bg-stone-50 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.22em] text-stone-600 transition group-open:bg-stone-950 group-open:text-stone-50">
+										<div class="rounded-full border border-stone-300 bg-stone-50 px-3 py-1 text-[10px] font-medium uppercase tracking-[0.16em] text-stone-600 transition group-open:bg-stone-950 group-open:text-stone-50">
 											{seoExpanded ? 'Hide' : 'Edit'}
 										</div>
 									</summary>
 
 									<div class="mt-4 space-y-4 border-t border-stone-200 pt-4">
 										<div class="space-y-2">
-											<label for="seoTitle" class="text-sm font-semibold text-stone-800">Search title</label>
+												<label for="seoTitle" class="text-sm font-medium text-stone-800">Title for search</label>
 											<input
 												id="seoTitle"
 												type="text"
@@ -430,14 +430,14 @@
 												bind:value={seo.title}
 												class={inputClass}
 											/>
-											<p class="text-xs leading-5 text-stone-500">
-												Optional. Leave blank to reuse page title in search results.
+											<p class="text-sm leading-6 text-stone-500">
+												Optional. Leave empty to use page title.
 											</p>
 										</div>
 
 										<div class="space-y-2">
-											<label for="seoDescription" class="text-sm font-semibold text-stone-800">
-												Search description
+												<label for="seoDescription" class="text-sm font-medium text-stone-800">
+												Description for search
 											</label>
 											<textarea
 												id="seoDescription"
@@ -446,14 +446,14 @@
 												bind:value={seo.description}
 												class={inputClass}
 											></textarea>
-											<p class="text-xs leading-5 text-stone-500">
-												Write short summary people may see under page title in search results.
+											<p class="text-sm leading-6 text-stone-500">
+												Short summary people may see under page title.
 											</p>
 										</div>
 
 										<div class="space-y-2">
-											<label for="canonicalUrl" class="text-sm font-semibold text-stone-800">
-												Preferred page URL
+												<label for="canonicalUrl" class="text-sm font-medium text-stone-800">
+												Preferred link
 											</label>
 											<input
 												id="canonicalUrl"
@@ -465,8 +465,8 @@
 										</div>
 
 										<div class="space-y-2">
-											<label for="ogImageUrl" class="text-sm font-semibold text-stone-800">
-												Sharing image URL
+												<label for="ogImageUrl" class="text-sm font-medium text-stone-800">
+												Image for sharing
 											</label>
 											<input
 												id="ogImageUrl"
@@ -490,9 +490,9 @@
 													class="mt-0.5 h-4 w-4 rounded border-stone-400 text-stone-950 focus:ring-stone-300"
 												/>
 												<span>
-													<span class="block font-semibold text-stone-950">Hide from search results</span>
-													<span class="mt-1 block text-stone-500">
-														Use for private, utility, or staging pages that should not appear in search.
+													<span class="block font-medium text-stone-950">Hide from search results</span>
+														<span class="mt-1 block leading-6 text-stone-500">
+														Use for pages that should not show up in search.
 													</span>
 												</span>
 											</label>
@@ -509,9 +509,9 @@
 													class="mt-0.5 h-4 w-4 rounded border-stone-400 text-stone-950 focus:ring-stone-300"
 												/>
 												<span>
-													<span class="block font-semibold text-stone-950">Do not pass link signals</span>
-													<span class="mt-1 block text-stone-500">
-														Use only when links on this page should not influence search engines.
+													<span class="block font-medium text-stone-950">Do not pass link signals</span>
+														<span class="mt-1 block leading-6 text-stone-500">
+														Use only if links on this page should not affect search ranking.
 													</span>
 												</span>
 											</label>
@@ -525,11 +525,11 @@
 								<div class="space-y-3 text-sm text-stone-700">
 									<div class="flex items-center justify-between gap-3">
 										<span class="text-stone-500">Created</span>
-										<span class="text-right text-stone-950">{formatTimestamp(page.created_at)}</span>
+											<span class="text-right tabular-nums text-stone-950">{formatTimestamp(page.created_at)}</span>
 									</div>
 									<div class="flex items-center justify-between gap-3">
 										<span class="text-stone-500">Updated</span>
-										<span class="text-right text-stone-950">{formatTimestamp(page.updated_at)}</span>
+											<span class="text-right tabular-nums text-stone-950">{formatTimestamp(page.updated_at)}</span>
 									</div>
 								</div>
 							</section>

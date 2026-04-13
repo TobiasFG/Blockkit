@@ -251,6 +251,11 @@ export const validatePageContentEditorState = (
 				return;
 			}
 
+			if (!listLocation) {
+				errors[pathKey] = 'Top-level page content must come from Content library.';
+				return;
+			}
+
 			const definition = getBlockDefinition(block.type);
 
 			if (!definition) {

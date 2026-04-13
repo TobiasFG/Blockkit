@@ -108,16 +108,16 @@
 <main class="mx-auto max-w-4xl space-y-6">
 	<div class="flex flex-wrap items-start justify-between gap-4">
 		<div class="space-y-2">
-			<h1 class="text-3xl font-bold text-slate-900">Editing reusable block</h1>
+			<h1 class="text-3xl font-bold text-slate-900">Editing content</h1>
 			<p class="text-slate-700">
-				Update the block name, folder, and fields for this reusable <span class="font-semibold">{block.block_type}</span> block.
+				Update content name, folder, and fields for this <span class="font-semibold">{block.block_type}</span> content item.
 			</p>
 		</div>
 		<a
-			href="/blocks"
+			href="/content"
 			class="inline-flex items-center rounded-md border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 transition hover:border-slate-300 hover:bg-slate-50"
 		>
-			Back to library
+			Back to Content
 		</a>
 	</div>
 
@@ -174,7 +174,7 @@
 						publishing = false;
 
 						if (result.type === 'success' && result.data) {
-							successMessage = 'Reusable block published successfully!';
+							successMessage = 'Content published successfully!';
 							if ('block' in result.data) {
 								block = result.data.block as ReusableBlock;
 								contentDraft = createEditableReusableBlockContent(block.content);
@@ -195,7 +195,7 @@
 								}
 							}
 						} else if (result.type === 'failure') {
-							errorMessage = `Failed to publish reusable block: ${result.data?.error ?? 'Unknown error'}`;
+							errorMessage = `Failed to publish content: ${result.data?.error ?? 'Unknown error'}`;
 						}
 
 						await applyAction(result);
@@ -232,7 +232,7 @@
 					saving = false;
 
 					if (result.type === 'success' && result.data) {
-						successMessage = 'Reusable block updated successfully!';
+						successMessage = 'Content updated successfully!';
 						if ('block' in result.data) {
 							block = result.data.block as ReusableBlock;
 							contentDraft = createEditableReusableBlockContent(block.content);
@@ -253,7 +253,7 @@
 							}
 						}
 					} else if (result.type === 'failure') {
-						errorMessage = `Failed to update reusable block: ${result.data?.error ?? 'Unknown error'}`;
+						errorMessage = `Failed to update content: ${result.data?.error ?? 'Unknown error'}`;
 					}
 
 					await applyAction(result);
@@ -295,7 +295,7 @@
 				<div class="space-y-2">
 					<h2 class="text-base font-semibold text-slate-900">Fields</h2>
 					<p class="text-sm text-slate-600">
-						Edit primitive fields inline and build nested block content for container-style reusable blocks.
+						Edit primitive fields inline and build nested block content for container-style content items.
 					</p>
 				</div>
 

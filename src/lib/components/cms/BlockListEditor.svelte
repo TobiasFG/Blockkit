@@ -24,7 +24,7 @@
 		location: BlockListLocation;
 		allowedTypes?: string[] | null;
 		pathPrefix?: BlockPath;
-		title: string;
+		title?: string;
 		description?: string;
 		errors: PageContentValidationErrors;
 		draggingPath: string | null;
@@ -38,6 +38,7 @@
 		onStartDrag: (path: BlockPath) => void;
 		onEndDrag: () => void;
 		reusableBlocks?: ReusableBlock[];
+		allowInlineBlockCreation?: boolean;
 	};
 
 	let {
@@ -45,7 +46,7 @@
 		location,
 		allowedTypes = null,
 		pathPrefix = [],
-		title,
+		title = '',
 		description,
 		errors,
 		draggingPath,
@@ -58,7 +59,8 @@
 		onUpdateField,
 		onStartDrag,
 		onEndDrag,
-		reusableBlocks = []
+		reusableBlocks = [],
+		allowInlineBlockCreation = true
 	}: Props = $props();
 
 	const getFieldError = (path: BlockPath, fieldKey: string) => errors[`${path.join('.')}:${fieldKey}`] ?? '';
@@ -80,6 +82,7 @@
 
 	const isRootList = $derived(location.parentPath === null && location.fieldKey === null);
 	const canInsertReusableBlocks = $derived(isRootList && reusableBlocks.length > 0);
+	const showInlineBlockCreate = $derived(allowInlineBlockCreation || !isRootList);
 	let openReusableMenuPath = $state<string | null>(null);
 	let openActionMenuPath = $state<string | null>(null);
 	let hoveredDropTarget = $state<string | null>(null);
@@ -88,9 +91,9 @@
 		'w-full rounded-2xl border border-stone-300/80 bg-white px-4 py-3 text-sm text-stone-900 shadow-[0_1px_0_rgba(41,37,36,0.04)] outline-none transition focus:border-stone-500 focus:ring-4 focus:ring-stone-200/70';
 
 	const tertiaryButtonClass =
-		'rounded-full border border-stone-300 bg-white px-3 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-stone-700 transition hover:border-stone-400 hover:bg-stone-50';
+		'rounded-full border border-stone-300 bg-white px-3 py-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-stone-700 transition hover:border-stone-400 hover:bg-stone-50 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-stone-200/70';
 
-	const captionClass = 'text-[11px] font-semibold uppercase tracking-[0.28em] text-stone-500';
+	const captionClass = 'text-[10px] font-medium uppercase tracking-[0.22em] text-stone-500';
 
 	const parseStringValue = (value: string, field: BlockFieldDefinition): BlockValue | undefined => {
 		if (field.type === 'number') {
@@ -111,6 +114,7 @@
 		Array.isArray(value) ? value : [];
 
 	const getReusableBlock = (id: string) => reusableBlocks.find((block) => block.id === id) ?? null;
+	const getContentHref = (id: string) => `/content/${id}`;
 
 	const insertReusableBlockReference = (reusableBlockId: string, index: number) => {
 		if (onInsertReusableBlockReference) {
@@ -172,55 +176,59 @@
 </script>
 
 <div class="space-y-4">
-	<div class="flex flex-wrap items-start justify-between gap-3">
-		<div class="space-y-1">
-			<h3 class="text-lg font-black tracking-[-0.02em] text-stone-950">{title}</h3>
-			{#if description}
-				<p class="max-w-2xl text-sm leading-6 text-stone-600">{description}</p>
-			{/if}
-		</div>
-		<div class="flex items-center gap-2">
-			<select
-				class={`${fieldClass} min-w-[11rem] py-2.5 pr-10 text-sm`}
-				onchange={(event) => {
-					const select = event.currentTarget as HTMLSelectElement;
-					if (!select.value) return;
-					onAddBlock(location, select.value);
-					select.value = '';
-				}}
-			>
-				<option value="">Add block…</option>
-				{#each allowedDefinitions as definition}
-					<option value={definition.type}>{definition.label}</option>
-				{/each}
-			</select>
-		</div>
-	</div>
-
-	{#if canInsertReusableBlocks}
-		<div class="rounded-[1.5rem] border border-stone-300/80 bg-[oklch(0.97_0.01_85)] p-4 shadow-[0_18px_40px_-30px_rgba(41,37,36,0.24)]">
-			<div class="flex flex-wrap items-center justify-between gap-3">
-				<div class="space-y-1">
-					<p class={captionClass}>Reusable blocks</p>
-					<p class="max-w-xl text-sm leading-6 text-stone-600">
-						Insert shared content that should stay linked across pages. Drop targets appear only while dragging.
-					</p>
-				</div>
+	{#if title || description || showInlineBlockCreate}
+		<div class="flex flex-wrap items-start justify-between gap-3">
+			<div class="space-y-1">
+				{#if title}
+					<h3 class="text-[1.2rem] font-semibold tracking-[-0.025em] text-stone-950">{title}</h3>
+				{/if}
+				{#if description}
+					<p class="max-w-[62ch] text-base leading-7 text-stone-600">{description}</p>
+				{/if}
+			</div>
+			<div class="flex items-center gap-2">
+				{#if showInlineBlockCreate}
 				<select
-					class={`${fieldClass} min-w-[14rem] py-2.5 pr-10 text-sm`}
+					class={`${fieldClass} min-w-[11rem] py-2.5 pr-10 text-sm`}
 					onchange={(event) => {
 						const select = event.currentTarget as HTMLSelectElement;
 						if (!select.value) return;
-						insertReusableBlockReference(select.value, blocks.length);
+						onAddBlock(location, select.value);
 						select.value = '';
 					}}
 				>
-					<option value="">Insert reusable block…</option>
-					{#each reusableBlocks as reusableBlock}
-						<option value={reusableBlock.id}>{reusableBlock.name}</option>
+					<option value="">Add block…</option>
+					{#each allowedDefinitions as definition}
+						<option value={definition.type}>{definition.label}</option>
 					{/each}
 				</select>
+				{/if}
 			</div>
+		</div>
+	{/if}
+
+	{#if canInsertReusableBlocks}
+		<div class="flex flex-wrap items-center justify-between gap-3 border-b border-stone-200 pb-4">
+			<div class="space-y-1">
+				<p class={captionClass}>Content library</p>
+				<p class="max-w-xl text-sm leading-6 text-stone-600">
+					Add saved content here. Drag to place it where you want.
+				</p>
+			</div>
+			<select
+				class={`${fieldClass} min-w-[14rem] py-2.5 pr-10 text-sm`}
+				onchange={(event) => {
+					const select = event.currentTarget as HTMLSelectElement;
+					if (!select.value) return;
+					insertReusableBlockReference(select.value, blocks.length);
+					select.value = '';
+				}}
+			>
+				<option value="">Add content…</option>
+				{#each reusableBlocks as reusableBlock}
+					<option value={reusableBlock.id}>{reusableBlock.name}</option>
+				{/each}
+			</select>
 		</div>
 	{/if}
 
@@ -237,20 +245,22 @@
 			ondragover={(event) => canDragBlocks && event.preventDefault()}
 			ondrop={(event) => canDragBlocks && handleDrop(event, 0)}
 		>
-			<div class="font-semibold text-stone-900">No blocks yet.</div>
+			<div class="font-semibold text-stone-900">No content yet.</div>
 			{#if canDragBlocks}
-				<span class="mt-1 block text-stone-500">Drop here to insert at the start.</span>
+				<span class="mt-1 block text-stone-500">Drag content here to start page.</span>
+			{:else if !showInlineBlockCreate}
+				<span class="mt-1 block text-stone-500">Choose content from library to start page.</span>
 			{:else}
 				<span class="mt-1 block text-stone-500">Start with a block type, then build the page from there.</span>
 			{/if}
 		</button>
 	{:else}
-		<div class="space-y-4">
+		<div class="space-y-2 divide-y divide-stone-200">
 			{#if canDragBlocks && draggingPath}
 				<button
 					type="button"
 					class={[
-						'rounded-full border border-dashed px-4 py-2 text-center text-[11px] font-semibold uppercase tracking-[0.22em] transition',
+						'rounded-full border border-dashed px-4 py-2 text-center text-[11px] font-semibold uppercase tracking-[0.22em] transition focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-stone-200/70',
 						hoveredDropTarget === `${pathPrefix.join('.')}:0`
 							? 'border-stone-900 bg-stone-900 text-stone-50'
 							: 'border-stone-300 bg-stone-100/70 text-stone-500 hover:border-stone-400 hover:bg-stone-200/70'
@@ -280,7 +290,7 @@
 					<button
 						type="button"
 						class={[
-							'rounded-full border border-dashed px-4 py-2 text-center text-[11px] font-semibold uppercase tracking-[0.22em] transition',
+							'rounded-full border border-dashed px-4 py-2 text-center text-[11px] font-semibold uppercase tracking-[0.22em] transition focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-stone-200/70',
 							hoveredDropTarget === `${pathPrefix.join('.')}:${index + 1}`
 								? 'border-stone-900 bg-stone-900 text-stone-50'
 								: 'border-stone-300 bg-stone-100/70 text-stone-500 hover:border-stone-400 hover:bg-stone-200/70'
@@ -302,8 +312,8 @@
 
 				<div
 					class={[
-						'rounded-[1.5rem] border border-stone-300/80 bg-white p-4 shadow-[0_18px_45px_-34px_rgba(41,37,36,0.22)]',
-						draggingPath === pathKey ? 'border-amber-400 ring-4 ring-amber-100/80' : ''
+						'px-1 py-5',
+						draggingPath === pathKey ? 'rounded-[1.25rem] bg-amber-50/70 ring-2 ring-amber-200/80' : ''
 					].join(' ')}
 					role="listitem"
 					draggable={canDragBlocks}
@@ -316,32 +326,38 @@
 					<div class="flex flex-wrap items-start justify-between gap-3">
 						<div class="space-y-1">
 							<div class="flex flex-wrap items-center gap-2">
-								<h4 class="text-base font-black tracking-[-0.02em] text-stone-950">
+								<h4 class="text-[1.02rem] font-semibold tracking-[-0.02em] text-stone-950">
 									{#if isReusableBlockReference(block)}
-										{reusableBlock?.name ?? 'Missing reusable block'}
+										{#if reusableBlock}
+											<a href={getContentHref(reusableBlock.id)} class="underline decoration-stone-300 underline-offset-4">
+												{reusableBlock.name}
+											</a>
+										{:else}
+											Missing content item
+										{/if}
 									{:else}
 										{definition?.label ?? block.type}
 									{/if}
 								</h4>
-								<span class="rounded-full bg-stone-100 px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.18em] text-stone-600">
+								<span class="rounded-full bg-stone-100 px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.12em] text-stone-500">
 									{#if isReusableBlockReference(block)}
-										reusable
+										content
 									{:else}
 										{block.type}
 									{/if}
 								</span>
 								{#if isReusableBlockReference(block) && reusableBlock}
-									<span class="rounded-full bg-stone-200/80 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-stone-700">
+									<span class="rounded-full bg-stone-100 px-2.5 py-1 text-[10px] font-medium uppercase tracking-[0.12em] text-stone-600">
 										{reusableBlock.block_type}
 									</span>
 								{/if}
 								{#if canDragBlocks && draggingPath === pathKey}
-									<span class="rounded-full bg-amber-100 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-amber-800">
+									<span class="rounded-full bg-amber-100 px-2.5 py-1 text-[10px] font-medium uppercase tracking-[0.12em] text-amber-800">
 										Dragging
 									</span>
 								{/if}
 							</div>
-							<div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-stone-500">
+							<div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-stone-500">
 								<span>{index + 1} of {blocks.length}</span>
 								<span class="font-mono" title={block.id}>ID {block.id.slice(0, 8)}</span>
 							</div>
@@ -392,54 +408,40 @@
 												>
 													<span>Insert reusable before</span>
 												</button>
+												{#if openReusableMenuPath === pathKey}
+													<div class="space-y-1 border-t border-stone-200 pt-2">
+														<p class={`${captionClass} px-3 py-1`}>Insert before this row</p>
+														<div class="max-h-56 space-y-1 overflow-y-auto">
+															{#each reusableBlocks as reusableBlock}
+																<button
+																	type="button"
+																	class="flex w-full items-center justify-between gap-3 rounded-xl px-3 py-2 text-left text-sm text-stone-700 transition hover:bg-stone-100"
+																	onclick={() => insertReusableBlockReference(reusableBlock.id, index)}
+																>
+																	<span class="min-w-0 flex-1 truncate font-medium">{reusableBlock.name}</span>
+																	<span class="shrink-0 rounded-full bg-stone-100 px-2.5 py-1 text-[10px] uppercase tracking-[0.12em] text-stone-500">
+																		{reusableBlock.block_type}
+																	</span>
+																</button>
+															{/each}
+														</div>
+													</div>
+												{/if}
 											{/if}
+											<button
+												type="button"
+												class="flex w-full items-center justify-between rounded-xl px-3 py-2 text-left text-sm text-red-700 transition hover:bg-red-50"
+												onclick={() => {
+													onRemoveBlock(path);
+													closeMenus();
+												}}
+											>
+												<span>Remove block</span>
+											</button>
 										</div>
 									</div>
 								{/if}
 							</div>
-							{#if canInsertReusableBlocks}
-								<div class="relative">
-									<button
-										type="button"
-										class={tertiaryButtonClass}
-										aria-expanded={openReusableMenuPath === pathKey}
-										onclick={() => openReusableMenu(pathKey)}
-									>
-										Insert reusable
-									</button>
-									{#if openReusableMenuPath === pathKey}
-										<div
-											class="absolute right-0 top-full z-20 mt-2 w-64 rounded-[1.25rem] border border-stone-300 bg-white p-2 shadow-[0_24px_60px_-34px_rgba(41,37,36,0.28)]"
-										>
-											<p class={`${captionClass} px-3 py-1`}>Insert before this row</p>
-											<div class="max-h-56 space-y-1 overflow-y-auto">
-												{#each reusableBlocks as reusableBlock}
-													<button
-														type="button"
-														class="flex w-full items-center justify-between gap-3 rounded-xl px-3 py-2 text-left text-sm text-stone-700 transition hover:bg-stone-100"
-														onclick={() => insertReusableBlockReference(reusableBlock.id, index)}
-													>
-														<span class="min-w-0 flex-1 truncate font-medium">{reusableBlock.name}</span>
-														<span class="shrink-0 rounded-full bg-stone-100 px-2.5 py-1 text-[10px] uppercase tracking-[0.18em] text-stone-500">
-															{reusableBlock.block_type}
-														</span>
-													</button>
-												{/each}
-											</div>
-										</div>
-									{/if}
-								</div>
-							{/if}
-							<button
-								type="button"
-								class="rounded-full border border-red-200 bg-red-50 px-3 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-red-700 transition hover:bg-red-100"
-								onclick={() => {
-									onRemoveBlock(path);
-									closeMenus();
-								}}
-							>
-								Remove
-							</button>
 						</div>
 					</div>
 
@@ -450,22 +452,22 @@
 					{/if}
 
 					{#if isReusableBlockReference(block)}
-						<div class="mt-4 rounded-[1.25rem] border border-stone-300/80 bg-stone-50 px-4 py-4 text-sm text-stone-700">
-							<p>
-								Live reusable block reference.
+						<div class="mt-4 border-l border-stone-300 pl-4 text-sm text-stone-700">
+							<p class="text-sm font-medium text-stone-900">
+								Content used on this page.
 								{#if reusableBlock}
-									<a href={`/blocks/${reusableBlock.id}`} class="ml-1 font-semibold text-stone-950 underline">
-										Edit reusable block
+									<a href={getContentHref(reusableBlock.id)} class="ml-1 font-semibold text-stone-950 underline">
+										Edit content
 									</a>
 								{/if}
 							</p>
 							{#if reusableBlock}
-								<p class="mt-1 text-stone-500">
-									Uses the reusable block named “{reusableBlock.name}”.
+								<p class="mt-1 text-sm leading-6 text-stone-500">
+									Using “{reusableBlock.name}”.
 								</p>
 							{:else}
-								<p class="mt-1 text-red-700">
-									This reusable block no longer exists. Remove or replace the reference before saving.
+								<p class="mt-1 text-sm leading-6 text-red-700">
+									This content no longer exists. Remove it or choose different content before saving.
 								</p>
 							{/if}
 						</div>
@@ -474,7 +476,7 @@
 							{#each definition.fields as field (field.key)}
 								{@const nestedBlocks = getNestedBlocks(block.fields[field.key])}
 								<div class="space-y-2">
-									<label class="text-sm font-semibold text-stone-800" for={`${block.id}-${field.key}`}>
+									<label class="text-sm font-medium text-stone-800" for={`${block.id}-${field.key}`}>
 										{field.label}
 									</label>
 									{#if field.type === 'string' && isTextareaField(field)}
@@ -506,7 +508,7 @@
 									{:else if field.type === 'boolean'}
 										<label
 											for={`${block.id}-${field.key}`}
-											class="flex items-start gap-3 rounded-2xl border border-stone-300/80 bg-stone-50 px-4 py-3 text-sm text-stone-700"
+											class="flex items-start gap-3 rounded-2xl bg-stone-50/70 px-4 py-3 text-sm text-stone-700"
 										>
 											<input
 												id={`${block.id}-${field.key}`}
@@ -516,10 +518,10 @@
 												onchange={(event) =>
 													onUpdateField(path, field.key, (event.currentTarget as HTMLInputElement).checked)}
 											/>
-											<span class="block font-medium text-stone-950">{field.label}</span>
+											<span class="block text-sm font-medium text-stone-950">{field.label}</span>
 										</label>
 									{:else if field.type === 'blocks'}
-										<div class="rounded-[1.25rem] bg-stone-100/80 p-4 ring-1 ring-inset ring-stone-200">
+										<div class="border-l border-stone-200 pl-4">
 											<Self
 												blocks={nestedBlocks}
 												location={{ parentPath: path, fieldKey: field.key }}
@@ -559,7 +561,7 @@
 				<button
 					type="button"
 					class={[
-						'rounded-full border border-dashed px-4 py-2 text-center text-[11px] font-semibold uppercase tracking-[0.22em] transition',
+							'rounded-full border border-dashed px-4 py-2 text-center text-[11px] font-semibold uppercase tracking-[0.22em] transition focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-stone-200/70',
 						hoveredDropTarget === `${pathPrefix.join('.')}:${blocks.length}`
 							? 'border-stone-900 bg-stone-900 text-stone-50'
 							: 'border-stone-300 bg-stone-100/70 text-stone-500 hover:border-stone-400 hover:bg-stone-200/70'

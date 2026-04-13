@@ -140,7 +140,14 @@ describe('page content editor helpers', () => {
 		};
 
 		expect(validatePageContentEditorState(withNestedReference, new Set(['block-1']))).toEqual({
-			'0:items.0': 'Reusable block references are only allowed at the top level.'
+			'0': 'Top-level page content must come from Content library.'
+		});
+	});
+
+	it('rejects top-level inline page blocks', () => {
+		expect(validatePageContentEditorState(BASE_CONTENT, new Set(['block-1']))).toEqual({
+			'0': 'Top-level page content must come from Content library.',
+			'1': 'Top-level page content must come from Content library.'
 		});
 	});
 });

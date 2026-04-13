@@ -25,7 +25,7 @@ export const load: PageServerLoad = async ({ params }) => {
 	const block = await getReusableBlockById(params.id);
 
 	if (!block) {
-		throw error(404, 'Reusable block not found');
+		throw error(404, 'Content not found');
 	}
 
 	return {
@@ -41,7 +41,7 @@ export const actions = {
 		const current = await getReusableBlockById(params.id);
 
 		if (!current) {
-			return fail(404, { error: 'Reusable block not found' });
+			return fail(404, { error: 'Content not found' });
 		}
 
 		const name = String(formData.get('name') ?? '').trim();
@@ -64,8 +64,8 @@ export const actions = {
 				blockFolders: await getBlockFolders()
 			};
 		} catch (err) {
-			console.error('Error updating reusable block:', err);
-			return fail(500, { error: 'Failed to update reusable block' });
+			console.error('Error updating content:', err);
+			return fail(500, { error: 'Failed to update content' });
 		}
 	},
 
@@ -73,7 +73,7 @@ export const actions = {
 		const current = await getReusableBlockById(params.id);
 
 		if (!current) {
-			return fail(404, { error: 'Reusable block not found' });
+			return fail(404, { error: 'Content not found' });
 		}
 
 		try {
@@ -83,8 +83,8 @@ export const actions = {
 				blockFolders: await getBlockFolders()
 			};
 		} catch (err) {
-			console.error('Error publishing reusable block:', err);
-			return fail(500, { error: 'Failed to publish reusable block' });
+			console.error('Error publishing content:', err);
+			return fail(500, { error: 'Failed to publish content' });
 		}
 	},
 

@@ -82,10 +82,10 @@
         currentPages.find((entry: Page) => isActive(editHref(entry.slug)))?.slug ?? null,
     );
     const activeReusableBlockId = $derived(
-        currentReusableBlocks.find((entry: ReusableBlock) => isActive(`/blocks/${entry.id}`))?.id ??
+        currentReusableBlocks.find((entry: ReusableBlock) => isActive(`/content/${entry.id}`))?.id ??
             null,
     );
-    const isBlocksLibraryActive = $derived(isActive("/blocks"));
+    const isContentLibraryActive = $derived(isActive("/content"));
     const isPageEditorRoute = $derived($page.url.pathname.startsWith("/edit/"));
     const canInsertIntoCurrentPage = $derived(isPageEditorRoute);
     const pageTree = $derived(buildSidebarTree(currentPages));
@@ -148,14 +148,14 @@
                         : payload.intent === "deleteBlockFolder"
                           ? "Folder deleted."
                           : payload.intent === "deleteReusableBlock"
-                            ? "Reusable block deleted."
+                            ? "Content deleted."
                             : "Sidebar action completed.",
             };
 
             if (
                 payload.intent === "deleteReusableBlock" &&
                 typeof payload.id === "string" &&
-                $page.url.pathname === `/blocks/${payload.id}`
+                $page.url.pathname === `/content/${payload.id}`
             ) {
                 await goto("/");
             }
@@ -199,11 +199,11 @@
         actionNotice = inserted
             ? {
                   tone: "success",
-                  text: "Reusable block added to current page draft.",
+                  text: "Content added to current page draft.",
               }
             : {
                   tone: "error",
-                  text: "Open a page editor first to insert a reusable block.",
+                  text: "Open page editor first to insert content.",
               };
         if (inserted) {
             onClose();
@@ -344,18 +344,18 @@
                     class="flex items-center justify-between px-3 text-xs font-semibold uppercase tracking-wide text-slate-500"
                 >
                     <a
-                        href="/blocks"
+                        href="/content"
                         class={[
                             "transition hover:text-slate-700",
-                            isBlocksLibraryActive ? "text-slate-900" : "text-slate-500",
+                            isContentLibraryActive ? "text-slate-900" : "text-slate-500",
                         ].join(" ")}
                         onclick={onClose}
                     >
-                        Blocks
+                        Content
                     </a>
                     <div class="flex items-center gap-1">
                         <a
-                            href="/blocks#create-block-folder"
+                            href="/content#create-block-folder"
                             class="rounded px-1.5 py-0.5 text-[10px] font-semibold text-slate-500 transition hover:bg-slate-100 hover:text-slate-700"
                             onclick={onClose}
                         >
@@ -366,7 +366,7 @@
                 <div class="space-y-1">
                     {#if currentBlockFolders.length === 0 && currentReusableBlocks.length === 0}
                         <div class="px-3 py-2 text-sm text-slate-500">
-                            No reusable blocks yet
+                            No content yet
                         </div>
                     {:else}
                         {#each reusableBlocksTree.folders as folder (folder.folder?.id)}
@@ -397,7 +397,7 @@
                                 <ContextMenu.Root>
                                     <ContextMenu.Trigger class="flex min-w-0 flex-1">
                                         <a
-                                            href={`/blocks/${block.id}`}
+                                            href={`/content/${block.id}`}
                                             class="flex min-w-0 flex-1 items-center justify-between gap-3"
                                             draggable={canInsertIntoCurrentPage && canDragReusableBlocks}
                                             onclick={onClose}
@@ -429,7 +429,7 @@
                                             class="rounded-lg px-2 py-2 text-sm text-red-700 outline-none transition focus:bg-red-50"
                                             onSelect={() => openDeleteBlockModal(block.id, block.name)}
                                         >
-                                            Delete reusable block
+                                            Delete content
                                         </ContextMenu.Item>
                                     </ContextMenu.Content>
                                 </ContextMenu.Root>
@@ -450,7 +450,7 @@
                                             class="rounded-lg px-2 py-2 text-sm text-red-700 outline-none transition focus:bg-red-50"
                                             onSelect={() => openDeleteBlockModal(block.id, block.name)}
                                         >
-                                            Delete reusable block
+                                            Delete content
                                         </DropdownMenu.Item>
                                     </DropdownMenu.Content>
                                 </DropdownMenu.Root>
@@ -492,7 +492,7 @@
             page{currentPages.length === 1 ? "" : "s"}
             <span class="mx-1.5 text-slate-300">•</span>
             <span class="font-medium text-slate-700">{currentReusableBlocks.length}</span>
-            block{currentReusableBlocks.length === 1 ? "" : "s"}
+            content item{currentReusableBlocks.length === 1 ? "" : "s"}
         </div>
     </div>
 {/snippet}
@@ -505,14 +505,14 @@
             : modalState?.kind === "deleteFolder"
               ? "Delete folder"
               : modalState?.kind === "deleteBlock"
-                ? "Delete reusable block"
+                ? "Delete content"
                 : ""
     }
     description={
         modalState?.kind === "createFolder"
             ? `Add a folder${modalState.parentId ? ` inside ${modalState.parentName}` : ""}.`
             : modalState?.kind === "deleteFolder"
-              ? `Delete “${modalState.name}” only if it has no child folders and no reusable blocks.`
+                ? `Delete “${modalState.name}” only if it has no child folders and no content items.`
               : modalState?.kind === "deleteBlock"
                 ? `Delete “${modalState.name}” and remove its draft page references.`
                 : null

@@ -14,7 +14,7 @@ Agent note: if you have not read `AGENTS.md` at the repo root yet, do that first
 - `shadcn-svelte/components.json.md` — Component registry configuration.
 - `cms/dashboard.md` — CMS dashboard purpose, editor-facing copy conventions, and current scope.
 - `cms/edit-page.md` — CMS edit page behavior, constraints, and draft SEO metadata fields.
-- `cms/reusable-block-library.md` — Reusable block library behavior, storage model, and first-iteration editor constraints.
+- `cms/reusable-block-library.md` — Content library behavior, storage model, route naming, and editor constraints.
 - `cms/page-content-model.md` — Initial typed page content shape, block registry, and validation rules.
 - `cms/sidebar-navigation.md` — CMS sidebar page tree behavior and collapse rules.
 

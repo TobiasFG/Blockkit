@@ -83,7 +83,7 @@
 </script>
 
 <svelte:head>
-	<title>Reusable block library</title>
+	<title>Content</title>
 </svelte:head>
 
 <main class="space-y-8">
@@ -91,12 +91,12 @@
 		<div class="absolute inset-y-0 right-0 hidden w-1/3 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.18),transparent_70%)] lg:block"></div>
 		<div class="relative grid gap-8 lg:grid-cols-[1.2fr_0.8fr]">
 			<div class="space-y-4">
-				<p class="text-xs font-semibold uppercase tracking-[0.35em] text-white/70">Reusable block library</p>
+				<p class="text-xs font-semibold uppercase tracking-[0.35em] text-white/70">Content</p>
 				<h1 class="max-w-3xl text-4xl font-black tracking-tight text-white sm:text-5xl">
 					Create shared content here. Edit it elsewhere. Keep the CMS tree clean.
 				</h1>
 				<p class="max-w-2xl text-base leading-7 text-white/80 sm:text-lg">
-					This is the dedicated surface for folders and reusable blocks. The sidebar stays focused on navigation
+					This is dedicated surface for folders and content items. Sidebar stays focused on navigation
 					while this page handles creation, organization, and direct links into the editor.
 				</p>
 			</div>
@@ -107,7 +107,7 @@
 					<div class="mt-2 text-3xl font-black text-white">{currentBlockFolders.length}</div>
 				</div>
 				<div class="rounded-2xl border border-white/15 bg-white/10 px-4 py-4 backdrop-blur-sm">
-					<div class="text-xs font-semibold uppercase tracking-[0.28em] text-white/60">Shared content</div>
+					<div class="text-xs font-semibold uppercase tracking-[0.28em] text-white/60">Content items</div>
 					<div class="mt-2 text-3xl font-black text-white">{currentReusableBlocks.length}</div>
 				</div>
 				<div class="rounded-2xl border border-white/15 bg-white/10 px-4 py-4 backdrop-blur-sm">
@@ -236,8 +236,8 @@
 			}}
 		>
 			<div class="space-y-2">
-				<p class="text-xs font-semibold uppercase tracking-[0.3em] text-slate-500">Shared content</p>
-				<h2 class="text-2xl font-black tracking-tight text-slate-950">New reusable block</h2>
+				<p class="text-xs font-semibold uppercase tracking-[0.3em] text-slate-500">Content item</p>
+				<h2 class="text-2xl font-black tracking-tight text-slate-950">New content item</h2>
 				<p class="max-w-prose text-sm leading-6 text-slate-600">
 					Choose a registered block type, give it a clear name, and place it in the tree.
 				</p>
@@ -245,7 +245,7 @@
 
 			<div class="mt-5 grid gap-4">
 				<div class="space-y-1">
-					<label for="block-name" class="text-sm font-medium text-slate-700">Shared content name</label>
+					<label for="block-name" class="text-sm font-medium text-slate-700">Content name</label>
 					<input
 						id="block-name"
 						type="text"
@@ -286,7 +286,7 @@
 					class="inline-flex items-center justify-center rounded-2xl bg-amber-400 px-4 py-3 text-sm font-black text-slate-950 transition hover:bg-amber-300 disabled:cursor-not-allowed disabled:opacity-70"
 					disabled={createBlockSubmitting}
 				>
-					{createBlockSubmitting ? 'Creating shared content...' : 'Create shared content'}
+					{createBlockSubmitting ? 'Creating content...' : 'Create content'}
 				</button>
 			</div>
 		</form>
@@ -296,21 +296,21 @@
 		<div class="flex flex-wrap items-start justify-between gap-4">
 			<div class="space-y-2">
 				<p class="text-xs font-semibold uppercase tracking-[0.3em] text-slate-500">Library tree</p>
-				<h2 class="text-2xl font-black tracking-tight text-slate-950">Folders and shared content</h2>
+				<h2 class="text-2xl font-black tracking-tight text-slate-950">Folders and content items</h2>
 				<p class="max-w-2xl text-sm leading-6 text-slate-600">
-					Open any block to edit it in the dedicated editor. Delete actions stay behind confirmation.
+					Open any content item to edit it in dedicated editor. Delete actions stay behind confirmation.
 				</p>
 			</div>
 			<div class="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600">
 				<span class="font-semibold text-slate-900">{currentBlockFolders.length}</span> folders,
-				<span class="font-semibold text-slate-900">{currentReusableBlocks.length}</span> blocks
+				<span class="font-semibold text-slate-900">{currentReusableBlocks.length}</span> content items
 			</div>
 		</div>
 
 		<div class="mt-6">
 			{#if currentBlockFolders.length === 0 && currentReusableBlocks.length === 0}
 				<div class="rounded-[1.5rem] border border-dashed border-slate-300 bg-slate-50 px-6 py-10 text-sm text-slate-500">
-					No shared content yet. Create the first folder or reusable block above.
+					No content yet. Create first folder or content item above.
 				</div>
 			{:else}
 				<div class="space-y-4">
@@ -327,7 +327,7 @@
 
 					{#each reusableBlocksTree.blocks as block (block.id)}
 						<div class="flex items-center gap-3 rounded-2xl border border-slate-200 bg-slate-50/80 px-4 py-3 shadow-[0_12px_36px_-28px_rgba(15,23,42,0.45)]">
-							<a href={`/blocks/${block.id}`} class="min-w-0 flex-1">
+							<a href={`/content/${block.id}`} class="min-w-0 flex-1">
 								<div class="flex items-center gap-2">
 									<span class="truncate font-medium text-slate-900">{block.name}</span>
 									{#if !block.is_published || block.has_unpublished_changes}
@@ -373,10 +373,10 @@
 
 <ActionModal
 	open={modalState !== null}
-	title={modalState?.kind === 'deleteFolder' ? 'Delete folder' : modalState?.kind === 'deleteBlock' ? 'Delete reusable block' : ''}
+	title={modalState?.kind === 'deleteFolder' ? 'Delete folder' : modalState?.kind === 'deleteBlock' ? 'Delete content' : ''}
 	description={
 		modalState?.kind === 'deleteFolder'
-			? `Delete “${modalState.name}” only if it has no child folders and no reusable blocks.`
+			? `Delete “${modalState.name}” only if it has no child folders and no content items.`
 			: modalState?.kind === 'deleteBlock'
 				? `Deleting “${modalState.name}” will remove its live references from the following pages:`
 				: null
@@ -441,7 +441,7 @@
 				</ul>
 			{:else}
 				<div class="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600">
-					No draft pages currently reference this shared content.
+					No draft pages currently reference this content item.
 				</div>
 			{/if}
 
@@ -466,14 +466,14 @@
 							if (result.type === 'success' && result.data) {
 								feedback = {
 									tone: 'success',
-									text: 'Shared content deleted.'
+									text: 'Content deleted.'
 								};
 								syncLibraryState(result.data as Record<string, unknown>);
 								closeModal();
 							} else if (result.type === 'failure') {
 								feedback = {
 									tone: 'error',
-									text: `Failed to delete shared content: ${result.data?.error ?? 'Unknown error'}`
+									text: `Failed to delete content: ${result.data?.error ?? 'Unknown error'}`
 								};
 							}
 
@@ -488,7 +488,7 @@
 						class="inline-flex items-center rounded-2xl border border-red-200 bg-red-50 px-4 py-2.5 text-sm font-semibold text-red-700 transition hover:bg-red-100 disabled:cursor-not-allowed disabled:opacity-60"
 						disabled={deletePending}
 					>
-						{deletePending ? 'Deleting...' : 'Delete shared content'}
+						{deletePending ? 'Deleting...' : 'Delete content'}
 					</button>
 				</form>
 			</div>
