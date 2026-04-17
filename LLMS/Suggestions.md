@@ -14,6 +14,7 @@ Guidelines:
 
 # Suggestions
 - We need a system for restoring deleted content. If content is deleted it should be marked as deleted but still be findable in some sort of trash overview from where it can be restored. I dont remember if content can be deleted when it is used in other content or pages but, that also needs to be managed in a clear a way that empowers the users. Ideally deleting content in use should display a warning to the user that the content is in use, including where, prompting extra acceptance before deletion, while deleting unused content should just delete immediately.
-- right now there is only a draft flow for pages, pages also needs to be publishable.
+- I would like to combine the ui actions when editing pages/content. If there are no changes the button should be disabled with the lable "all changes saved", if there are changes the button should be enabled and say "save draft", if there is a unpublished draft the button should be enabled and say "publish", we should remove the "Validation    Ready to save" line, if there are errors the button should be disabled and say "validation error"
+- I would like to change the way pages page link is handled. Right now the user have to actively write the full path, eg. "/about/us/open-position", which can become cumbersome. It would be better if pages simply had a required title, required parent that defines the location, and then an optional url name. If a page has no url name, the title should be used (of cause url-encoded.), eg. a page "We love us" without url name set would become "we%20love%20us" automatically, but then the user can choose to override the url name to eg. "we-love-us"
 
 # Bugs

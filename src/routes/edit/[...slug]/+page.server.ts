@@ -10,6 +10,7 @@ import { requireAuthenticatedUser } from '$lib/server/auth';
 import {
 	getDraftVersionById,
 	getPageBySlugVariants,
+	publishPage,
 	updatePageTitleDraftSeoAndContent
 } from '$lib/server/PagesController.server';
 import { getReusableBlocks } from '$lib/server/ReusableBlocksController.server';
@@ -114,6 +115,48 @@ export const actions = {
 			}
 			console.error('Error updating page:', err);
 			return fail(500, { error: 'Failed to update page' });
+		}
+	},
+
+	publishPage: async (event) => {
+		await requireAuthenticatedUser(event.locals, {
+			pathname: event.url.pathname,
+			search: event.url.search
+		});
+
+		const candidates = buildPageSlugCandidates(event.params.slug);
+		const page = await getPageBySlugVariants(candidates);
+		if (!page) {
+			return fail(404, { error: 'Page not found' });
+		}
+
+		const draftVersion = page.draft_version_id
+			? await getDraftVersionById(page.draft_version_id)
+			: null;
+
+		if (!draftVersion) {
+			return fail(400, { error: 'Page draft not found' });
+		}
+
+		const reusableBlocks = await getReusableBlocks();
+		const reusableBlockIds = new Set(reusableBlocks.map((block) => block.id));
+		const contentErrors = validatePageContentEditorState(draftVersion.content, reusableBlockIds);
+		if (Object.keys(contentErrors).length > 0) {
+			return fail(400, { error: 'Current draft is not ready to publish' });
+		}
+
+		try {
+			const publishedPage = await publishPage(page);
+
+			return {
+				page: publishedPage,
+				seo: parsePageSeoMeta(draftVersion.meta),
+				content: draftVersion.content,
+				reusableBlocks
+			};
+		} catch (err) {
+			console.error('Error publishing page:', err);
+			return fail(500, { error: 'Failed to publish page' });
 		}
 	}
 } satisfies Actions;

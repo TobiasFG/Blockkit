@@ -11,7 +11,7 @@ Purpose: describe how the CMS sidebar derives and renders nested page navigation
 # Behavior
 - Any page with children renders an expand/collapse chevron.
 - The currently active page and its ancestor chain open automatically.
-- Pages show a lightweight `Draft` badge when they have an unpublished draft version or have never been published.
+- Pages show lightweight publish-state badges: `Unpublished`, `Published`, or `Draft changes`.
 - Dashboard and "New page" remain top-level sidebar actions and are not part of the page tree.
 - `Content` section keeps quick link for folder creation and routes content creation to dedicated library page.
 - Content folders are collapsible and open automatically for active content item's folder ancestry.

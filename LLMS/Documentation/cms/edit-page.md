@@ -1,11 +1,11 @@
-Purpose: describe the current page edit screen and its editing capabilities.
+Purpose: describe current page edit screen, draft save flow, and page publish workflow.
 
 # Overview
 The edit page lives at `/edit/[...slug]` and lets you update a page title, page slug, draft SEO metadata, and draft page content. The root page slug remains fixed as `/`.
 
 The current layout treats the page body as the primary editing region:
 - The main column uses tabs for Identity, Content, and Discovery & Sharing.
-- A secondary side rail holds draft state, save/reset actions, and page record details.
+- A secondary side rail holds draft state, publish state, save/publish/reset actions, and page record details.
 - The page relies on section spacing, dividers, and a dedicated side rail instead of wrapping the whole editor in one large parent card.
 - On smaller screens the layout collapses to one column, but the same priority order stays intact.
 
@@ -13,6 +13,7 @@ The current layout treats the page body as the primary editing region:
 - From the CMS home list, click Edit on a page card.
 - Update the Title field, adjust the Slug if needed, then compose page content in the main content region.
 - Use the draft panel in the side rail as the primary source of save state and validation state, then save or reset the current draft there.
+- Publish from the same side rail after the draft is saved and validation is clear.
 - Open the `Discovery & Sharing` tab when you need search or sharing metadata.
 - Create and edit content in `/content`, not inside the page editor.
 - Use Content sidebar plus-icon quick add or `Insert into page` context-menu action to append selected content into current page draft.
@@ -20,6 +21,7 @@ The current layout treats the page body as the primary editing region:
 - Drag block rows between the visible drop targets to reorder within the current list on wide pointer-capable layouts. The drop targets appear only while dragging.
 - Click content item name or `Edit content` link on placed content row to open dedicated `/content/[id]` editor.
 - Use `Reset draft` to discard unsaved edits and return to the last saved draft state.
+- `Publish page` publishes current saved draft only. Unsaved in-form edits must be saved first.
 - Use the `Back to pages` action in the header to return to the list.
 
 # Notes & constraints
@@ -34,6 +36,9 @@ The current layout treats the page body as the primary editing region:
 - The initial SEO fields are SEO title, meta description, canonical URL, Open Graph image URL, no-index, and no-follow.
 - The current editor labels these with more editor-facing copy such as “Title for search”, “Preferred link”, and “Image for sharing”.
 - Save, reset, success, error, and validation summary messaging is grouped in the side rail so content editing stays visually primary.
+- Publish state in the side rail uses three states: `Unpublished`, `Published`, and `Draft changes`.
+- `Last published` in the side rail comes from current published page version.
+- After publish, CMS creates fresh clean draft from newly published revision so page reads as clean until it changes again.
 - Draft/save/validation state is intentionally shown in the side rail instead of being repeated in the page header.
 - Search metadata is progressively disclosed behind a collapsible side-rail section so it does not compete with day-to-day content editing.
 - The page editor should avoid stacked card-in-card presentation; section boundaries should mostly come from spacing, dividers, and a few purposeful surfaces.
@@ -41,6 +46,7 @@ The current layout treats the page body as the primary editing region:
 - Typography should stay calm and editorial: fewer heavy weights, quieter uppercase metadata, and body/help text sized for sustained scanning rather than widget chrome.
 - Interactive controls should keep visible focus states and touch-safe button sizing as the editor gets flatter.
 - Page content is saved back into `page_versions.content` on the current draft version together with SEO metadata.
+- Publishing uses current draft `page_versions.content` plus current draft `page_versions.meta`.
 - Content editing uses shared block registry, but page editor now composes with linked content items instead of creating new top-level inline blocks.
 - Top-level page content can include live content references that point at existing `/content/[id]` records.
 - Required primitive block fields start empty and are validated before save.

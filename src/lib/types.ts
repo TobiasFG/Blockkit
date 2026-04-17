@@ -9,6 +9,9 @@ export type Page = {
 	updated_at: string;
 	draft_version_id?: string | null;
 	published_version_id?: string | null;
+	has_unpublished_changes?: boolean;
+	is_published?: boolean;
+	last_published_at?: string | null;
 };
 
 export type ReferencingPage = Pick<Page, 'id' | 'title' | 'slug'>;
@@ -16,8 +19,14 @@ export type ReferencingPage = Pick<Page, 'id' | 'title' | 'slug'>;
 export type PageDraftVersion = {
 	id: string;
 	page_id: string;
+	status: 'draft' | 'published' | 'archived';
 	content: PageContent;
 	meta: Record<string, unknown>;
+	parent_id: string | null;
+	revision: number | null;
+	created_at: string;
+	updated_at: string;
+	published_at: string | null;
 };
 
 export type BlockFolder = {

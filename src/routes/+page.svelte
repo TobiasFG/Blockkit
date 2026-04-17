@@ -5,7 +5,7 @@
 	import { flip } from 'svelte/animate';
 
 	import { pagesStore } from '$lib/client/pagesStore';
-	import { pageHasDraftChanges } from '$lib/pageStatus';
+	import { getPagePublishState, pageHasDraftChanges } from '$lib/pageStatus';
 	import type { Page } from '$lib/types';
 	import type { PageProps } from './$types';
 
@@ -73,6 +73,18 @@
 
 	const isRootPage = (slug: string) => slug === '/' || slug.trim() === '';
 	const displayDate = (value: string) => dateFormatter.format(new Date(value));
+	const getPublishStateLabel = (page: Page) => {
+		const state = getPagePublishState(page);
+		if (state === 'draft-changes') return 'Draft changes';
+		if (state === 'published') return 'Published';
+		return 'Unpublished';
+	};
+	const getPublishStateClass = (page: Page) => {
+		const state = getPagePublishState(page);
+		if (state === 'draft-changes') return 'bg-sky-100 text-sky-800';
+		if (state === 'published') return 'bg-emerald-100 text-emerald-800';
+		return 'bg-amber-100 text-amber-800';
+	};
 
 	$effect(() => {
 		if (browser) {
@@ -224,15 +236,16 @@
 									<div class="min-w-0 space-y-2">
 										<div class="flex flex-wrap items-center gap-2">
 											<h3 class="text-[1.12rem] font-semibold tracking-[-0.02em] text-stone-950">{page.title}</h3>
-											{#if pageHasDraftChanges(page)}
-												<span class="rounded-full bg-amber-100 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-amber-800">
-													Draft work
-												</span>
-											{/if}
+											<span class={`rounded-full px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.16em] ${getPublishStateClass(page)}`}>
+												{getPublishStateLabel(page)}
+											</span>
 										</div>
 										<div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-stone-500">
 											<span class="font-mono text-[12px] text-stone-600">{displaySlug(page.slug)}</span>
 											<span>Updated {displayDate(page.updated_at)}</span>
+											{#if page.last_published_at}
+												<span>Live {displayDate(page.last_published_at)}</span>
+											{/if}
 										</div>
 									</div>
 									<div class="flex items-center gap-2 sm:justify-end">

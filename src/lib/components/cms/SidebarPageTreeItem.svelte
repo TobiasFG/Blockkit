@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { ChevronRight } from '$lib/icons';
-	import { pageHasDraftChanges } from '$lib/pageStatus';
+	import { getPagePublishState } from '$lib/pageStatus';
 	import SidebarPageTreeItem from './SidebarPageTreeItem.svelte';
 	import type { SidebarTreeNode } from './sidebarTree';
 
@@ -29,7 +29,21 @@
 	const hasChildren = $derived(node.children.length > 0);
 	const isOpen = $derived(hasChildren ? !closedNodes[node.page.slug] : false);
 	const isActive = $derived(activeSlug === node.page.slug);
-	const showDraftBadge = $derived(pageHasDraftChanges(node.page));
+	const publishState = $derived(getPagePublishState(node.page));
+	const publishStateLabel = $derived(
+		publishState === 'draft-changes'
+			? 'Draft changes'
+			: publishState === 'published'
+				? 'Published'
+				: 'Unpublished'
+	);
+	const publishStateClass = $derived(
+		publishState === 'draft-changes'
+			? 'bg-sky-100 text-sky-800'
+			: publishState === 'published'
+				? 'bg-emerald-100 text-emerald-800'
+				: 'bg-amber-100 text-amber-800'
+	);
 </script>
 
 <div class="space-y-1">
@@ -46,11 +60,9 @@
 		>
 			<div class="flex min-w-0 flex-1 items-center gap-2">
 				<span class="min-w-0 flex-1 truncate font-medium">{node.page.title}</span>
-				{#if showDraftBadge}
-					<span class="shrink-0 rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-amber-800">
-						Draft
-					</span>
-				{/if}
+				<span class={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide ${publishStateClass}`}>
+					{publishStateLabel}
+				</span>
 			</div>
 			<span class="shrink-0 font-mono text-xs text-slate-500">{displaySlug(node.page.slug)}</span>
 		</a>

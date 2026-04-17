@@ -1,293 +1,309 @@
 <script lang="ts">
-    import { onMount } from "svelte";
-    import { browser } from "$app/environment";
-    import { applyAction, enhance } from "$app/forms";
-    import { pagesStore } from "$lib/client/pagesStore";
-    import BlockListEditor from "$lib/components/cms/BlockListEditor.svelte";
-    import { registerReusableBlockInsertHandler } from "$lib/components/cms/reusableBlockInsertion";
-    import type {
-        BlockListLocation,
-        BlockPath,
-        PageContentValidationErrors,
-    } from "$lib/pageContentEditor";
-    import {
-        addBlockAtPath,
-        createEditablePageContent,
-        insertReusableBlockReferenceAtIndex,
-        moveBlock,
-        removeBlockAtPath,
-        updateBlockFieldValue,
-        validatePageContentEditorState,
-    } from "$lib/pageContentEditor";
-    import type { BlockValue, PageContent } from "$lib/pageContent";
-    import { EMPTY_PAGE_SEO_META, type PageSeoMeta } from "$lib/pageSeoMeta";
-    import type { Page, ReusableBlock } from "$lib/types";
-    import type { PageProps } from "./$types";
+	import { onMount } from 'svelte';
+	import { browser } from '$app/environment';
+	import { applyAction, enhance } from '$app/forms';
+	import { pagesStore } from '$lib/client/pagesStore';
+	import BlockListEditor from '$lib/components/cms/BlockListEditor.svelte';
+	import { registerReusableBlockInsertHandler } from '$lib/components/cms/reusableBlockInsertion';
+	import { getPagePublishState, pageHasDraftChanges } from '$lib/pageStatus';
+	import type {
+		BlockListLocation,
+		BlockPath,
+		PageContentValidationErrors
+	} from '$lib/pageContentEditor';
+	import {
+		addBlockAtPath,
+		createEditablePageContent,
+		insertReusableBlockReferenceAtIndex,
+		moveBlock,
+		removeBlockAtPath,
+		updateBlockFieldValue,
+		validatePageContentEditorState
+	} from '$lib/pageContentEditor';
+	import type { BlockValue, PageContent } from '$lib/pageContent';
+	import { EMPTY_PAGE_SEO_META, type PageSeoMeta } from '$lib/pageSeoMeta';
+	import type { Page, ReusableBlock } from '$lib/types';
+	import type { PageProps } from './$types';
 
-    type LoadedSnapshot = {
-        title: string;
-        slug: string;
-        seo: PageSeoMeta;
-        content: PageContent;
-    };
+	type LoadedSnapshot = {
+		title: string;
+		slug: string;
+		seo: PageSeoMeta;
+		content: PageContent;
+	};
 
-    let { data }: PageProps = $props();
+	let { data }: PageProps = $props();
 
-    let page = $state<Page | null>(null);
-    let title = $state("");
-    let slug = $state("");
-    let seo = $state<PageSeoMeta>({ ...EMPTY_PAGE_SEO_META });
-    let content = $state<PageContent>(createEditablePageContent(null));
-    let reusableBlocks = $state<ReusableBlock[]>([]);
-    let formSubmitting = $state(false);
-    let successMessage = $state("");
-    let errorMessage = $state("");
-    let contentErrors = $state<PageContentValidationErrors>({});
-    let draggingPath = $state<string | null>(null);
-    let canDragBlocks = $state(false);
-    let loadedSnapshot = $state<LoadedSnapshot | null>(null);
-    let activeTab = $state<"identity" | "content" | "discovery">("content");
+	let page = $state<Page | null>(null);
+	let title = $state('');
+	let slug = $state('');
+	let seo = $state<PageSeoMeta>({ ...EMPTY_PAGE_SEO_META });
+	let content = $state<PageContent>(createEditablePageContent(null));
+	let reusableBlocks = $state<ReusableBlock[]>([]);
+	let formSubmitting = $state(false);
+	let publishing = $state(false);
+	let successMessage = $state('');
+	let errorMessage = $state('');
+	let contentErrors = $state<PageContentValidationErrors>({});
+	let draggingPath = $state<string | null>(null);
+	let canDragBlocks = $state(false);
+	let loadedSnapshot = $state<LoadedSnapshot | null>(null);
+	let activeTab = $state<'identity' | 'content' | 'discovery'>('content');
 
-    const serializedContent = $derived(JSON.stringify(content));
-    const hasValidationErrors = $derived(Object.keys(contentErrors).length > 0);
-    const hasUnsavedChanges = $derived.by(() => {
-        if (!loadedSnapshot) return false;
+	const serializedContent = $derived(JSON.stringify(content));
+	const hasValidationErrors = $derived(Object.keys(contentErrors).length > 0);
+	const hasUnsavedChanges = $derived.by(() => {
+		if (!loadedSnapshot) return false;
 
-        return (
-            title !== loadedSnapshot.title ||
-            slug !== loadedSnapshot.slug ||
-            JSON.stringify(seo) !== JSON.stringify(loadedSnapshot.seo) ||
-            serializedContent !== JSON.stringify(loadedSnapshot.content)
-        );
-    });
+		return (
+			title !== loadedSnapshot.title ||
+			slug !== loadedSnapshot.slug ||
+			JSON.stringify(seo) !== JSON.stringify(loadedSnapshot.seo) ||
+			serializedContent !== JSON.stringify(loadedSnapshot.content)
+		);
+	});
+	const hasDraftChanges = $derived(page ? pageHasDraftChanges(page) : false);
+	const publishState = $derived(page ? getPagePublishState(page) : 'unpublished');
 
-    const resetMessages = () => {
-        successMessage = "";
-        errorMessage = "";
-    };
+	const resetMessages = () => {
+		successMessage = '';
+		errorMessage = '';
+	};
 
-    const displaySlug = (slug: string) => {
-        const cleaned = slug.replace(/^\//, "");
-        return cleaned.length === 0 ? "/" : `/${cleaned}`;
-    };
+	const displaySlug = (slug: string) => {
+		const cleaned = slug.replace(/^\//, '');
+		return cleaned.length === 0 ? '/' : `/${cleaned}`;
+	};
 
-    const formatTimestamp = (value?: string | null) =>
-        value ? new Date(value).toLocaleString() : "—";
+	const formatTimestamp = (value?: string | null) => (value ? new Date(value).toLocaleString() : '—');
+	const inputClass =
+		'w-full rounded-2xl border border-stone-300/80 bg-white px-4 py-3 text-sm text-stone-900 shadow-[0_1px_0_rgba(41,37,36,0.04)] outline-none transition placeholder:text-stone-400 focus:border-stone-500 focus:ring-4 focus:ring-stone-200/70 disabled:bg-stone-100 disabled:text-stone-500';
+	const captionClass = 'text-[10px] font-medium uppercase tracking-[0.24em] text-stone-500';
 
-    const inputClass =
-        "w-full rounded-2xl border border-stone-300/80 bg-white px-4 py-3 text-sm text-stone-900 shadow-[0_1px_0_rgba(41,37,36,0.04)] outline-none transition placeholder:text-stone-400 focus:border-stone-500 focus:ring-4 focus:ring-stone-200/70 disabled:bg-stone-100 disabled:text-stone-500";
+	const getPublishStateLabel = (state: 'unpublished' | 'published' | 'draft-changes') => {
+		switch (state) {
+			case 'draft-changes':
+				return 'Draft changes';
+			case 'published':
+				return 'Published';
+			default:
+				return 'Unpublished';
+		}
+	};
 
-    const captionClass =
-        "text-[10px] font-medium uppercase tracking-[0.24em] text-stone-500";
+	const getPublishStateClass = (state: 'unpublished' | 'published' | 'draft-changes') => {
+		switch (state) {
+			case 'draft-changes':
+				return 'bg-sky-100 text-sky-800';
+			case 'published':
+				return 'bg-emerald-100 text-emerald-800';
+			default:
+				return 'bg-amber-100 text-amber-800';
+		}
+	};
 
-    $effect(() => {
-        page = data.page ?? null;
-        title = data.page?.title ?? "";
-        slug = data.page?.slug ?? "";
-        seo = data.seo ? { ...data.seo } : { ...EMPTY_PAGE_SEO_META };
-        content = createEditablePageContent(data.content);
-        loadedSnapshot = {
-            title: data.page?.title ?? "",
-            slug: data.page?.slug ?? "",
-            seo: data.seo ? { ...data.seo } : { ...EMPTY_PAGE_SEO_META },
-            content: createEditablePageContent(data.content),
-        };
-        reusableBlocks = data.reusableBlocks ?? [];
-        contentErrors = {};
-    });
+	const getDraftStateLabel = () => {
+		if (hasUnsavedChanges) return 'Unsaved changes';
+		if (hasDraftChanges) return 'Saved draft changes';
+		return 'Up to date';
+	};
 
-    onMount(() => {
-        const mediaQuery = window.matchMedia(
-            "(pointer: fine) and (hover: hover) and (min-width: 1024px)",
-        );
-        const updateDragMode = () => {
-            canDragBlocks = mediaQuery.matches;
-        };
-        const unregisterReusableInsert = registerReusableBlockInsertHandler(
-            ({ reusableBlockId }) => {
-                insertReusableReference(reusableBlockId, content.blocks.length);
-                successMessage = "Content added to page draft.";
-                errorMessage = "";
-            },
-        );
+	const publishButtonDisabled = $derived(
+		publishing || formSubmitting || hasUnsavedChanges || hasValidationErrors || !hasDraftChanges
+	);
 
-        updateDragMode();
-        mediaQuery.addEventListener("change", updateDragMode);
+	$effect(() => {
+		page = data.page ?? null;
+		title = data.page?.title ?? '';
+		slug = data.page?.slug ?? '';
+		seo = data.seo ? { ...data.seo } : { ...EMPTY_PAGE_SEO_META };
+		content = createEditablePageContent(data.content);
+		loadedSnapshot = {
+			title: data.page?.title ?? '',
+			slug: data.page?.slug ?? '',
+			seo: data.seo ? { ...data.seo } : { ...EMPTY_PAGE_SEO_META },
+			content: createEditablePageContent(data.content)
+		};
+		reusableBlocks = data.reusableBlocks ?? [];
+		contentErrors = {};
+	});
 
-        return () => {
-            unregisterReusableInsert();
-            mediaQuery.removeEventListener("change", updateDragMode);
-        };
-    });
+	onMount(() => {
+		const mediaQuery = window.matchMedia('(pointer: fine) and (hover: hover) and (min-width: 1024px)');
+		const updateDragMode = () => {
+			canDragBlocks = mediaQuery.matches;
+		};
+		const unregisterReusableInsert = registerReusableBlockInsertHandler(({ reusableBlockId }) => {
+			insertReusableReference(reusableBlockId, content.blocks.length);
+			successMessage = 'Content added to page draft.';
+			errorMessage = '';
+		});
 
-    const syncContentErrors = () => {
-        contentErrors = validatePageContentEditorState(
-            content,
-            new Set(reusableBlocks.map((block) => block.id)),
-        );
-        return Object.keys(contentErrors).length === 0;
-    };
+		updateDragMode();
+		mediaQuery.addEventListener('change', updateDragMode);
 
-    const createBlockId = () =>
-        typeof crypto !== "undefined" && "randomUUID" in crypto
-            ? crypto.randomUUID()
-            : `block-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+		return () => {
+			unregisterReusableInsert();
+			mediaQuery.removeEventListener('change', updateDragMode);
+		};
+	});
 
-    const addBlock = (location: BlockListLocation, type: string) => {
-        content = addBlockAtPath(content, location, type, createBlockId());
-        syncContentErrors();
-    };
+	const syncContentErrors = () => {
+		contentErrors = validatePageContentEditorState(content, new Set(reusableBlocks.map((block) => block.id)));
+		return Object.keys(contentErrors).length === 0;
+	};
 
-    const insertReusableReference = (
-        reusableBlockId: string,
-        index: number,
-    ) => {
-        content = insertReusableBlockReferenceAtIndex(
-            content,
-            reusableBlockId,
-            createBlockId(),
-            index,
-        );
-        syncContentErrors();
-    };
+	const createBlockId = () =>
+		typeof crypto !== 'undefined' && 'randomUUID' in crypto
+			? crypto.randomUUID()
+			: `block-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
 
-    const removeBlock = (path: BlockPath) => {
-        content = removeBlockAtPath(content, path);
-        syncContentErrors();
-    };
+	const addBlock = (location: BlockListLocation, type: string) => {
+		content = addBlockAtPath(content, location, type, createBlockId());
+		syncContentErrors();
+	};
 
-    const reorderBlock = (path: BlockPath, toIndex: number) => {
-        content = moveBlock(content, path, toIndex);
-        syncContentErrors();
-    };
+	const insertReusableReference = (reusableBlockId: string, index: number) => {
+		content = insertReusableBlockReferenceAtIndex(content, reusableBlockId, createBlockId(), index);
+		syncContentErrors();
+	};
 
-    const updateField = (
-        path: BlockPath,
-        fieldKey: string,
-        value: BlockValue | undefined,
-    ) => {
-        content = updateBlockFieldValue(content, path, fieldKey, value);
-        syncContentErrors();
-    };
+	const removeBlock = (path: BlockPath) => {
+		content = removeBlockAtPath(content, path);
+		syncContentErrors();
+	};
 
-    const resetDraft = () => {
-        if (!loadedSnapshot) return;
+	const reorderBlock = (path: BlockPath, toIndex: number) => {
+		content = moveBlock(content, path, toIndex);
+		syncContentErrors();
+	};
 
-        title = loadedSnapshot.title;
-        slug = loadedSnapshot.slug;
-        seo = { ...loadedSnapshot.seo };
-        content = createEditablePageContent(loadedSnapshot.content);
-        contentErrors = {};
-        draggingPath = null;
-        resetMessages();
-    };
+	const updateField = (path: BlockPath, fieldKey: string, value: BlockValue | undefined) => {
+		content = updateBlockFieldValue(content, path, fieldKey, value);
+		syncContentErrors();
+	};
+
+	const resetDraft = () => {
+		if (!loadedSnapshot) return;
+
+		title = loadedSnapshot.title;
+		slug = loadedSnapshot.slug;
+		seo = { ...loadedSnapshot.seo };
+		content = createEditablePageContent(loadedSnapshot.content);
+		contentErrors = {};
+		draggingPath = null;
+		resetMessages();
+	};
 </script>
 
 <main class="mx-auto max-w-[96rem] px-4 pb-10 pt-6 sm:px-6 lg:px-8">
-    {#if page}
-        <form
-            method="POST"
-            action="?/updatePage"
-            class="space-y-6"
-            use:enhance={({ formElement, cancel }) => {
-                resetMessages();
-                if (!syncContentErrors()) {
-                    errorMessage =
-                        "Fix the highlighted content fields before saving.";
-                    cancel();
-                    formElement.reportValidity();
-                    return;
-                }
+	{#if page}
+		<form
+			method="POST"
+			action="?/updatePage"
+			class="space-y-6"
+			use:enhance={({ formElement, cancel, submitter }) => {
+				const intent =
+					submitter instanceof HTMLButtonElement ? submitter.dataset.intent ?? 'save' : 'save';
 
-                formSubmitting = true;
+				resetMessages();
 
-                return async ({ result, update }) => {
-                    formSubmitting = false;
+				if (!syncContentErrors()) {
+					errorMessage =
+						intent === 'publish'
+							? 'Fix highlighted content fields before publishing.'
+							: 'Fix the highlighted content fields before saving.';
+					cancel();
+					formElement.reportValidity();
+					return;
+				}
 
-                    if (result.type === "success") {
-                        successMessage = "Page updated successfully!";
-                    } else if (result.type === "failure") {
-                        errorMessage = `Failed to update page: ${result.data?.error ?? "Unknown error"}`;
-                    }
+				if (intent === 'publish') {
+					if (hasUnsavedChanges) {
+						errorMessage = 'Save draft before publishing current page changes.';
+						cancel();
+						return;
+					}
 
-                    await applyAction(result);
-                    await update({
-                        reset: false,
-                        invalidateAll: false,
-                    });
+					publishing = true;
+				} else {
+					formSubmitting = true;
+				}
 
-                    if (
-                        result.type === "success" &&
-                        result.data &&
-                        "page" in result.data
-                    ) {
-                        page = result.data.page as Page;
-                        title = page.title;
-                        slug = page.slug;
-                        if ("seo" in result.data && result.data.seo) {
-                            seo = { ...(result.data.seo as PageSeoMeta) };
-                        }
-                        if ("content" in result.data && result.data.content) {
-                            content = createEditablePageContent(
-                                result.data.content as PageContent,
-                            );
-                            contentErrors = {};
-                        }
-                        if (
-                            "reusableBlocks" in result.data &&
-                            result.data.reusableBlocks
-                        ) {
-                            reusableBlocks = result.data
-                                .reusableBlocks as ReusableBlock[];
-                        }
-                        loadedSnapshot = {
-                            title,
-                            slug,
-                            seo: { ...seo },
-                            content: createEditablePageContent(content),
-                        };
+				return async ({ result, update }) => {
+					formSubmitting = false;
+					publishing = false;
 
-                        if (browser) {
-                            pagesStore.update((current) =>
-                                current
-                                    ? current.map((item) =>
-                                          item.id === page?.id ? page : item,
-                                      )
-                                    : current,
-                            );
-                        }
-                    }
+					if (result.type === 'success') {
+						successMessage =
+							intent === 'publish' ? 'Page published successfully!' : 'Draft saved successfully!';
+					} else if (result.type === 'failure') {
+						errorMessage =
+							intent === 'publish'
+								? `Failed to publish page: ${result.data?.error ?? 'Unknown error'}`
+								: `Failed to update page: ${result.data?.error ?? 'Unknown error'}`;
+					}
 
-                    formElement.reportValidity();
-                };
-            }}
-        >
-            <input type="hidden" name="content" value={serializedContent} />
+					await applyAction(result);
+					await update({
+						reset: false,
+						invalidateAll: false
+					});
 
-            <div class="space-y-8">
-                <header class="border-b border-stone-300/70 pb-8">
-                    <div
-                        class="flex flex-wrap items-start justify-between gap-6"
-                    >
-                        <div class="max-w-3xl space-y-3">
-                            <p class={captionClass}>Page editor</p>
-                            <div class="space-y-2">
-                                <h1
-                                    class="max-w-2xl text-[2.6rem] font-semibold tracking-[-0.045em] text-stone-950 sm:text-5xl"
-                                >
-                                    {title || page.title}
-                                </h1>
-                            </div>
-                        </div>
+					if (result.type === 'success' && result.data && 'page' in result.data) {
+						page = result.data.page as Page;
+						title = page.title;
+						slug = page.slug;
+						if ('seo' in result.data && result.data.seo) {
+							seo = { ...(result.data.seo as PageSeoMeta) };
+						}
+						if ('content' in result.data && result.data.content) {
+							content = createEditablePageContent(result.data.content as PageContent);
+							contentErrors = {};
+						}
+						if ('reusableBlocks' in result.data && result.data.reusableBlocks) {
+							reusableBlocks = result.data.reusableBlocks as ReusableBlock[];
+						}
+						loadedSnapshot = {
+							title,
+							slug,
+							seo: { ...seo },
+							content: createEditablePageContent(content)
+						};
 
-                        <a
-                            href="/"
-                            class="inline-flex items-center rounded-full border border-stone-300 bg-white px-4 py-2 text-sm font-medium text-stone-700 transition hover:border-stone-400 hover:bg-stone-50 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-stone-200/70"
-                        >
-                            Back to pages
-                        </a>
-                    </div>
-                </header>
+						if (browser) {
+							pagesStore.update((current) =>
+								current ? current.map((item) => (item.id === page?.id ? page : item)) : current
+							);
+						}
+					}
+
+					formElement.reportValidity();
+				};
+			}}
+		>
+			<input type="hidden" name="content" value={serializedContent} />
+
+			<div class="space-y-8">
+				<header class="border-b border-stone-300/70 pb-8">
+					<div class="flex flex-wrap items-start justify-between gap-6">
+						<div class="max-w-3xl space-y-3">
+							<p class={captionClass}>Page editor</p>
+							<div class="space-y-2">
+								<h1 class="max-w-2xl text-[2.6rem] font-semibold tracking-[-0.045em] text-stone-950 sm:text-5xl">
+									{title || page.title}
+								</h1>
+							</div>
+						</div>
+
+						<a
+							href="/"
+							class="inline-flex items-center rounded-full border border-stone-300 bg-white px-4 py-2 text-sm font-medium text-stone-700 transition hover:border-stone-400 hover:bg-stone-50 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-stone-200/70"
+						>
+							Back to pages
+						</a>
+					</div>
+				</header>
 
                 <div
                     class="grid gap-10 xl:grid-cols-[minmax(0,1fr)_22rem] xl:items-start"
@@ -305,7 +321,7 @@
                                             : "text-stone-600 hover:bg-stone-50 hover:text-stone-900"
                                     }`}
                                     onclick={() => {
-                                        activeTab = "identity";
+                                        activeTab = 'identity';
                                     }}
                                 >
                                     Identity
@@ -318,7 +334,7 @@
                                             : "text-stone-600 hover:bg-stone-50 hover:text-stone-900"
                                     }`}
                                     onclick={() => {
-                                        activeTab = "content";
+                                        activeTab = 'content';
                                     }}
                                 >
                                     Content
@@ -331,7 +347,7 @@
                                             : "text-stone-600 hover:bg-stone-50 hover:text-stone-900"
                                     }`}
                                     onclick={() => {
-                                        activeTab = "discovery";
+                                        activeTab = 'discovery';
                                     }}
                                 >
                                     Discovery &amp; Sharing
@@ -607,9 +623,9 @@
                         {/if}
                     </div>
 
-                    <aside
-                        class="border-t border-stone-300/70 pt-8 xl:sticky xl:top-6 xl:border-l xl:border-t-0 xl:pl-8 xl:pt-0"
-                    >
+					<aside
+						class="border-t border-stone-300/70 pt-8 xl:sticky xl:top-6 xl:border-l xl:border-t-0 xl:pl-8 xl:pt-0"
+					>
                         <div class="space-y-8">
                             <section
                                 class="space-y-4 border-b border-stone-200 pb-8"
@@ -619,11 +635,20 @@
                                     <h2
                                         class="text-[1.35rem] font-semibold tracking-[-0.03em] text-stone-950"
                                     >
-                                        Save and review
+                                        Save and publish
                                     </h2>
                                 </div>
 
-                                <div class="space-y-3">
+								<div class="space-y-3">
+									<div class="flex flex-wrap gap-2">
+										<span
+											class={`rounded-full px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.16em] ${getPublishStateClass(publishState)}`}
+										>
+											{getPublishStateLabel(publishState)}
+										</span>
+									</div>
+
+									<div class="space-y-3">
                                     <div
                                         class="flex items-center justify-between gap-3"
                                     >
@@ -635,20 +660,18 @@
                                             >{displaySlug(page.slug)}</span
                                         >
                                     </div>
-                                    <div
-                                        class="flex items-center justify-between gap-3"
-                                    >
-                                        <span class="text-sm text-stone-600"
-                                            >Draft state</span
-                                        >
-                                        <span
-                                            class="text-sm font-medium text-stone-950"
-                                        >
-                                            {hasUnsavedChanges
-                                                ? "Unsaved changes"
-                                                : "Up to date"}
-                                        </span>
-                                    </div>
+									<div
+										class="flex items-center justify-between gap-3"
+									>
+										<span class="text-sm text-stone-600"
+											>Draft state</span
+										>
+										<span
+											class="text-sm font-medium text-stone-950"
+										>
+											{getDraftStateLabel()}
+										</span>
+									</div>
                                     <div
                                         class="flex items-center justify-between gap-3"
                                     >
@@ -658,23 +681,38 @@
                                         <span
                                             class={`text-sm font-medium ${hasValidationErrors ? "text-red-900" : "text-emerald-900"}`}
                                         >
-                                            {hasValidationErrors
-                                                ? "Needs attention"
-                                                : "Ready to save"}
-                                        </span>
-                                    </div>
+											{hasValidationErrors
+												? 'Needs attention'
+												: 'Ready to save'}
+										</span>
+									</div>
+									<div class="flex items-center justify-between gap-3">
+										<span class="text-sm text-stone-600">Last published</span>
+										<span class="text-right tabular-nums text-sm text-stone-950">
+											{formatTimestamp(page.last_published_at)}
+										</span>
+									</div>
+									</div>
                                 </div>
 
                                 <div class="space-y-3">
                                     <button
                                         type="submit"
+                                        formaction="?/updatePage"
                                         class="inline-flex min-h-11 w-full items-center justify-center rounded-full bg-stone-950 px-5 py-3 text-sm font-semibold text-stone-50 transition hover:bg-stone-800 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-stone-300/70 disabled:cursor-not-allowed disabled:opacity-70"
-                                        disabled={formSubmitting}
+                                        disabled={formSubmitting || publishing}
                                     >
-                                        {formSubmitting
-                                            ? "Saving..."
-                                            : "Save changes"}
+                                        {formSubmitting ? 'Saving draft...' : 'Save draft'}
                                     </button>
+									<button
+										type="submit"
+										formaction="?/publishPage"
+										data-intent="publish"
+										class="inline-flex min-h-11 w-full items-center justify-center rounded-full border border-emerald-300/70 bg-emerald-50 px-5 py-3 text-sm font-semibold text-emerald-900 transition hover:bg-emerald-100 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-emerald-200/70 disabled:cursor-not-allowed disabled:opacity-70"
+										disabled={publishButtonDisabled}
+									>
+										{publishing ? 'Publishing...' : 'Publish page'}
+									</button>
                                     {#if hasUnsavedChanges}
                                         <button
                                             type="button"
@@ -701,6 +739,12 @@
                                         {errorMessage}
                                     </div>
                                 {/if}
+
+								{#if hasUnsavedChanges}
+									<p class="text-sm leading-6 text-stone-500">
+										Save draft before publishing current page changes.
+									</p>
+								{/if}
                             </section>
 
                             <section class="space-y-3">
