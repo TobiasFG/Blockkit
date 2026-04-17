@@ -13,5 +13,7 @@ Guidelines:
 - Do not copy design review points, open questions, risks, or follow-ups here unless they are actual future suggestions that belong in this file.
 
 # Suggestions
+- We need a system for restoring deleted content. If content is deleted it should be marked as deleted but still be findable in some sort of trash overview from where it can be restored. I dont remember if content can be deleted when it is used in other content or pages but, that also needs to be managed in a clear a way that empowers the users. Ideally deleting content in use should display a warning to the user that the content is in use, including where, prompting extra acceptance before deletion, while deleting unused content should just delete immediately.
+- right now there is only a draft flow for pages, pages also needs to be publishable.
 
 # Bugs

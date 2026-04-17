@@ -12,6 +12,7 @@ Content items use draft/publish workflow so editor can save changes without chan
 - Use `Save draft` to update the editable draft version.
 - Use `Publish` when current draft should become live content version used by page references.
 - When page editor is open, use sidebar `Add` action or row context menu to insert content into current page without leaving library tree.
+- Content editor uses same calmer shell direction as page editor: editable fields in main column, draft/publish state and record metadata in secondary rail.
 
 # Behavior
 - Content items are stored independently from page content.
@@ -23,6 +24,7 @@ Content items use draft/publish workflow so editor can save changes without chan
 - `/content` route shows same status badges and exposes creation controls for folders and content.
 - Sidebar keeps structural folder actions nearby and acts as content source for page-editor insertion actions and drag/drop.
 - Container-style content items can edit nested `blocks` fields inline in `/content/[id]` editor.
+- `/content/[id]` keeps save/publish controls grouped in one persistent draft panel instead of scattering status and actions across multiple top-level cards.
 - Nested block lists support the same add, remove, drag-and-drop, and Up/Down reordering controls used on the page editor.
 - Pages can reference content items as top-level page-content nodes from page editor.
 - Page references continue storing stable content id and should resolve to published content.
