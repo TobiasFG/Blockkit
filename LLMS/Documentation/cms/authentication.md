@@ -30,9 +30,10 @@ Purpose: describe CMS authentication flow, setup requirements, and current acces
 
 # UX notes
 - Auth route uses split layout:
-  - left auth rail sized wider than final sidebar
-  - right visual stage previews editor shell
-- Success state briefly animates auth rail toward sidebar proportions before route navigation.
+  - left auth rail is its own overlay component above preview stage
+  - right visual stage previews editor shell beneath overlay rail
+- Success state uses Svelte outro transitions and route handoff on outro completion.
+- Exit motion stays on transform/opacity only; do not animate width or blur/filter on full-screen auth layers.
 - Reduced-motion users get near-immediate transition instead of decorative animation.
 
 # Constraints

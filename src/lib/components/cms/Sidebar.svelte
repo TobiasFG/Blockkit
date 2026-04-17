@@ -1,10 +1,12 @@
 <script lang="ts">
     import { browser } from "$app/environment";
+    import { enhance } from "$app/forms";
     import { ContextMenu, DropdownMenu } from "bits-ui";
     import { onMount } from "svelte";
     import { goto } from "$app/navigation";
     import { resolveRoute } from "$app/paths";
     import { page } from "$app/stores";
+    import type { SubmitFunction } from "@sveltejs/kit";
     import type { User } from "@supabase/supabase-js";
     import { pagesStore } from "$lib/client/pagesStore";
     import { blockFoldersStore, reusableBlocksStore } from "$lib/client/reusableBlocksStore";
@@ -22,13 +24,14 @@
         collectReusableBlockFolderAncestors,
     } from "./reusableBlocksTree";
 
-    let { pages, blockFolders, reusableBlocks, user, mobileOpen, onClose } = $props<{
+    let { pages, blockFolders, reusableBlocks, user, mobileOpen, onClose, logoutEnhanceSubmit } = $props<{
         pages: Page[];
         blockFolders: BlockFolder[];
         reusableBlocks: ReusableBlock[];
         user: User;
         mobileOpen: boolean;
         onClose: () => void;
+        logoutEnhanceSubmit?: SubmitFunction;
     }>();
 
     let closedNodes = $state<Record<string, boolean>>({});
@@ -511,7 +514,12 @@
                     content item{currentReusableBlocks.length === 1 ? "" : "s"}
                 </div>
 
-                <form method="POST" action="/auth?/signOut" class="mt-3">
+                <form
+                    method="POST"
+                    action="/auth?/signOut"
+                    class="mt-3"
+                    use:enhance={logoutEnhanceSubmit}
+                >
                     <button
                         type="submit"
                         class="inline-flex w-full items-center justify-center rounded-md border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-100"

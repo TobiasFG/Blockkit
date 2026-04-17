@@ -10,3 +10,4 @@
 - If the user asks to perform a specific task, do that task only; do not expand scope.
 - Before implementing a `LLMS/Changes.md` item backed by a design, check whether the design has unresolved review points, open questions, follow-ups, or risks that need user input. If so, stop and ask for answers or approval before implementation instead of guessing.
 - If a task is unclear, blocked, impossible, or depends on unfinished work, state that it is blocked and why.
+- use bun not npm

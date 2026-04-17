@@ -19,14 +19,12 @@ export const load: LayoutServerLoad = async ({ locals, url }) => {
 	if (isAuthRoute) {
 		return {
 			isAuthRoute: true,
-			session,
 			user
 		};
 	}
 
 	return {
 		isAuthRoute: false,
-		session,
 		user,
 		pages: await getPages(),
 		blockFolders: await getBlockFolders(),
