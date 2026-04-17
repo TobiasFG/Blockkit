@@ -32,6 +32,8 @@
 		content: PageContent;
 	};
 
+	type PrimaryActionState = 'validation-error' | 'save-draft' | 'publish' | 'all-saved';
+
 	let { data }: PageProps = $props();
 
 	let page = $state<Page | null>(null);
@@ -108,8 +110,43 @@
 		return 'Up to date';
 	};
 
-	const publishButtonDisabled = $derived(
-		publishing || formSubmitting || hasUnsavedChanges || hasValidationErrors || !hasDraftChanges
+	const primaryActionState = $derived<PrimaryActionState>(
+		hasValidationErrors
+			? 'validation-error'
+			: hasUnsavedChanges
+				? 'save-draft'
+				: hasDraftChanges
+					? 'publish'
+					: 'all-saved'
+	);
+	const primaryActionDisabled = $derived(
+		formSubmitting || publishing || primaryActionState === 'validation-error' || primaryActionState === 'all-saved'
+	);
+	const primaryActionIntent = $derived(primaryActionState === 'publish' ? 'publish' : 'save');
+	const primaryActionFormAction = $derived(
+		primaryActionState === 'publish' ? '?/publishPage' : '?/updatePage'
+	);
+	const primaryActionLabel = $derived.by(() => {
+		if (publishing) return 'Publishing...';
+		if (formSubmitting) return 'Saving draft...';
+
+		switch (primaryActionState) {
+			case 'validation-error':
+				return 'Validation error';
+			case 'publish':
+				return 'Publish';
+			case 'all-saved':
+				return 'All changes saved';
+			default:
+				return 'Save draft';
+		}
+	});
+	const primaryActionClass = $derived(
+		primaryActionState === 'publish'
+			? 'border border-emerald-300/70 bg-emerald-50 text-emerald-900 hover:bg-emerald-100 focus-visible:ring-emerald-200/70'
+			: primaryActionState === 'validation-error'
+				? 'bg-red-900 text-red-50 hover:bg-red-900 focus-visible:ring-red-200/70'
+				: 'bg-stone-950 text-stone-50 hover:bg-stone-800 focus-visible:ring-stone-300/70'
 	);
 
 	$effect(() => {
@@ -672,20 +709,6 @@
 											{getDraftStateLabel()}
 										</span>
 									</div>
-                                    <div
-                                        class="flex items-center justify-between gap-3"
-                                    >
-                                        <span class="text-sm text-stone-600"
-                                            >Validation</span
-                                        >
-                                        <span
-                                            class={`text-sm font-medium ${hasValidationErrors ? "text-red-900" : "text-emerald-900"}`}
-                                        >
-											{hasValidationErrors
-												? 'Needs attention'
-												: 'Ready to save'}
-										</span>
-									</div>
 									<div class="flex items-center justify-between gap-3">
 										<span class="text-sm text-stone-600">Last published</span>
 										<span class="text-right tabular-nums text-sm text-stone-950">
@@ -698,20 +721,12 @@
                                 <div class="space-y-3">
                                     <button
                                         type="submit"
-                                        formaction="?/updatePage"
-                                        class="inline-flex min-h-11 w-full items-center justify-center rounded-full bg-stone-950 px-5 py-3 text-sm font-semibold text-stone-50 transition hover:bg-stone-800 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-stone-300/70 disabled:cursor-not-allowed disabled:opacity-70"
-                                        disabled={formSubmitting || publishing}
+                                        formaction={primaryActionFormAction}
+										data-intent={primaryActionIntent}
+                                        class={`inline-flex min-h-11 w-full items-center justify-center rounded-full px-5 py-3 text-sm font-semibold transition focus-visible:outline-none focus-visible:ring-4 disabled:cursor-not-allowed disabled:opacity-70 ${primaryActionClass}`}
+                                        disabled={primaryActionDisabled}
                                     >
-                                        {formSubmitting ? 'Saving draft...' : 'Save draft'}
-                                    </button>
-									<button
-										type="submit"
-										formaction="?/publishPage"
-										data-intent="publish"
-										class="inline-flex min-h-11 w-full items-center justify-center rounded-full border border-emerald-300/70 bg-emerald-50 px-5 py-3 text-sm font-semibold text-emerald-900 transition hover:bg-emerald-100 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-emerald-200/70 disabled:cursor-not-allowed disabled:opacity-70"
-										disabled={publishButtonDisabled}
-									>
-										{publishing ? 'Publishing...' : 'Publish page'}
+                                        {primaryActionLabel}
 									</button>
                                     {#if hasUnsavedChanges}
                                         <button

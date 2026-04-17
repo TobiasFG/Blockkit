@@ -18,6 +18,14 @@
 	import type { BlockFolder, ReusableBlock } from '$lib/types';
 	import type { PageProps } from './$types';
 
+	type LoadedSnapshot = {
+		name: string;
+		folderId: string | null;
+		content: BlockInstance;
+	};
+
+	type PrimaryActionState = 'validation-error' | 'save-draft' | 'publish' | 'all-saved';
+
 	let { data }: PageProps = $props();
 
 	let block = $state<ReusableBlock>({} as ReusableBlock);
@@ -30,6 +38,7 @@
 	let errorMessage = $state('');
 	let saving = $state(false);
 	let publishing = $state(false);
+	let loadedSnapshot = $state<LoadedSnapshot | null>(null);
 
 	const inputClass =
 		'w-full rounded-2xl border border-stone-300/80 bg-white px-4 py-3 text-sm text-stone-900 shadow-[0_1px_0_rgba(41,37,36,0.04)] outline-none transition placeholder:text-stone-400 focus:border-stone-500 focus:ring-4 focus:ring-stone-200/70';
@@ -43,12 +52,65 @@
 	const currentDefinition = $derived(
 		definitions.find((entry) => entry.type === block.block_type) ?? null
 	);
+	const hasValidationErrors = $derived(Object.keys(validationErrors).length > 0);
+	const hasUnsavedChanges = $derived.by(() => {
+		if (!loadedSnapshot) return false;
+
+		return (
+			block.name !== loadedSnapshot.name ||
+			(block.folder_id ?? null) !== loadedSnapshot.folderId ||
+			JSON.stringify(contentDraft) !== JSON.stringify(loadedSnapshot.content)
+		);
+	});
+	const primaryActionState = $derived<PrimaryActionState>(
+		hasValidationErrors
+			? 'validation-error'
+			: hasUnsavedChanges
+				? 'save-draft'
+				: block.has_unpublished_changes
+					? 'publish'
+					: 'all-saved'
+	);
+	const primaryActionDisabled = $derived(
+		saving || publishing || primaryActionState === 'validation-error' || primaryActionState === 'all-saved'
+	);
+	const primaryActionIntent = $derived(primaryActionState === 'publish' ? 'publish' : 'save');
+	const primaryActionFormAction = $derived(
+		primaryActionState === 'publish' ? '?/publishReusableBlock' : '?/updateReusableBlock'
+	);
+	const primaryActionLabel = $derived.by(() => {
+		if (publishing) return 'Publishing...';
+		if (saving) return 'Saving draft...';
+
+		switch (primaryActionState) {
+			case 'validation-error':
+				return 'Validation error';
+			case 'publish':
+				return 'Publish';
+			case 'all-saved':
+				return 'All changes saved';
+			default:
+				return 'Save draft';
+		}
+	});
+	const primaryActionClass = $derived(
+		primaryActionState === 'publish'
+			? 'border border-emerald-300/70 bg-emerald-50 text-emerald-900 hover:bg-emerald-100 focus-visible:ring-emerald-200/70'
+			: primaryActionState === 'validation-error'
+				? 'bg-red-900 text-red-50 hover:bg-red-900 focus-visible:ring-red-200/70'
+				: 'bg-stone-950 text-stone-50 hover:bg-stone-800 focus-visible:ring-stone-300/70'
+	);
 
 	$effect(() => {
 		block = data.block;
 		blockFolders = data.blockFolders;
 		definitions = data.blockDefinitions;
 		contentDraft = createEditableReusableBlockContent(data.block.content);
+		loadedSnapshot = {
+			name: data.block.name,
+			folderId: data.block.folder_id ?? null,
+			content: createEditableReusableBlockContent(data.block.content)
+		};
 		validationErrors = {};
 		draggingPath = null;
 	});
@@ -136,25 +198,49 @@
 			method="POST"
 			action="?/updateReusableBlock"
 			class="space-y-8"
-			use:enhance={({ formElement, cancel }) => {
+			use:enhance={({ formElement, cancel, submitter }) => {
+				const intent =
+					submitter instanceof HTMLButtonElement ? submitter.dataset.intent ?? 'save' : 'save';
+
 				resetMessages();
 				validationErrors = validateReusableBlockEditorState(contentDraft);
 				if (Object.keys(validationErrors).length > 0) {
 					cancel();
-					errorMessage = 'Fix the highlighted block fields before saving.';
+					errorMessage =
+						intent === 'publish'
+							? 'Fix highlighted block fields before publishing.'
+							: 'Fix the highlighted block fields before saving.';
 					formElement.reportValidity();
 					return;
 				}
-				saving = true;
+
+				if (intent === 'publish') {
+					if (hasUnsavedChanges) {
+						errorMessage = 'Save draft before publishing current content changes.';
+						cancel();
+						return;
+					}
+
+					publishing = true;
+				} else {
+					saving = true;
+				}
 
 				return async ({ result, update }) => {
 					saving = false;
+					publishing = false;
 
 					if (result.type === 'success' && result.data) {
-						successMessage = 'Content updated successfully!';
+						successMessage =
+							intent === 'publish' ? 'Content published successfully!' : 'Content updated successfully!';
 						if ('block' in result.data) {
 							block = result.data.block as ReusableBlock;
 							contentDraft = createEditableReusableBlockContent(block.content);
+							loadedSnapshot = {
+								name: block.name,
+								folderId: block.folder_id ?? null,
+								content: createEditableReusableBlockContent(block.content)
+							};
 							validationErrors = {};
 							draggingPath = null;
 							if (browser) {
@@ -170,7 +256,10 @@
 							}
 						}
 					} else if (result.type === 'failure') {
-						errorMessage = `Failed to update content: ${result.data?.error ?? 'Unknown error'}`;
+						errorMessage =
+							intent === 'publish'
+								? `Failed to publish content: ${result.data?.error ?? 'Unknown error'}`
+								: `Failed to update content: ${result.data?.error ?? 'Unknown error'}`;
 					}
 
 					await applyAction(result);
@@ -342,15 +431,11 @@
 								<div class="flex items-center justify-between gap-3">
 									<span class="text-sm text-stone-600">Draft state</span>
 									<span class="text-sm font-medium text-stone-950">
-										{block.has_unpublished_changes ? 'Unsaved draft work' : 'Up to date'}
-									</span>
-								</div>
-								<div class="flex items-center justify-between gap-3">
-									<span class="text-sm text-stone-600">Validation</span>
-									<span
-										class={`text-sm font-medium ${Object.keys(validationErrors).length > 0 ? 'text-red-900' : 'text-emerald-900'}`}
-									>
-										{Object.keys(validationErrors).length > 0 ? 'Needs attention' : 'Ready to save'}
+										{hasUnsavedChanges
+											? 'Unsaved changes'
+											: block.has_unpublished_changes
+												? 'Saved draft changes'
+												: 'Up to date'}
 									</span>
 								</div>
 							</div>
@@ -359,59 +444,13 @@
 						<div class="space-y-3">
 							<button
 								type="submit"
-								form="update-reusable-block-form"
-								class="inline-flex min-h-11 w-full items-center justify-center rounded-full bg-stone-950 px-5 py-3 text-sm font-semibold text-stone-50 transition hover:bg-stone-800 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-stone-300/70 disabled:cursor-not-allowed disabled:opacity-70"
-								disabled={saving || publishing}
+								formaction={primaryActionFormAction}
+								data-intent={primaryActionIntent}
+								class={`inline-flex min-h-11 w-full items-center justify-center rounded-full px-5 py-3 text-sm font-semibold transition focus-visible:outline-none focus-visible:ring-4 disabled:cursor-not-allowed disabled:opacity-70 ${primaryActionClass}`}
+								disabled={primaryActionDisabled}
 							>
-								{saving ? 'Saving draft...' : 'Save draft'}
+								{primaryActionLabel}
 							</button>
-
-							<form
-								method="POST"
-								action="?/publishReusableBlock"
-								use:enhance={() => {
-									resetMessages();
-									publishing = true;
-
-									return async ({ result, update }) => {
-										publishing = false;
-
-										if (result.type === 'success' && result.data) {
-											successMessage = 'Content published successfully!';
-											if ('block' in result.data) {
-												block = result.data.block as ReusableBlock;
-												contentDraft = createEditableReusableBlockContent(block.content);
-												validationErrors = {};
-												draggingPath = null;
-												if (browser) {
-													reusableBlocksStore.update((current) =>
-														current ? current.map((entry) => (entry.id === block.id ? block : entry)) : current
-													);
-												}
-											}
-											if ('blockFolders' in result.data) {
-												blockFolders = result.data.blockFolders as BlockFolder[];
-												if (browser) {
-													blockFoldersStore.set(blockFolders);
-												}
-											}
-										} else if (result.type === 'failure') {
-											errorMessage = `Failed to publish content: ${result.data?.error ?? 'Unknown error'}`;
-										}
-
-										await applyAction(result);
-										await update({ reset: false, invalidateAll: false });
-									};
-								}}
-							>
-								<button
-									type="submit"
-									class="inline-flex min-h-11 w-full items-center justify-center rounded-full border border-emerald-300/70 bg-emerald-50 px-5 py-3 text-sm font-semibold text-emerald-900 transition hover:bg-emerald-100 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-emerald-200/70 disabled:cursor-not-allowed disabled:opacity-70"
-									disabled={publishing || saving || !block.has_unpublished_changes}
-								>
-									{publishing ? 'Publishing...' : 'Publish'}
-								</button>
-							</form>
 						</div>
 
 						{#if successMessage}
