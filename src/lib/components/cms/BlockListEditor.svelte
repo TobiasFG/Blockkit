@@ -34,7 +34,6 @@
             reusableBlockId: string,
             index: number,
         ) => void;
-        onAddReusableBlockReference?: (reusableBlockId: string) => void;
         onRemoveBlock: (path: BlockPath) => void;
         onMoveBlock: (path: BlockPath, toIndex: number) => void;
         onUpdateField: (
@@ -60,7 +59,6 @@
         canDragBlocks = false,
         onAddBlock,
         onInsertReusableBlockReference,
-        onAddReusableBlockReference,
         onRemoveBlock,
         onMoveBlock,
         onUpdateField,
@@ -94,9 +92,7 @@
     const isRootList = $derived(
         location.parentPath === null && location.fieldKey === null,
     );
-    const canInsertReusableBlocks = $derived(
-        isRootList && reusableBlocks.length > 0,
-    );
+    const canInsertReusableBlocks = $derived(isRootList && reusableBlocks.length > 0);
     const showInlineBlockCreate = $derived(
         allowInlineBlockCreation || !isRootList,
     );
@@ -142,11 +138,7 @@
         reusableBlockId: string,
         index: number,
     ) => {
-        if (onInsertReusableBlockReference) {
-            onInsertReusableBlockReference(reusableBlockId, index);
-        } else {
-            onAddReusableBlockReference?.(reusableBlockId);
-        }
+        onInsertReusableBlockReference?.(reusableBlockId, index);
 
         openReusableMenuPath = null;
     };
@@ -246,32 +238,6 @@
                     </select>
                 {/if}
             </div>
-        </div>
-    {/if}
-
-    {#if canInsertReusableBlocks}
-        <div
-            class="flex flex-wrap items-center justify-between gap-3 border-b border-stone-200 pb-4"
-        >
-            <div class="space-y-1">
-                <p class={captionClass}>Content library</p>
-            </div>
-            <select
-                class={`${fieldClass} min-w-[14rem] py-2.5 pr-10 text-sm`}
-                onchange={(event) => {
-                    const select = event.currentTarget as HTMLSelectElement;
-                    if (!select.value) return;
-                    insertReusableBlockReference(select.value, blocks.length);
-                    select.value = "";
-                }}
-            >
-                <option value="">Add content…</option>
-                {#each reusableBlocks as reusableBlock}
-                    <option value={reusableBlock.id}
-                        >{reusableBlock.name}</option
-                    >
-                {/each}
-            </select>
         </div>
     {/if}
 

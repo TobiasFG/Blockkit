@@ -15,8 +15,7 @@ The current layout treats the page body as the primary editing region:
 - Use the draft panel in the side rail as the primary source of save state and validation state, then save or reset the current draft there.
 - Open the `Discovery & Sharing` tab when you need search or sharing metadata.
 - Create and edit content in `/content`, not inside the page editor.
-- Use the content picker at the top of the Content section to insert top-level live references to existing content items.
-- Use the Content sidebar `Add` action or `Insert into page` context-menu action to append selected content into current page draft.
+- Use Content sidebar plus-icon quick add or `Insert into page` context-menu action to append selected content into current page draft.
 - Use block-row `Actions` control to move row, remove it, or open inline content picker for insertion before that row when you do not want to drag.
 - Drag block rows between the visible drop targets to reorder within the current list on wide pointer-capable layouts. The drop targets appear only while dragging.
 - Click content item name or `Edit content` link on placed content row to open dedicated `/content/[id]` editor.

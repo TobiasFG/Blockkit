@@ -1,6 +1,8 @@
 <script lang="ts">
 	import { ContextMenu, DropdownMenu } from 'bits-ui';
+	import CmsIconButton from './CmsIconButton.svelte';
 	import SidebarReusableBlocksTreeItem from './SidebarReusableBlocksTreeItem.svelte';
+	import { ChevronRight, Plus } from '$lib/icons';
 	import { setReusableBlockDragData } from './reusableBlockInsertion';
 	import type { ReusableBlocksTreeNode } from './reusableBlocksTree';
 
@@ -90,20 +92,14 @@
 			{#if hasChildren}
 				<button
 					type="button"
-					class="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-md text-slate-500 transition hover:bg-slate-100 hover:text-slate-700"
+					class="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-md text-slate-500 transition hover:bg-slate-100 hover:text-slate-700 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-slate-200/70"
 					aria-label={isOpen ? `Collapse ${node.folder.name}` : `Expand ${node.folder.name}`}
 					aria-expanded={isOpen}
 					onclick={() => onToggle(node.folder!.id)}
 				>
-					<svg
-						viewBox="0 0 24 24"
+					<ChevronRight
 						class={['h-4 w-4 transition-transform', isOpen ? 'rotate-90' : ''].join(' ')}
-						fill="none"
-						stroke="currentColor"
-						stroke-width="2"
-					>
-						<path d="m9 6 6 6-6 6" />
-					</svg>
+					/>
 				</button>
 			{/if}
 		</div>
@@ -198,13 +194,15 @@
 							</DropdownMenu.Content>
 						</DropdownMenu.Root>
 						{#if canInsertIntoPage}
-							<button
-								type="button"
-								class="shrink-0 rounded-md border border-slate-200 bg-white px-2 py-1 text-[10px] font-semibold uppercase tracking-wide text-slate-600 transition hover:border-slate-300 hover:bg-slate-50 hover:text-slate-900"
+							<CmsIconButton
+								label={`Add ${block.name} to current page`}
+								title="Add to current page"
 								onclick={() => onInsertBlockIntoPage(block.id)}
 							>
-								Add
-							</button>
+								{#snippet children()}
+									<Plus class="h-4 w-4" />
+								{/snippet}
+							</CmsIconButton>
 						{/if}
 					</div>
 				{/each}

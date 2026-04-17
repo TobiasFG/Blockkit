@@ -10,8 +10,10 @@
     import type { User } from "@supabase/supabase-js";
     import { pagesStore } from "$lib/client/pagesStore";
     import { blockFoldersStore, reusableBlocksStore } from "$lib/client/reusableBlocksStore";
+    import { Plus } from "$lib/icons";
     import type { BlockFolder, Page, ReusableBlock } from "$lib/types";
     import ActionModal from "./ActionModal.svelte";
+    import CmsIconButton from "./CmsIconButton.svelte";
     import {
         requestReusableBlockInsert,
         setReusableBlockDragData,
@@ -466,13 +468,15 @@
                                     </DropdownMenu.Content>
                                 </DropdownMenu.Root>
                                 {#if canInsertIntoCurrentPage}
-                                    <button
-                                        type="button"
-                                        class="shrink-0 rounded-md border border-slate-200 bg-white px-2 py-1 text-[10px] font-semibold uppercase tracking-wide text-slate-600 transition hover:border-slate-300 hover:bg-slate-50 hover:text-slate-900"
+                                    <CmsIconButton
+                                        label={`Add ${block.name} to current page`}
+                                        title="Add to current page"
                                         onclick={() => insertBlockIntoCurrentPage(block.id)}
                                     >
-                                        Add
-                                    </button>
+                                        {#snippet children()}
+                                            <Plus class="h-4 w-4" />
+                                        {/snippet}
+                                    </CmsIconButton>
                                 {/if}
                             </div>
                         {/each}

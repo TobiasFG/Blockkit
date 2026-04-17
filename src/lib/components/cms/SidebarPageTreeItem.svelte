@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { ChevronRight } from '$lib/icons';
 	import { pageHasDraftChanges } from '$lib/pageStatus';
 	import SidebarPageTreeItem from './SidebarPageTreeItem.svelte';
 	import type { SidebarTreeNode } from './sidebarTree';
@@ -57,20 +58,14 @@
 		{#if hasChildren}
 			<button
 				type="button"
-				class="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-md text-slate-500 transition hover:bg-slate-100 hover:text-slate-700"
+				class="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-md text-slate-500 transition hover:bg-slate-100 hover:text-slate-700 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-slate-200/70"
 				aria-label={isOpen ? `Collapse ${node.page.title}` : `Expand ${node.page.title}`}
 				aria-expanded={isOpen}
 				onclick={() => onToggle(node.page.slug)}
 			>
-				<svg
-					viewBox="0 0 24 24"
+				<ChevronRight
 					class={['h-4 w-4 transition-transform', isOpen ? 'rotate-90' : ''].join(' ')}
-					fill="none"
-					stroke="currentColor"
-					stroke-width="2"
-				>
-					<path d="m9 6 6 6-6 6" />
-				</svg>
+				/>
 			</button>
 		{/if}
 	</div>
