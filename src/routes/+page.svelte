@@ -1,10 +1,10 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { applyAction, enhance } from '$app/forms';
-	import { resolveRoute } from '$app/paths';
 	import { flip } from 'svelte/animate';
 
 	import { pagesStore } from '$lib/client/pagesStore';
+	import { buildEditPagePath, buildPagePathPreview, isRootPage } from '$lib/pagePath';
 	import { getPagePublishState, pageHasDraftChanges } from '$lib/pageStatus';
 	import type { Page } from '$lib/types';
 	import type { PageProps } from './$types';
@@ -21,6 +21,9 @@
 	let deletingPage = $state<string | null>(null);
 	let pendingDeletePage = $state<Page | null>(null);
 	let showDeletePageModal = $state(false);
+	let createTitle = $state('');
+	let createUrlName = $state('');
+	let createParentPageId = $state('');
 
 	const dateFormatter = new Intl.DateTimeFormat('en', {
 		day: 'numeric',
@@ -60,19 +63,24 @@
 		pendingDeletePage = null;
 	};
 
-	const editHref = (slug: string) => {
-		const cleaned = slug.replace(/^\//, '');
-		const target = isRootPage(slug) ? '__root__' : cleaned;
-		return resolveRoute('/edit/[...slug]', { slug: target });
-	};
-
-	const displaySlug = (slug: string) => {
-		const cleaned = slug.replace(/^\//, '');
-		return cleaned.length === 0 ? '/' : `/${cleaned}`;
-	};
-
-	const isRootPage = (slug: string) => slug === '/' || slug.trim() === '';
+	const editHref = (pageId: string) => buildEditPagePath(pageId);
+	const displayPath = (path: string | null | undefined) => (path && path.trim() ? path : '/');
 	const displayDate = (value: string) => dateFormatter.format(new Date(value));
+	const createPathPreview = $derived.by(() => {
+		if (!createParentPageId) return '/';
+
+		try {
+			return buildPagePathPreview({
+				pageId: '__new__',
+				parentPageId: createParentPageId,
+				title: createTitle,
+				urlName: createUrlName,
+				pages
+			});
+		} catch {
+			return '/';
+		}
+	});
 	const getPublishStateLabel = (page: Page) => {
 		const state = getPagePublishState(page);
 		if (state === 'draft-changes') return 'Draft changes';
@@ -89,6 +97,10 @@
 	$effect(() => {
 		if (browser) {
 			pagesStore.set(data.pages ?? []);
+		}
+
+		if (!createParentPageId) {
+			createParentPageId = (data.pages ?? []).find((page) => isRootPage(page))?.id ?? '';
 		}
 	});
 </script>
@@ -128,7 +140,7 @@
 					<div class="space-y-1">
 						<p class={captionClass}>New page</p>
 						<h2 class="text-[1.35rem] font-semibold tracking-[-0.03em] text-stone-950">Create next draft</h2>
-						<p class="text-sm leading-6 text-stone-600">Start with page name and final URL segment.</p>
+						<p class="text-sm leading-6 text-stone-600">Start with page name, parent, optional URL override.</p>
 					</div>
 
 					{#if pageFeedback}
@@ -157,6 +169,9 @@
 
 								if (result.type === 'success') {
 									formElement.reset();
+									createTitle = '';
+									createUrlName = '';
+									createParentPageId = pages.find((page) => isRootPage(page))?.id ?? '';
 									pageFeedback = {
 										tone: 'success',
 										text: 'Page created successfully.'
@@ -188,20 +203,39 @@
 								name="title"
 								placeholder="About us"
 								required
+								bind:value={createTitle}
 								class={inputClass}
 							/>
 						</div>
 						<div class="space-y-2">
-							<label for="slug" class="text-sm font-medium text-stone-800">Page link</label>
-							<input
-								id="slug"
-								type="text"
-								name="slug"
-								placeholder="about"
+							<label for="parentPageId" class="text-sm font-medium text-stone-800">Parent page</label>
+							<select
+								id="parentPageId"
+								name="parentPageId"
 								required
+								bind:value={createParentPageId}
+								class={inputClass}
+							>
+								{#each pages as page (page.id)}
+									<option value={page.id}>{page.title} ({displayPath(page.path)})</option>
+								{/each}
+							</select>
+						</div>
+						<div class="space-y-2">
+							<label for="urlName" class="text-sm font-medium text-stone-800">URL name</label>
+							<input
+								id="urlName"
+								type="text"
+								name="urlName"
+								placeholder="about-us"
+								bind:value={createUrlName}
 								class={`${inputClass} font-mono text-[13px]`}
 							/>
-							<p class="text-sm leading-6 text-stone-500">Use last part of page path, for example `about`.</p>
+							<p class="text-sm leading-6 text-stone-500">Optional. Leave empty to derive URL from title.</p>
+						</div>
+						<div class="rounded-2xl border border-stone-200/80 bg-stone-50 px-4 py-3">
+							<p class={captionClass}>Path preview</p>
+							<p class="mt-1 font-mono text-sm text-stone-800">{displayPath(createPathPreview)}</p>
 						</div>
 						<button
 							type="submit"
@@ -241,7 +275,10 @@
 											</span>
 										</div>
 										<div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-stone-500">
-											<span class="font-mono text-[12px] text-stone-600">{displaySlug(page.slug)}</span>
+											<span class="font-mono text-[12px] text-stone-600">{displayPath(page.path)}</span>
+											{#if page.live_path && page.live_path !== page.path}
+												<span>Live path {displayPath(page.live_path)}</span>
+											{/if}
 											<span>Updated {displayDate(page.updated_at)}</span>
 											{#if page.last_published_at}
 												<span>Live {displayDate(page.last_published_at)}</span>
@@ -250,19 +287,19 @@
 									</div>
 									<div class="flex items-center gap-2 sm:justify-end">
 										<a
-											href={editHref(page.slug)}
+											href={editHref(page.id)}
 											class="inline-flex min-h-10 items-center justify-center rounded-full bg-stone-950 px-4 py-2 text-sm font-medium text-stone-50 transition hover:bg-stone-800 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-stone-300/70"
 										>
 											Edit
 										</a>
-										{#if !isRootPage(page.slug)}
+										{#if !isRootPage(page)}
 											<button
 												type="button"
 												class="inline-flex min-h-10 items-center justify-center rounded-full border border-red-300/70 bg-red-50 px-4 py-2 text-sm font-medium text-red-800 transition hover:bg-red-100 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-red-200/70 disabled:cursor-not-allowed disabled:opacity-60"
-												disabled={deletingPage === page.slug}
+												disabled={deletingPage === page.id}
 												onclick={() => openDeletePageModal(page)}
 											>
-												{deletingPage === page.slug ? 'Deleting...' : 'Delete'}
+												{deletingPage === page.id ? 'Deleting...' : 'Delete'}
 											</button>
 										{/if}
 									</div>
@@ -327,7 +364,7 @@
 		<p class={captionClass}>Delete page</p>
 		<h2 class="mt-2 text-[1.35rem] font-semibold tracking-[-0.03em] text-stone-950">Remove page draft</h2>
 		<p class="mt-2 text-sm leading-6 text-stone-600">
-			{pendingDeletePage ? `Delete “${pendingDeletePage.title}” at ${displaySlug(pendingDeletePage.slug)}.` : ''}
+			{pendingDeletePage ? `Delete “${pendingDeletePage.title}” at ${displayPath(pendingDeletePage.path)}.` : ''}
 		</p>
 
 		<form
@@ -335,9 +372,9 @@
 			action="?/deletePage"
 			class="mt-6 flex items-center justify-end gap-2"
 			use:enhance={({ formData }) => {
-				const slug = String(formData.get('slug') ?? '');
+				const pageId = String(formData.get('pageId') ?? '');
 				clearPageFeedback();
-				deletingPage = slug;
+				deletingPage = pageId;
 
 				return async ({ result, update }) => {
 					deletingPage = null;
@@ -367,7 +404,7 @@
 				};
 			}}
 		>
-			<input type="hidden" name="slug" value={pendingDeletePage.slug} />
+			<input type="hidden" name="pageId" value={pendingDeletePage.id} />
 			<button
 				type="button"
 				class="inline-flex items-center rounded-full border border-stone-300 bg-white px-4 py-2 text-sm font-medium text-stone-700 transition hover:bg-stone-50 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-stone-200/70"
@@ -378,9 +415,9 @@
 			<button
 				type="submit"
 				class="inline-flex items-center rounded-full border border-red-300/70 bg-red-50 px-4 py-2 text-sm font-medium text-red-800 transition hover:bg-red-100 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-red-200/70 disabled:cursor-not-allowed disabled:opacity-60"
-				disabled={deletingPage === pendingDeletePage.slug}
+				disabled={deletingPage === pendingDeletePage.id}
 			>
-				{deletingPage === pendingDeletePage.slug ? 'Deleting...' : 'Delete page'}
+				{deletingPage === pendingDeletePage.id ? 'Deleting...' : 'Delete page'}
 			</button>
 		</form>
 	</div>

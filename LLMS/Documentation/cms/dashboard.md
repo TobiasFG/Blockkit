@@ -2,6 +2,8 @@ Purpose: describe CMS dashboard landing page as page-first surface with lightwei
 
 # How to use
 - Open the CMS root route to review pages and create a new page draft.
+- New page flow requires Title, Parent page, and optional URL name.
+- The dashboard shows computed draft path preview before page creation.
 - Use the `Pages` section to open the most urgent draft work first, then the most recently updated pages.
 - Use Content summary only as link into Content library.
 
@@ -10,7 +12,8 @@ Purpose: describe CMS dashboard landing page as page-first surface with lightwei
 - The primary heading should make page work feel dominant, not balanced against shared-content administration.
 - The layout should rely on section spacing, dividers, compact side modules, and lighter inset form areas instead of a dramatic hero plus repeated heavy cards.
 - Page rows should read as flat editorial list items with actions aligned to the edge, not miniature cards repeated in a grid.
-- Page creation uses simple labels and examples that map to common publishing tasks.
+- Page creation uses simple labels and examples that map to common publishing tasks, while still exposing explicit parent-page structure.
+- Page rows show draft path metadata and may also show live path when draft identity differs from published identity.
 - Content copy should refer to library surface only as secondary destination.
 - Page create/delete feedback is shown inside the `Pages` section near the new-page form instead of sharing a site-wide dashboard message area.
 - Pending states should be reflected on the action button that triggered the request when practical, including page creation and destructive actions.

@@ -7,28 +7,28 @@
 	type Props = {
 		node: SidebarTreeNode;
 		depth: number;
-		activeSlug: string | null;
+		activePageId: string | null;
 		closedNodes: Record<string, boolean>;
-		onToggle: (slug: string) => void;
+		onToggle: (pageId: string) => void;
 		onClose: () => void;
-		editHref: (slug: string) => string;
-		displaySlug: (slug: string) => string;
+		editHref: (pageId: string) => string;
+		displayPath: (path: string) => string;
 	};
 
 	let {
 		node,
 		depth,
-		activeSlug,
+		activePageId,
 		closedNodes,
 		onToggle,
 		onClose,
 		editHref,
-		displaySlug
+		displayPath
 	}: Props = $props();
 
 	const hasChildren = $derived(node.children.length > 0);
-	const isOpen = $derived(hasChildren ? !closedNodes[node.page.slug] : false);
-	const isActive = $derived(activeSlug === node.page.slug);
+	const isOpen = $derived(hasChildren ? !closedNodes[node.page.id] : false);
+	const isActive = $derived(activePageId === node.page.id);
 	const publishState = $derived(getPagePublishState(node.page));
 	const publishStateLabel = $derived(
 		publishState === 'draft-changes'
@@ -49,7 +49,7 @@
 <div class="space-y-1">
 	<div class="flex items-center gap-1">
 		<a
-			href={editHref(node.page.slug)}
+			href={editHref(node.page.id)}
 			class={[
 				'flex min-w-0 flex-1 items-center justify-between gap-3 rounded-md py-2 pr-3 text-sm transition',
 				depth === 0 ? 'pl-3' : '',
@@ -64,7 +64,7 @@
 					{publishStateLabel}
 				</span>
 			</div>
-			<span class="shrink-0 font-mono text-xs text-slate-500">{displaySlug(node.page.slug)}</span>
+			<span class="shrink-0 font-mono text-xs text-slate-500">{displayPath(node.page.path)}</span>
 		</a>
 
 		{#if hasChildren}
@@ -73,7 +73,7 @@
 				class="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-md text-slate-500 transition hover:bg-slate-100 hover:text-slate-700 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-slate-200/70"
 				aria-label={isOpen ? `Collapse ${node.page.title}` : `Expand ${node.page.title}`}
 				aria-expanded={isOpen}
-				onclick={() => onToggle(node.page.slug)}
+				onclick={() => onToggle(node.page.id)}
 			>
 				<ChevronRight
 					class={['h-4 w-4 transition-transform', isOpen ? 'rotate-90' : ''].join(' ')}
@@ -88,12 +88,12 @@
 				<SidebarPageTreeItem
 					node={child}
 					depth={depth + 1}
-					{activeSlug}
+					{activePageId}
 					{closedNodes}
 					{onToggle}
 					{onClose}
 					{editHref}
-					{displaySlug}
+					{displayPath}
 				/>
 			{/each}
 		</div>

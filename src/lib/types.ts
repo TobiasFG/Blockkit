@@ -4,7 +4,15 @@ import type { BlockInstance } from '$lib/pageContent';
 export type Page = {
 	id: string;
 	title: string;
-	slug: string;
+	path: string;
+	live_title: string | null;
+	live_path: string | null;
+	parent_page_id: string | null;
+	published_parent_page_id: string | null;
+	url_name: string | null;
+	path_segment: string | null;
+	published_url_name: string | null;
+	published_path_segment: string | null;
 	created_at: string;
 	updated_at: string;
 	draft_version_id?: string | null;
@@ -14,12 +22,16 @@ export type Page = {
 	last_published_at?: string | null;
 };
 
-export type ReferencingPage = Pick<Page, 'id' | 'title' | 'slug'>;
+export type ReferencingPage = Pick<Page, 'id' | 'title' | 'path'>;
 
 export type PageDraftVersion = {
 	id: string;
 	page_id: string;
 	status: 'draft' | 'published' | 'archived';
+	title: string;
+	parent_page_id: string | null;
+	url_name: string | null;
+	path_segment: string | null;
 	content: PageContent;
 	meta: Record<string, unknown>;
 	parent_id: string | null;

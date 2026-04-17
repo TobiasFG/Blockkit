@@ -1,9 +1,15 @@
 import { fail, type Actions } from '@sveltejs/kit';
 
 import { pageHasDraftChanges } from '$lib/pageStatus';
-import { validatePageSlug } from '$lib/pageSlug';
+import { validatePagePathInput } from '$lib/pagePath';
 import { requireAuthenticatedUser } from '$lib/server/auth';
-import { createPage, deletePage, getPages, pageExists } from '$lib/server/PagesController.server';
+import {
+	createPage,
+	deletePageById,
+	draftPathSegmentExists,
+	getPageById,
+	getPages
+} from '$lib/server/PagesController.server';
 import type { Page } from '$lib/types';
 
 const sortDashboardPages = (pages: Page[]) =>
@@ -27,23 +33,45 @@ export const actions = {
 		});
 
 		const formData = await event.request.formData();
-		const slugResult = validatePageSlug(String(formData.get('slug') ?? ''));
+		const title = String(formData.get('title') ?? '').trim();
+		const parentPageId = String(formData.get('parentPageId') ?? '').trim();
+		const urlName = String(formData.get('urlName') ?? '').trim();
 
-		if (slugResult.error) {
-			return fail(400, { error: slugResult.error });
+		if (!parentPageId) {
+			return fail(400, { error: 'Parent page is required' });
 		}
 
-		const slug = slugResult.slug;
-		const pageAlreadyExists = await pageExists(slug);
+		const validation = validatePagePathInput({
+			title,
+			urlName,
+			isRoot: false
+		});
 
+		if (validation.error) {
+			return fail(400, { error: validation.error });
+		}
+
+		const parentPage = await getPageById(parentPageId);
+		if (!parentPage) {
+			return fail(404, { error: 'Parent page not found' });
+		}
+
+		const pageAlreadyExists = await draftPathSegmentExists({
+			parentPageId,
+			pathSegment: validation.pathSegment as string
+		});
 		if (pageAlreadyExists) {
 			return fail(409, {
-				error: 'Page with this slug already exists'
+				error: 'Page with this URL already exists under selected parent'
 			});
 		}
 
 		try {
-			await createPage(formData.get('title') as string, slug);
+			await createPage({
+				title,
+				parentPageId,
+				urlName
+			});
 
 			return {
 				pages: await getDashboardPages()
@@ -61,16 +89,25 @@ export const actions = {
 		});
 
 		const formData = await event.request.formData();
-		const slug = formData.get('slug') as string;
+		const pageId = String(formData.get('pageId') ?? '').trim();
 
-		if (!slug) {
+		if (!pageId) {
 			return fail(400, {
-				error: 'Slug is required to delete a page'
+				error: 'Page id is required to delete a page'
 			});
 		}
 
 		try {
-			await deletePage(slug);
+			const page = await getPageById(pageId);
+			if (!page) {
+				return fail(404, { error: 'Page not found' });
+			}
+
+			if (page.parent_page_id === null) {
+				return fail(400, { error: 'Root page cannot be deleted' });
+			}
+
+			await deletePageById(pageId);
 			return {
 				success: true,
 				pages: await getDashboardPages()

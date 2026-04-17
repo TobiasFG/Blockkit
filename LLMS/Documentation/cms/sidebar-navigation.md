@@ -1,17 +1,19 @@
 Purpose: describe how the CMS sidebar derives and renders nested page navigation.
 
 # How It Works
-- The sidebar builds a route tree from the flat `Page[]` list using each page's slug.
-- The `/` page is the root of the tree and is labeled with its page title.
-- Child pages are nested under the nearest existing ancestor page based on URL segments.
-- Pages without a real intermediate parent are attached to the closest existing ancestor instead of creating synthetic nodes.
-- Content items render in separate `Content` section using explicit folder records instead of page slugs.
+- The sidebar builds a route tree from the flat `Page[]` list using each page's draft `parent_page_id`.
+- The single root page is the root of the tree and is labeled with its draft page title.
+- Child pages are nested under their explicit parent page, not inferred from URL segments.
+- Sidebar page links point to stable `/edit/page/[id]` routes instead of path-based editor routes.
+- Content items render in separate `Content` section using explicit folder records instead of page paths.
 - `Content` section header links to dedicated `/content` library route.
 
 # Behavior
 - Any page with children renders an expand/collapse chevron.
 - The currently active page and its ancestor chain open automatically.
 - Pages show lightweight publish-state badges: `Unpublished`, `Published`, or `Draft changes`.
+- Sidebar page metadata shows draft path.
+- If draft path differs from live path, the sidebar still keeps page inside draft tree because editor navigation follows draft structure.
 - Dashboard and "New page" remain top-level sidebar actions and are not part of the page tree.
 - `Content` section keeps quick link for folder creation and routes content creation to dedicated library page.
 - Content folders are collapsible and open automatically for active content item's folder ancestry.
@@ -27,6 +29,7 @@ Purpose: describe how the CMS sidebar derives and renders nested page navigation
 
 # Constraints
 - The sidebar only shows real pages stored in the CMS.
+- The sidebar assumes single-root page model.
 - Collapse state is local UI state and resets on refresh.
 - Folder collapse state for content items is also local UI state and resets on refresh.
 - Folder deletion is still blocked unless folder has no child folders and no content items.

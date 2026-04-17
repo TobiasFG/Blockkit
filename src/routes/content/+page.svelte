@@ -436,7 +436,7 @@
 			{#if modalState.references.length > 0}
 				<ul class="max-h-56 space-y-2 overflow-y-auto rounded-2xl border border-slate-200 bg-slate-50 p-3 text-sm text-slate-700">
 					{#each modalState.references as page (page.id)}
-						<li class="rounded-xl bg-white px-3 py-2 shadow-sm">{page.title} <span class="text-slate-500">({page.slug})</span></li>
+						<li class="rounded-xl bg-white px-3 py-2 shadow-sm">{page.title} <span class="text-slate-500">({page.path})</span></li>
 					{/each}
 				</ul>
 			{:else}

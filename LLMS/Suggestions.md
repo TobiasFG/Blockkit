@@ -13,7 +13,5 @@ Guidelines:
 - Do not copy design review points, open questions, risks, or follow-ups here unless they are actual future suggestions that belong in this file.
 
 # Suggestions
-- We need a system for restoring deleted content. If content is deleted it should be marked as deleted but still be findable in some sort of trash overview from where it can be restored. I dont remember if content can be deleted when it is used in other content or pages but, that also needs to be managed in a clear a way that empowers the users. Ideally deleting content in use should display a warning to the user that the content is in use, including where, prompting extra acceptance before deletion, while deleting unused content should just delete immediately.
-- I would like to change the way pages page link is handled. Right now the user have to actively write the full path, eg. "/about/us/open-position", which can become cumbersome. It would be better if pages simply had a required title, required parent that defines the location, and then an optional url name. If a page has no url name, the title should be used (of cause url-encoded.), eg. a page "We love us" without url name set would become "we%20love%20us" automatically, but then the user can choose to override the url name to eg. "we-love-us"
 
 # Bugs

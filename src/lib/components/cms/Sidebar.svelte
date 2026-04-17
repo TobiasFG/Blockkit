@@ -4,11 +4,11 @@
     import { ContextMenu, DropdownMenu } from "bits-ui";
     import { onMount } from "svelte";
     import { goto } from "$app/navigation";
-    import { resolveRoute } from "$app/paths";
     import { page } from "$app/stores";
     import type { SubmitFunction } from "@sveltejs/kit";
     import type { User } from "@supabase/supabase-js";
     import { pagesStore } from "$lib/client/pagesStore";
+    import { buildEditPagePath, isRootPage } from "$lib/pagePath";
     import { blockFoldersStore, reusableBlocksStore } from "$lib/client/reusableBlocksStore";
     import { Plus } from "$lib/icons";
     import type { BlockFolder, Page, ReusableBlock } from "$lib/types";
@@ -20,7 +20,7 @@
     } from "./reusableBlockInsertion";
     import SidebarPageTreeItem from "./SidebarPageTreeItem.svelte";
     import SidebarReusableBlocksTreeItem from "./SidebarReusableBlocksTreeItem.svelte";
-    import { buildSidebarTree, collectAncestorSlugs } from "./sidebarTree";
+    import { buildSidebarTree, collectAncestorPageIds } from "./sidebarTree";
     import {
         buildReusableBlocksTree,
         collectReusableBlockFolderAncestors,
@@ -66,16 +66,8 @@
         | null
     >(null);
 
-    const isRootPage = (slug: string) => slug === "/" || slug.trim() === "";
-    const editHref = (slug: string) => {
-        const cleaned = slug.replace(/^\//, "");
-        const target = isRootPage(slug) ? "__root__" : cleaned;
-        return resolveRoute("/edit/[...slug]", { slug: target });
-    };
-    const displaySlug = (slug: string) => {
-        const cleaned = slug.replace(/^\//, "");
-        return cleaned.length === 0 ? "/" : `/${cleaned}`;
-    };
+    const editHref = (pageId: string) => buildEditPagePath(pageId);
+    const displayPath = (path: string | null | undefined) => (path && path.trim() ? path : "/");
     const displayName = $derived(
         user.user_metadata?.full_name ||
             user.user_metadata?.name ||
@@ -91,8 +83,8 @@
     const currentReusableBlocks = $derived(
         browser ? ($reusableBlocksStore ?? reusableBlocks) : reusableBlocks,
     );
-    const activePageSlug = $derived(
-        currentPages.find((entry: Page) => isActive(editHref(entry.slug)))?.slug ?? null,
+    const activePageId = $derived(
+        currentPages.find((entry: Page) => isActive(editHref(entry.id)))?.id ?? null,
     );
     const activeReusableBlockId = $derived(
         currentReusableBlocks.find((entry: ReusableBlock) => isActive(`/content/${entry.id}`))?.id ??
@@ -106,10 +98,10 @@
         buildReusableBlocksTree(currentBlockFolders, currentReusableBlocks),
     );
 
-    const toggleNode = (slug: string) => {
+    const toggleNode = (pageId: string) => {
         closedNodes = {
             ...closedNodes,
-            [slug]: !closedNodes[slug],
+            [pageId]: !closedNodes[pageId],
         };
     };
 
@@ -238,11 +230,11 @@
     });
 
     $effect(() => {
-        for (const slug of collectAncestorSlugs(pageTree, activePageSlug ?? "/")) {
-            if (closedNodes[slug]) {
+        for (const pageId of collectAncestorPageIds(pageTree, activePageId ?? "")) {
+            if (closedNodes[pageId]) {
                 closedNodes = {
                     ...closedNodes,
-                    [slug]: false,
+                    [pageId]: false,
                 };
             }
         }
@@ -341,12 +333,12 @@
                         <SidebarPageTreeItem
                             node={pageTree}
                             depth={0}
-                            activeSlug={activePageSlug}
+                            activePageId={activePageId}
                             {closedNodes}
                             onToggle={toggleNode}
                             {onClose}
                             {editHref}
-                            {displaySlug}
+                            {displayPath}
                         />
                     {/if}
                 </div>
