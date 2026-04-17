@@ -19,8 +19,7 @@ describe('block registry', () => {
 		expect(getBlockDefinition('hero')?.fields.map((field) => field.type)).toEqual([
 			'string',
 			'date',
-			'number',
-			'boolean'
+			'number'
 		]);
 	});
 });
@@ -43,8 +42,7 @@ describe('page content helpers', () => {
 					fields: {
 						heading: 'Welcome',
 						publishedOn: '2026-04-09',
-						priority: 3,
-						featured: true
+						priority: 3
 					}
 				},
 				{

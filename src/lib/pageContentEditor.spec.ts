@@ -20,8 +20,7 @@ const BASE_CONTENT: PageContent = {
 			id: 'hero-1',
 			type: 'hero',
 			fields: {
-				heading: 'Welcome',
-				featured: false
+				heading: 'Welcome'
 			}
 		},
 		{

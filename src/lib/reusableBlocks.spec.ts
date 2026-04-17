@@ -15,8 +15,7 @@ describe('reusable block helpers', () => {
 			id: 'hero-1',
 			type: 'hero',
 			fields: {
-				heading: '',
-				featured: false
+				heading: ''
 			}
 		});
 	});
@@ -60,16 +59,14 @@ describe('reusable block helpers', () => {
 				type: 'hero',
 				fields: {
 					heading: 'Welcome',
-					publishedOn: '',
-					featured: false
+					publishedOn: ''
 				}
 			})
 		).toEqual({
 			id: 'hero-1',
 			type: 'hero',
 			fields: {
-				heading: 'Welcome',
-				featured: false
+				heading: 'Welcome'
 			}
 		});
 	});

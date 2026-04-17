@@ -27,7 +27,7 @@ type PageContent = {
 
 # Initial block types
 - `text`: required `body` string.
-- `hero`: `heading` string plus optional `publishedOn` date, `priority` number, and `featured` boolean.
+- `hero`: `heading` string plus optional `publishedOn` date and `priority` number.
 - `section`: optional `title` string plus `items` nested blocks field.
 
 # Notes & constraints

@@ -62,8 +62,7 @@ describe('reusable block editor helpers', () => {
 			id: 'hero-root',
 			type: 'hero',
 			fields: {
-				heading: '',
-				featured: false
+				heading: ''
 			}
 		});
 

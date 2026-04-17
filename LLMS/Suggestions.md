@@ -13,7 +13,8 @@ Guidelines:
 - Do not copy design review points, open questions, risks, or follow-ups here unless they are actual future suggestions that belong in this file.
 
 # Suggestions
-- we currently have a "reset draft" button when editing pages or content, i do not like that, if something have changed, there should be a button saying revert changes to draft/published depending on whether the orignally displayed content was draft or published
 - I would like to get started on the feature where users can also manage media like images and videos in the content area. These should be stored in supabase and it should then be possible to use them in content blocks or on pages' seo. When creating new media content it should be possible to either upload a media file or provide a link. It should be possible to preview media content by clicking on it.
+- we should get started on an account page where the user can manage their account and stuff releated to it.
+- It seems like there is a misalignment between the how the action buttons on the content edit page work compared to the page editor, where the page editor is currently working as expected and as i want it to. Also the state labels in the sidebar work for pages but seems none-functional for content.
 
 # Bugs

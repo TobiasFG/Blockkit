@@ -9,9 +9,11 @@ Content items use draft/publish workflow so editor can save changes without chan
 - Use folder form on `/content` to add optional folder structure.
 - Use content form on `/content` to pick registered block type and create named content item.
 - Open content item from `/content` or sidebar tree to edit name, folder, and supported fields.
-- Use side-rail primary action button for next step: `Save draft` while edits are unsaved, `Publish` once saved draft changes are ready, `Validation error` when blocked, and `All changes saved` when nothing is pending.
+- Use side-rail primary action button for next step: `Save draft` while edits are unsaved, `Publish` once saved draft changes are ready, `Validation error` when blocked, and no primary button when nothing is pending.
+- Use side-rail secondary action button to `Revert changes to draft` or `Revert changes to published` when you want to discard unsaved edits and return to currently loaded source state. Hide it when no unsaved edits exist.
 - When page editor is open, use sidebar `Add` action or row context menu to insert content into current page without leaving library tree.
 - Content editor uses same calmer shell direction as page editor: editable fields in main column, draft/publish state and record metadata in secondary rail.
+- Draft-rail action buttons animate in and out as state changes instead of lingering disabled.
 
 # Behavior
 - Content items are stored independently from page content.

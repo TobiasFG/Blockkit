@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import { fly } from 'svelte/transition';
 	import { browser } from '$app/environment';
 	import { applyAction, enhance } from '$app/forms';
 	import { pagesStore } from '$lib/client/pagesStore';
@@ -32,6 +33,7 @@
 		urlName: string;
 		seo: PageSeoMeta;
 		content: PageContent;
+		revertTargetLabel: 'draft' | 'published';
 	};
 
 	type PrimaryActionState = 'validation-error' | 'save-draft' | 'publish' | 'all-saved';
@@ -53,6 +55,7 @@
 	let contentErrors = $state<PageContentValidationErrors>({});
 	let draggingPath = $state<string | null>(null);
 	let canDragBlocks = $state(false);
+	let prefersReducedMotion = $state(false);
 	let loadedSnapshot = $state<LoadedSnapshot | null>(null);
 	let activeTab = $state<'identity' | 'content' | 'discovery'>('content');
 
@@ -105,6 +108,10 @@
 	const resetMessages = () => {
 		successMessage = '';
 		errorMessage = '';
+	};
+	const getRevertTargetLabel = (currentPage: Page | null) => {
+		if (!currentPage) return 'draft' as const;
+		return currentPage.is_published && !pageHasDraftChanges(currentPage) ? 'published' : 'draft';
 	};
 
 	const formatTimestamp = (value?: string | null) => (value ? new Date(value).toLocaleString() : '—');
@@ -178,6 +185,12 @@
 				? 'bg-red-900 text-red-50 hover:bg-red-900 focus-visible:ring-red-200/70'
 				: 'bg-stone-950 text-stone-50 hover:bg-stone-800 focus-visible:ring-stone-300/70'
 	);
+	const showPrimaryAction = $derived(primaryActionState !== 'all-saved');
+	const showRevertAction = $derived(hasUnsavedChanges);
+	const actionMotion = $derived({
+		y: prefersReducedMotion ? -4 : -10,
+		duration: prefersReducedMotion ? 0 : 180
+	});
 
 	$effect(() => {
 		page = data.page ?? null;
@@ -192,7 +205,8 @@
 			parentPageId: data.page?.parent_page_id ?? null,
 			urlName: data.page?.url_name ?? '',
 			seo: data.seo ? { ...data.seo } : { ...EMPTY_PAGE_SEO_META },
-			content: createEditablePageContent(data.content)
+			content: createEditablePageContent(data.content),
+			revertTargetLabel: getRevertTargetLabel(data.page ?? null)
 		};
 		reusableBlocks = data.reusableBlocks ?? [];
 		contentErrors = {};
@@ -200,8 +214,12 @@
 
 	onMount(() => {
 		const mediaQuery = window.matchMedia('(pointer: fine) and (hover: hover) and (min-width: 1024px)');
+		const reducedMotionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
 		const updateDragMode = () => {
 			canDragBlocks = mediaQuery.matches;
+		};
+		const updateReducedMotion = () => {
+			prefersReducedMotion = reducedMotionQuery.matches;
 		};
 		const unregisterReusableInsert = registerReusableBlockInsertHandler(({ reusableBlockId }) => {
 			insertReusableReference(reusableBlockId, content.blocks.length);
@@ -210,11 +228,14 @@
 		});
 
 		updateDragMode();
+		updateReducedMotion();
 		mediaQuery.addEventListener('change', updateDragMode);
+		reducedMotionQuery.addEventListener('change', updateReducedMotion);
 
 		return () => {
 			unregisterReusableInsert();
 			mediaQuery.removeEventListener('change', updateDragMode);
+			reducedMotionQuery.removeEventListener('change', updateReducedMotion);
 		};
 	});
 
@@ -342,7 +363,8 @@
 							parentPageId,
 							urlName,
 							seo: { ...seo },
-							content: createEditablePageContent(content)
+							content: createEditablePageContent(content),
+							revertTargetLabel: getRevertTargetLabel(page)
 						};
 
 						if (browser) {
@@ -590,23 +612,30 @@
 							</div>
 
 							<div class="mt-4 flex flex-col gap-2">
-								<button
-									type="submit"
-									formaction={primaryActionFormAction}
-									data-intent={primaryActionState === 'publish' ? 'publish' : 'save'}
-									class={`inline-flex min-h-11 items-center justify-center rounded-full px-5 py-3 text-sm font-semibold transition focus-visible:outline-none focus-visible:ring-4 disabled:cursor-not-allowed disabled:opacity-70 ${primaryActionClass}`}
-									disabled={primaryActionDisabled}
-								>
-									{primaryActionLabel}
-								</button>
-								<button
-									type="button"
-									class="inline-flex min-h-11 items-center justify-center rounded-full border border-stone-300 bg-white px-5 py-3 text-sm font-medium text-stone-700 transition hover:bg-stone-50 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-stone-200/70 disabled:cursor-not-allowed disabled:opacity-60"
-									disabled={!hasUnsavedChanges}
-									onclick={resetDraft}
-								>
-									Reset draft
-								</button>
+								{#if showPrimaryAction}
+									<button
+										in:fly={actionMotion}
+										out:fly={actionMotion}
+										type="submit"
+										formaction={primaryActionFormAction}
+										data-intent={primaryActionState === 'publish' ? 'publish' : 'save'}
+										class={`inline-flex min-h-11 items-center justify-center rounded-full px-5 py-3 text-sm font-semibold transition focus-visible:outline-none focus-visible:ring-4 disabled:cursor-not-allowed disabled:opacity-70 ${primaryActionClass}`}
+										disabled={primaryActionDisabled}
+									>
+										{primaryActionLabel}
+									</button>
+								{/if}
+								{#if showRevertAction}
+									<button
+										in:fly={actionMotion}
+										out:fly={actionMotion}
+										type="button"
+										class="inline-flex min-h-11 items-center justify-center rounded-full border border-stone-300 bg-white px-5 py-3 text-sm font-medium text-stone-700 transition hover:bg-stone-50 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-stone-200/70 disabled:cursor-not-allowed disabled:opacity-60"
+										onclick={resetDraft}
+									>
+										Revert changes to {loadedSnapshot?.revertTargetLabel ?? 'draft'}
+									</button>
+								{/if}
 							</div>
 
 							{#if successMessage}

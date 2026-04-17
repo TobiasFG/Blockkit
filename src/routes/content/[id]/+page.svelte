@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { fly } from 'svelte/transition';
 	import { browser } from '$app/environment';
 	import { applyAction, enhance } from '$app/forms';
 	import { type BlockDefinition, type BlockFieldDefinition } from '$lib/blocks/registry';
@@ -22,6 +23,7 @@
 		name: string;
 		folderId: string | null;
 		content: BlockInstance;
+		revertTargetLabel: 'draft' | 'published';
 	};
 
 	type PrimaryActionState = 'validation-error' | 'save-draft' | 'publish' | 'all-saved';
@@ -38,6 +40,7 @@
 	let errorMessage = $state('');
 	let saving = $state(false);
 	let publishing = $state(false);
+	let prefersReducedMotion = $state(false);
 	let loadedSnapshot = $state<LoadedSnapshot | null>(null);
 
 	const inputClass =
@@ -48,6 +51,8 @@
 		successMessage = '';
 		errorMessage = '';
 	};
+	const getRevertTargetLabel = (currentBlock: ReusableBlock) =>
+		currentBlock.is_published && !currentBlock.has_unpublished_changes ? 'published' : 'draft';
 
 	const currentDefinition = $derived(
 		definitions.find((entry) => entry.type === block.block_type) ?? null
@@ -100,6 +105,12 @@
 				? 'bg-red-900 text-red-50 hover:bg-red-900 focus-visible:ring-red-200/70'
 				: 'bg-stone-950 text-stone-50 hover:bg-stone-800 focus-visible:ring-stone-300/70'
 	);
+	const showPrimaryAction = $derived(primaryActionState !== 'all-saved');
+	const showRevertAction = $derived(hasUnsavedChanges);
+	const actionMotion = $derived({
+		y: prefersReducedMotion ? -4 : -10,
+		duration: prefersReducedMotion ? 0 : 180
+	});
 
 	$effect(() => {
 		block = data.block;
@@ -109,10 +120,26 @@
 		loadedSnapshot = {
 			name: data.block.name,
 			folderId: data.block.folder_id ?? null,
-			content: createEditableReusableBlockContent(data.block.content)
+			content: createEditableReusableBlockContent(data.block.content),
+			revertTargetLabel: getRevertTargetLabel(data.block)
 		};
 		validationErrors = {};
 		draggingPath = null;
+	});
+	$effect(() => {
+		if (!browser) return;
+
+		const reducedMotionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+		const updateReducedMotion = () => {
+			prefersReducedMotion = reducedMotionQuery.matches;
+		};
+
+		updateReducedMotion();
+		reducedMotionQuery.addEventListener('change', updateReducedMotion);
+
+		return () => {
+			reducedMotionQuery.removeEventListener('change', updateReducedMotion);
+		};
 	});
 
 	const isTextareaField = (field: BlockFieldDefinition) =>
@@ -168,6 +195,20 @@
 
 	const handleNestedFieldUpdate = (path: BlockPath, fieldKey: string, value: BlockValue | undefined) => {
 		contentDraft = syncValidation(updateReusableBlockFieldValue(contentDraft, path, fieldKey, value));
+	};
+
+	const resetDraft = () => {
+		if (!loadedSnapshot) return;
+
+		block = {
+			...block,
+			name: loadedSnapshot.name,
+			folder_id: loadedSnapshot.folderId
+		};
+		contentDraft = createEditableReusableBlockContent(loadedSnapshot.content);
+		validationErrors = {};
+		draggingPath = null;
+		resetMessages();
 	};
 </script>
 
@@ -239,7 +280,8 @@
 							loadedSnapshot = {
 								name: block.name,
 								folderId: block.folder_id ?? null,
-								content: createEditableReusableBlockContent(block.content)
+								content: createEditableReusableBlockContent(block.content),
+								revertTargetLabel: getRevertTargetLabel(block)
 							};
 							validationErrors = {};
 							draggingPath = null;
@@ -442,15 +484,30 @@
 						</div>
 
 						<div class="space-y-3">
-							<button
-								type="submit"
-								formaction={primaryActionFormAction}
-								data-intent={primaryActionIntent}
-								class={`inline-flex min-h-11 w-full items-center justify-center rounded-full px-5 py-3 text-sm font-semibold transition focus-visible:outline-none focus-visible:ring-4 disabled:cursor-not-allowed disabled:opacity-70 ${primaryActionClass}`}
-								disabled={primaryActionDisabled}
-							>
-								{primaryActionLabel}
-							</button>
+							{#if showPrimaryAction}
+								<button
+									in:fly={actionMotion}
+									out:fly={actionMotion}
+									type="submit"
+									formaction={primaryActionFormAction}
+									data-intent={primaryActionIntent}
+									class={`inline-flex min-h-11 w-full items-center justify-center rounded-full px-5 py-3 text-sm font-semibold transition focus-visible:outline-none focus-visible:ring-4 disabled:cursor-not-allowed disabled:opacity-70 ${primaryActionClass}`}
+									disabled={primaryActionDisabled}
+								>
+									{primaryActionLabel}
+								</button>
+							{/if}
+							{#if showRevertAction}
+								<button
+									in:fly={actionMotion}
+									out:fly={actionMotion}
+									type="button"
+									class="inline-flex min-h-11 w-full items-center justify-center rounded-full border border-stone-300 bg-white px-5 py-3 text-sm font-medium text-stone-700 transition hover:bg-stone-50 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-stone-200/70 disabled:cursor-not-allowed disabled:opacity-60"
+									onclick={resetDraft}
+								>
+									Revert changes to {loadedSnapshot?.revertTargetLabel ?? 'draft'}
+								</button>
+							{/if}
 						</div>
 
 						{#if successMessage}

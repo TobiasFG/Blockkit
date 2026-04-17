@@ -13,14 +13,14 @@ The current layout treats the page body as the primary editing region:
 - From the CMS home list, click Edit on a page card.
 - Update the Title field, choose Parent page, optionally override URL name, then compose page content in the main content region.
 - Use the draft panel in the side rail as the primary source of save state, then use its single primary action button for next step.
-- When edits are unsaved the button shows `Save draft`, when saved draft changes are ready it shows `Publish`, when validation fails it disables as `Validation error`, and when nothing is pending it disables as `All changes saved`.
+- When edits are unsaved the button shows `Save draft`, when saved draft changes are ready it shows `Publish`, when validation fails it stays visible as disabled `Validation error`, and when nothing is pending it disappears instead of showing idle disabled state.
 - Open the `Discovery & Sharing` tab when you need search or sharing metadata.
 - Create and edit content in `/content`, not inside the page editor.
 - Use Content sidebar plus-icon quick add or `Insert into page` context-menu action to append selected content into current page draft.
 - Use block-row `Actions` control to move row, remove it, or open inline content picker for insertion before that row when you do not want to drag.
 - Drag block rows between the visible drop targets to reorder within the current list on wide pointer-capable layouts. The drop targets appear only while dragging.
 - Click content item name or `Edit content` link on placed content row to open dedicated `/content/[id]` editor.
-- Use `Reset draft` to discard unsaved edits and return to the last saved draft state.
+- Use `Revert changes to draft` or `Revert changes to published` to discard unsaved edits and return to whichever version the editor loaded from. Hide this action when no unsaved edits exist.
 - Publish still uses current saved draft only. Unsaved in-form edits must be saved first.
 - Use the `Back to pages` action in the header to return to the list.
 
@@ -40,10 +40,11 @@ The current layout treats the page body as the primary editing region:
 - SEO title is optional and intended to fall back to current published or draft page title if frontend rendering leaves it empty.
 - The initial SEO fields are SEO title, meta description, canonical URL, Open Graph image URL, no-index, and no-follow.
 - The current editor labels these with more editor-facing copy such as “Title for search”, “Preferred link”, and “Image for sharing”.
-- Save, reset, success, and error messaging is grouped in the side rail so content editing stays visually primary.
+- Save, revert, success, and error messaging is grouped in the side rail so content editing stays visually primary.
 - Publish state in the side rail uses three states: `Unpublished`, `Published`, and `Draft changes`.
 - `Last published` in the side rail comes from current published page version.
 - After publish, CMS creates fresh clean draft from newly published revision so page reads as clean until it changes again.
+- Draft-rail action buttons animate in and out as state changes instead of staying mounted as disabled placeholders.
 - Publish creates new published version from current draft identity/content/meta, then creates fresh clean draft clone from that published revision.
 - Draft/action state is intentionally shown in the side rail instead of being repeated in the page header.
 - Search metadata is progressively disclosed behind a collapsible side-rail section so it does not compete with day-to-day content editing.

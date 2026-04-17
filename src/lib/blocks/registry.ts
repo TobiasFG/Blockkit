@@ -28,8 +28,7 @@ export const BLOCK_REGISTRY: Record<string, BlockDefinition> = {
 		fields: [
 			{ key: 'heading', label: 'Heading', type: 'string', required: true },
 			{ key: 'publishedOn', label: 'Published on', type: 'date' },
-			{ key: 'priority', label: 'Priority', type: 'number' },
-			{ key: 'featured', label: 'Featured', type: 'boolean' }
+			{ key: 'priority', label: 'Priority', type: 'number' }
 		]
 	},
 	section: {
