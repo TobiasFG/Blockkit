@@ -362,9 +362,9 @@
 		].join(' ')}
 	>
 		<p class={captionClass}>Delete page</p>
-		<h2 class="mt-2 text-[1.35rem] font-semibold tracking-[-0.03em] text-stone-950">Remove page draft</h2>
+		<h2 class="mt-2 text-[1.35rem] font-semibold tracking-[-0.03em] text-stone-950">Move page to trash</h2>
 		<p class="mt-2 text-sm leading-6 text-stone-600">
-			{pendingDeletePage ? `Delete “${pendingDeletePage.title}” at ${displayPath(pendingDeletePage.path)}.` : ''}
+			{pendingDeletePage ? `Move “${pendingDeletePage.title}” at ${displayPath(pendingDeletePage.path)} to trash. Featured content stays untouched.` : ''}
 		</p>
 
 		<form
@@ -382,7 +382,7 @@
 					if (result.type === 'success') {
 						pageFeedback = {
 							tone: 'success',
-							text: 'Page deleted successfully.'
+							text: 'Page moved to trash.'
 						};
 						closeDeletePageModal();
 					} else if (result.type === 'failure') {
@@ -417,7 +417,7 @@
 				class="inline-flex items-center rounded-full border border-red-300/70 bg-red-50 px-4 py-2 text-sm font-medium text-red-800 transition hover:bg-red-100 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-red-200/70 disabled:cursor-not-allowed disabled:opacity-60"
 				disabled={deletingPage === pendingDeletePage.id}
 			>
-				{deletingPage === pendingDeletePage.id ? 'Deleting...' : 'Delete page'}
+				{deletingPage === pendingDeletePage.id ? 'Moving...' : 'Move to trash'}
 			</button>
 		</form>
 	</div>

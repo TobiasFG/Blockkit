@@ -15,6 +15,7 @@ Purpose: describe how the CMS sidebar derives and renders nested page navigation
 - Sidebar page metadata shows draft path.
 - If draft path differs from live path, the sidebar still keeps page inside draft tree because editor navigation follows draft structure.
 - Dashboard and "New page" remain top-level sidebar actions and are not part of the page tree.
+- `Trash` is also top-level sidebar action and opens dedicated restore surface.
 - `Content` section keeps quick link for folder creation and routes content creation to dedicated library page.
 - Content folders are collapsible and open automatically for active content item's folder ancestry.
 - Content items render as leaf items with block-type badge and link to `/content/[id]`.
@@ -26,6 +27,7 @@ Purpose: describe how the CMS sidebar derives and renders nested page navigation
 - Right-clicking content item in sidebar opens context menu with insert/delete actions, and visible `Actions` trigger opens same menu.
 - Sidebar structural and destructive actions should continue into the same modal pattern used on the dashboard instead of browser `prompt` or `confirm` dialogs.
 - Sidebar content actions report pending, success, and error feedback inline within `Content` section instead of only relying on detached global messaging.
+- Sidebar content delete modal should list affected pages when content is currently in use and label action as moving to trash.
 
 # Constraints
 - The sidebar only shows real pages stored in the CMS.

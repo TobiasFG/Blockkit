@@ -11,7 +11,7 @@ import {
 	updatePageDraftSeoAndContent
 } from '$lib/server/PagesController.server';
 import { getReusableBlocks } from '$lib/server/ReusableBlocksController.server';
-import { error, fail } from '@sveltejs/kit';
+import { error, fail, redirect } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
 
 const getDescendantIds = (pageId: string, pages: Awaited<ReturnType<typeof getPages>>) => {
@@ -35,9 +35,12 @@ const getDescendantIds = (pageId: string, pages: Awaited<ReturnType<typeof getPa
 };
 
 export const load: PageServerLoad = async ({ params }) => {
-	const page = await getPageById(params.id);
+	const page = await getPageById(params.id, { includeDeleted: true });
 	if (!page) {
 		throw error(404, 'Page not found');
+	}
+	if (page.deleted_at) {
+		throw redirect(303, '/trash');
 	}
 
 	const draftVersion = page.draft_version_id ? await getDraftVersionById(page.draft_version_id) : null;

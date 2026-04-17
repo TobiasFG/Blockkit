@@ -24,6 +24,7 @@
         pages={data.pages ?? []}
         blockFolders={data.blockFolders ?? []}
         reusableBlocks={data.reusableBlocks ?? []}
+        reusableBlockPageReferences={data.reusableBlockPageReferences ?? {}}
         user={data.user!}
     >
         {@render children()}

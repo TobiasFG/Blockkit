@@ -16,6 +16,7 @@ Agent note: if you have not read `AGENTS.md` at the repo root yet, do that first
 - `cms/authentication.md` — CMS auth flow, required env vars, route guard architecture, and current access model.
 - `cms/edit-page.md` — CMS edit page behavior, constraints, and draft SEO metadata fields.
 - `cms/reusable-block-library.md` — Content library behavior, storage model, route naming, and editor constraints.
+- `cms/trash.md` — CMS trash route, restore flow, and delete/restore constraints for pages and content.
 - `cms/page-content-model.md` — Initial typed page content shape, block registry, and validation rules.
 - `cms/sidebar-navigation.md` — CMS sidebar page tree behavior and collapse rules.
 

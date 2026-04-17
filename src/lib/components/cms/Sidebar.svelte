@@ -11,7 +11,7 @@
     import { buildEditPagePath, isRootPage } from "$lib/pagePath";
     import { blockFoldersStore, reusableBlocksStore } from "$lib/client/reusableBlocksStore";
     import { Plus } from "$lib/icons";
-    import type { BlockFolder, Page, ReusableBlock } from "$lib/types";
+    import type { BlockFolder, Page, ReferencingPage, ReusableBlock } from "$lib/types";
     import ActionModal from "./ActionModal.svelte";
     import CmsIconButton from "./CmsIconButton.svelte";
     import {
@@ -26,10 +26,11 @@
         collectReusableBlockFolderAncestors,
     } from "./reusableBlocksTree";
 
-    let { pages, blockFolders, reusableBlocks, user, mobileOpen, onClose, logoutEnhanceSubmit } = $props<{
+    let { pages, blockFolders, reusableBlocks, reusableBlockPageReferences, user, mobileOpen, onClose, logoutEnhanceSubmit } = $props<{
         pages: Page[];
         blockFolders: BlockFolder[];
         reusableBlocks: ReusableBlock[];
+        reusableBlockPageReferences: Record<string, ReferencingPage[]>;
         user: User;
         mobileOpen: boolean;
         onClose: () => void;
@@ -62,6 +63,7 @@
                 kind: "deleteBlock";
                 id: string;
                 name: string;
+                references: ReferencingPage[];
           }
         | null
     >(null);
@@ -83,6 +85,7 @@
     const currentReusableBlocks = $derived(
         browser ? ($reusableBlocksStore ?? reusableBlocks) : reusableBlocks,
     );
+    let currentReusableBlockPageReferences = $state<Record<string, ReferencingPage[]>>({});
     const activePageId = $derived(
         currentPages.find((entry: Page) => isActive(editHref(entry.id)))?.id ?? null,
     );
@@ -112,12 +115,16 @@
     const applySidebarState = (result: {
         blockFolders?: BlockFolder[];
         reusableBlocks?: ReusableBlock[];
+        reusableBlockPageReferences?: Record<string, ReferencingPage[]>;
     }) => {
         if (result.blockFolders) {
             blockFoldersStore.set(result.blockFolders);
         }
         if (result.reusableBlocks) {
             reusableBlocksStore.set(result.reusableBlocks);
+        }
+        if (result.reusableBlockPageReferences) {
+            currentReusableBlockPageReferences = result.reusableBlockPageReferences;
         }
     };
 
@@ -153,7 +160,7 @@
                         : payload.intent === "deleteBlockFolder"
                           ? "Folder deleted."
                           : payload.intent === "deleteReusableBlock"
-                            ? "Content deleted."
+                            ? "Content moved to trash."
                             : "Sidebar action completed.",
             };
 
@@ -196,6 +203,7 @@
             kind: "deleteBlock",
             id,
             name,
+            references: currentReusableBlockPageReferences[id] ?? [],
         };
     };
 
@@ -227,6 +235,10 @@
         return () => {
             mediaQuery.removeEventListener("change", updateDragMode);
         };
+    });
+
+    $effect(() => {
+        currentReusableBlockPageReferences = reusableBlockPageReferences ?? {};
     });
 
     $effect(() => {
@@ -315,6 +327,30 @@
                         <path d="M12 5v14M5 12h14" />
                     </svg>
                     New page
+                </a>
+
+                <a
+                    href="/trash"
+                    class={[
+                        "flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition",
+                        isActive("/trash")
+                            ? "bg-slate-100 text-slate-900"
+                            : "text-slate-700 hover:bg-slate-100",
+                    ].join(" ")}
+                    onclick={onClose}
+                >
+                    <svg
+                        viewBox="0 0 24 24"
+                        class="h-4 w-4"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                    >
+                        <path d="M3 6h18" />
+                        <path d="M8 6V4h8v2" />
+                        <path d="M6 6l1 14h10l1-14" />
+                    </svg>
+                    Trash
                 </a>
             </div>
 
@@ -545,7 +581,9 @@
             : modalState?.kind === "deleteFolder"
                 ? `Delete “${modalState.name}” only if it has no child folders and no content items.`
               : modalState?.kind === "deleteBlock"
-                ? `Delete “${modalState.name}” and remove its draft page references.`
+                ? modalState.references.length > 0
+                    ? `Move “${modalState.name}” to trash and remove it from published and draft pages that use it.`
+                    : `Move “${modalState.name}” to trash.`
                 : null
     }
     onClose={closeModal}
@@ -632,32 +670,46 @@
             </button>
         </div>
     {:else if modalState?.kind === "deleteBlock"}
-        <div class="flex items-center justify-end gap-2">
-            <button
-                type="button"
-                class="inline-flex items-center rounded-md border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
-                onclick={closeModal}
-            >
-                Cancel
-            </button>
-            <button
-                type="button"
-                class="inline-flex items-center rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm font-medium text-red-700 transition hover:bg-red-100 disabled:cursor-not-allowed disabled:opacity-60"
-                disabled={actionPending}
-                onclick={() => {
-                    if (modalState?.kind !== "deleteBlock") {
-                        return;
-                    }
+        <div class="space-y-4">
+            {#if modalState.references.length > 0}
+                <ul class="max-h-56 space-y-2 overflow-y-auto rounded-2xl border border-slate-200 bg-slate-50 p-3 text-sm text-slate-700">
+                    {#each modalState.references as page (page.id)}
+                        <li class="rounded-xl bg-white px-3 py-2 shadow-sm">{page.title} <span class="text-slate-500">({page.path})</span></li>
+                    {/each}
+                </ul>
+            {:else}
+                <div class="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600">
+                    No pages currently reference this content item.
+                </div>
+            {/if}
 
-                    void runSidebarAction({
-                        intent: "deleteReusableBlock",
-                        id: modalState.id,
-                    });
-                    closeModal();
-                }}
-            >
-                Delete block
-            </button>
+            <div class="flex items-center justify-end gap-2">
+                <button
+                    type="button"
+                    class="inline-flex items-center rounded-md border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
+                    onclick={closeModal}
+                >
+                    Cancel
+                </button>
+                <button
+                    type="button"
+                    class="inline-flex items-center rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm font-medium text-red-700 transition hover:bg-red-100 disabled:cursor-not-allowed disabled:opacity-60"
+                    disabled={actionPending}
+                    onclick={() => {
+                        if (modalState?.kind !== "deleteBlock") {
+                            return;
+                        }
+
+                        void runSidebarAction({
+                            intent: "deleteReusableBlock",
+                            id: modalState.id,
+                        });
+                        closeModal();
+                    }}
+                >
+                    {modalState.references.length > 0 ? "Move to trash anyway" : "Move to trash"}
+                </button>
+            </div>
         </div>
     {/if}
 </ActionModal>

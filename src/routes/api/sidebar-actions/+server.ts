@@ -4,7 +4,7 @@ import { getReusableBlockPageReferences, removeReusableBlockReferencesFromPages 
 import {
 	createBlockFolder,
 	deleteBlockFolder,
-	deleteReusableBlock,
+	softDeleteReusableBlock,
 	getBlockFolders,
 	getReusableBlocks
 } from '$lib/server/ReusableBlocksController.server';
@@ -72,7 +72,7 @@ export const POST = async ({ request, locals }) => {
 					}
 
 					await removeReusableBlockReferencesFromPages(id);
-					await deleteReusableBlock(id);
+					await softDeleteReusableBlock(id);
 					return json(await getSidebarState());
 				}
 			}

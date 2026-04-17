@@ -19,6 +19,7 @@ type PageShellRow = {
 	updated_at: string;
 	draft_version_id: string | null;
 	published_version_id: string | null;
+	deleted_at: string | null;
 };
 
 type PageVersionRow = {
@@ -94,7 +95,8 @@ const parsePage = (
 		published_version_id: row.published_version_id,
 		has_unpublished_changes: draftVersion !== null && (!isPublished || !pageVersionsMatch(draftVersion, publishedVersion)),
 		is_published: isPublished,
-		last_published_at: publishedVersion?.published_at ?? null
+		last_published_at: publishedVersion?.published_at ?? null,
+		deleted_at: row.deleted_at
 	};
 };
 
@@ -140,6 +142,27 @@ const parsePages = async (rows: PageShellRow[]) => {
 	const { draftPathMap, publishedPathMap } = buildPathMaps(rows, versionsById);
 
 	return rows.map((row) => parsePage(row, versionsById, draftPathMap, publishedPathMap));
+};
+
+const getPageRows = async ({
+	includeDeleted = false,
+	deletedOnly = false
+}: {
+	includeDeleted?: boolean;
+	deletedOnly?: boolean;
+} = {}) => {
+	let query = supabaseAdmin.from(TABLE).select('*').order('created_at');
+
+	if (deletedOnly) {
+		query = query.not('deleted_at', 'is', null);
+	} else if (!includeDeleted) {
+		query = query.is('deleted_at', null);
+	}
+
+	const { data, error } = await query;
+	if (error) throw error;
+
+	return (data ?? []) as PageShellRow[];
 };
 
 const touchPageShell = async (pageId: string) => {
@@ -191,6 +214,17 @@ const pageContentReferencesReusableBlock = (blocks: PageBlockNode[], reusableBlo
 		(block) => isReusableBlockReference(block) && block.reusableBlockId === reusableBlockId
 	);
 
+const removeReusableBlockReferencesFromPageContent = (
+	content: PageContent,
+	reusableBlockId: string
+): PageContent => ({
+	version: 1,
+	layout: content.layout,
+	blocks: content.blocks.filter(
+		(block) => !(isReusableBlockReference(block) && block.reusableBlockId === reusableBlockId)
+	)
+});
+
 export const createPage = async ({
 	title,
 	parentPageId,
@@ -232,20 +266,26 @@ export const createPage = async ({
 	return (await getPageById(pageId)) as Page;
 };
 
-export const deletePageById = async (id: string): Promise<void> => {
-	const { error } = await supabaseAdmin.from(TABLE).delete().eq('id', id);
+export const softDeletePageById = async (id: string): Promise<void> => {
+	const { error } = await supabaseAdmin
+		.from(TABLE)
+		.update({ deleted_at: new Date().toISOString() })
+		.eq('id', id)
+		.is('deleted_at', null);
 	if (error) throw error;
 };
 
 export const getPages = async (): Promise<Page[]> => {
-	const { data, error } = await supabaseAdmin.from(TABLE).select('*').order('created_at');
-	if (error) throw error;
-
-	return parsePages((data ?? []) as PageShellRow[]);
+	return parsePages(await getPageRows());
 };
 
-export const getPageById = async (id: string): Promise<Page | null> => {
-	const pages = await getPages();
+export const getDeletedPages = async (): Promise<Page[]> => parsePages(await getPageRows({ deletedOnly: true }));
+
+export const getPageById = async (
+	id: string,
+	{ includeDeleted = false }: { includeDeleted?: boolean } = {}
+): Promise<Page | null> => {
+	const pages = await parsePages(await getPageRows({ includeDeleted }));
 	return pages.find((page) => page.id === id) ?? null;
 };
 
@@ -278,6 +318,8 @@ export const getDraftVersionById = async (id: string): Promise<PageDraftVersion 
 		published_at: data.published_at
 	};
 };
+
+const getPageVersionById = async (id: string): Promise<PageDraftVersion | null> => getDraftVersionById(id);
 
 export const updatePageShell = async (
 	id: string,
@@ -314,10 +356,19 @@ export const getPagesReferencingReusableBlock = async (
 	const matches: ReferencingPage[] = [];
 
 	for (const page of pages) {
-		if (!page.draft_version_id) continue;
-		const draftVersion = await getDraftVersionById(page.draft_version_id);
-		if (!draftVersion) continue;
-		if (pageContentReferencesReusableBlock(draftVersion.content.blocks, reusableBlockId)) {
+		let hasReference = false;
+
+		for (const versionId of [page.draft_version_id, page.published_version_id]) {
+			if (!versionId) continue;
+			const version = await getPageVersionById(versionId);
+			if (!version) continue;
+			if (pageContentReferencesReusableBlock(version.content.blocks, reusableBlockId)) {
+				hasReference = true;
+				break;
+			}
+		}
+
+		if (hasReference) {
 			matches.push({
 				id: page.id,
 				title: page.title,
@@ -329,19 +380,34 @@ export const getPagesReferencingReusableBlock = async (
 	return matches;
 };
 
+export const getDeletedPagesReferencingParent = async (parentPageId: string): Promise<ReferencingPage[]> => {
+	const pages = await getDeletedPages();
+	return pages
+		.filter((page) => page.parent_page_id === parentPageId)
+		.map((page) => ({ id: page.id, title: page.title, path: page.path }));
+};
+
 export const getReusableBlockPageReferences = async (): Promise<Record<string, ReferencingPage[]>> => {
 	const pages = await getPages();
 	const references: Record<string, ReferencingPage[]> = {};
 
 	for (const page of pages) {
-		if (!page.draft_version_id) continue;
-		const draftVersion = await getDraftVersionById(page.draft_version_id);
-		if (!draftVersion) continue;
+		const pageBlockIds = new Set<string>();
 
-		for (const block of draftVersion.content.blocks) {
-			if (!isReusableBlockReference(block)) continue;
-			references[block.reusableBlockId] ??= [];
-			references[block.reusableBlockId].push({
+		for (const versionId of [page.draft_version_id, page.published_version_id]) {
+			if (!versionId) continue;
+			const version = await getPageVersionById(versionId);
+			if (!version) continue;
+
+			for (const block of version.content.blocks) {
+				if (!isReusableBlockReference(block)) continue;
+				pageBlockIds.add(block.reusableBlockId);
+			}
+		}
+
+		for (const blockId of pageBlockIds) {
+			references[blockId] ??= [];
+			references[blockId].push({
 				id: page.id,
 				title: page.title,
 				path: page.path
@@ -358,21 +424,19 @@ export const removeReusableBlockReferencesFromPages = async (
 	const pages = await getPagesReferencingReusableBlock(reusableBlockId);
 
 	for (const page of pages) {
-		const fullPage = await getPageById(page.id);
-		if (!fullPage?.draft_version_id) continue;
+		const fullPage = await getPageById(page.id, { includeDeleted: true });
+		if (!fullPage) continue;
 
-		const draftVersion = await getDraftVersionById(fullPage.draft_version_id);
-		if (!draftVersion) continue;
+		for (const versionId of [fullPage.draft_version_id, fullPage.published_version_id]) {
+			if (!versionId) continue;
+			const version = await getPageVersionById(versionId);
+			if (!version) continue;
 
-		const nextContent: PageContent = {
-			version: 1,
-			layout: null,
-			blocks: draftVersion.content.blocks.filter(
-				(block) => !(isReusableBlockReference(block) && block.reusableBlockId === reusableBlockId)
-			)
-		};
-
-		await updateDraftVersionContent(draftVersion.id, nextContent);
+			await updateDraftVersionContent(
+				version.id,
+				removeReusableBlockReferencesFromPageContent(version.content, reusableBlockId)
+			);
+		}
 	}
 
 	return pages;
@@ -490,4 +554,68 @@ export const publishPage = async (page: Page): Promise<Page> => {
 	});
 	await touchPageShell(page.id);
 	return (await getPageById(page.id)) as Page;
+};
+
+export const ensurePageCanBeDeleted = async (id: string): Promise<void> => {
+	const pages = await getPages();
+	if (pages.some((page) => page.parent_page_id === id)) {
+		throw new Error('Page with child pages cannot be moved to trash');
+	}
+};
+
+export const restorePageById = async (id: string, parentPageId: string | null): Promise<Page> => {
+	const page = await getPageById(id, { includeDeleted: true });
+	if (!page) {
+		throw new Error('Page not found');
+	}
+
+	if (!page.deleted_at) {
+		throw new Error('Page is not in trash');
+	}
+
+	if (page.parent_page_id === null) {
+		throw new Error('Root page cannot be restored from trash');
+	}
+
+	const nextParentId = parentPageId ?? page.parent_page_id;
+	if (!nextParentId) {
+		throw new Error('Parent page is required');
+	}
+
+	const parentPage = await getPageById(nextParentId);
+	if (!parentPage) {
+		throw new Error('Selected parent page not found');
+	}
+
+	const activePages = await getPages();
+	if (
+		activePages.some(
+			(activePage) =>
+				activePage.parent_page_id === nextParentId &&
+				(activePage.path_segment === page.path_segment ||
+					(page.published_path_segment && activePage.published_path_segment === page.published_path_segment))
+		)
+	) {
+		throw new Error('Another page already uses this URL under selected parent');
+	}
+
+	const { error: pageError } = await supabaseAdmin
+		.from(TABLE)
+		.update({ deleted_at: null, updated_at: new Date().toISOString() })
+		.eq('id', id);
+	if (pageError) throw pageError;
+
+	for (const versionId of [page.draft_version_id, page.published_version_id]) {
+		if (!versionId) continue;
+		const version = await getPageVersionById(versionId);
+		if (!version || version.parent_page_id === nextParentId) continue;
+
+		const { error: versionError } = await supabaseAdmin
+			.from(PAGE_VERSIONS_TABLE)
+			.update({ parent_page_id: nextParentId })
+			.eq('id', version.id);
+		if (versionError) throw versionError;
+	}
+
+	return (await getPageById(id)) as Page;
 };

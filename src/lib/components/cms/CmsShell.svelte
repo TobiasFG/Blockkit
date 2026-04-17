@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { applyAction } from '$app/forms';
-	import type { BlockFolder, Page, ReusableBlock } from '$lib/types';
+	import type { BlockFolder, Page, ReferencingPage, ReusableBlock } from '$lib/types';
 	import { goto } from '$app/navigation';
 	import type { SubmitFunction } from '@sveltejs/kit';
 	import type { User } from '@supabase/supabase-js';
@@ -8,10 +8,11 @@
 	import type { Snippet } from 'svelte';
 	import Sidebar from './Sidebar.svelte';
 
-	let { pages, blockFolders, reusableBlocks, user, children } = $props<{
+	let { pages, blockFolders, reusableBlocks, reusableBlockPageReferences, user, children } = $props<{
 		pages: Page[];
 		blockFolders: BlockFolder[];
 		reusableBlocks: ReusableBlock[];
+		reusableBlockPageReferences: Record<string, ReferencingPage[]>;
 		user: User;
 		children: Snippet;
 	}>();
@@ -112,6 +113,7 @@
 				pages={pages}
 				blockFolders={blockFolders}
 				reusableBlocks={reusableBlocks}
+				reusableBlockPageReferences={reusableBlockPageReferences}
 				user={user}
 				mobileOpen={mobileOpen}
 				onClose={closeMobile}

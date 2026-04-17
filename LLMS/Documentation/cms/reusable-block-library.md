@@ -28,9 +28,11 @@ Content items use draft/publish workflow so editor can save changes without chan
 - Pages can reference content items as top-level page-content nodes from page editor.
 - Page references continue storing stable content id and should resolve to published content.
 - Content-item and folder deletion should use same confirmation-modal pattern across dashboard and sidebar.
+- Content delete now means `Move to trash`, with restore handled from dedicated `/trash` route.
 
 # Constraints
 - Folder deletion is only allowed when folder has no child folders and no content items.
 - Content validation uses shared block registry, including nested `allowedTypes` restrictions.
-- Deleting content now shows confirmation modal listing pages that reference it and removes those live references from affected draft pages as part of delete flow.
+- Deleting content now shows confirmation modal listing pages that reference it and removes those references from both published and draft pages immediately as part of delete flow.
 - Unpublished content items do not have live content yet, so any live-resolution path must treat them as unavailable until published.
+- Restoring deleted content does not reinsert removed page references automatically.

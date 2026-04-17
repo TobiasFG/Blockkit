@@ -67,8 +67,30 @@ const parseReusableBlock = (
 		is_published: publishedVersionId !== null,
 		last_published_at: publishedVersion?.published_at ?? null,
 		created_at: String(data.created_at ?? ''),
-		updated_at: String(data.updated_at ?? '')
+		updated_at: String(data.updated_at ?? ''),
+		deleted_at: (data.deleted_at as string | null) ?? null
 	};
+};
+
+const getReusableBlockRows = async ({
+	includeDeleted = false,
+	deletedOnly = false
+}: {
+	includeDeleted?: boolean;
+	deletedOnly?: boolean;
+} = {}) => {
+	let query = supabaseAdmin.from(BLOCKS_TABLE).select('*').order('created_at');
+
+	if (deletedOnly) {
+		query = query.not('deleted_at', 'is', null);
+	} else if (!includeDeleted) {
+		query = query.is('deleted_at', null);
+	}
+
+	const { data, error } = await query;
+	if (error) throw error;
+
+	return (data ?? []) as Array<Record<string, unknown>>;
 };
 
 const getVersionRowsById = async (versionIds: string[]): Promise<Map<string, ReusableBlockVersionRow>> => {
@@ -97,13 +119,7 @@ export const getBlockFolders = async (): Promise<BlockFolder[]> => {
 };
 
 export const getReusableBlocks = async (): Promise<ReusableBlock[]> => {
-	const { data, error } = await supabaseAdmin
-		.from(BLOCKS_TABLE)
-		.select('*')
-		.order('created_at');
-
-	if (error) throw error;
-	const rows = (data ?? []) as Array<Record<string, unknown>>;
+	const rows = await getReusableBlockRows();
 	const versionsById = await getVersionRowsById(
 		rows.flatMap((item) => [
 			String(item.draft_version_id ?? ''),
@@ -113,8 +129,26 @@ export const getReusableBlocks = async (): Promise<ReusableBlock[]> => {
 	return rows.map((item) => parseReusableBlock(item, versionsById));
 };
 
-export const getReusableBlockById = async (id: string): Promise<ReusableBlock | null> => {
-	const { data, error } = await supabaseAdmin.from(BLOCKS_TABLE).select('*').eq('id', id).maybeSingle();
+export const getDeletedReusableBlocks = async (): Promise<ReusableBlock[]> => {
+	const rows = await getReusableBlockRows({ deletedOnly: true });
+	const versionsById = await getVersionRowsById(
+		rows.flatMap((item) => [
+			String(item.draft_version_id ?? ''),
+			String(item.published_version_id ?? '')
+		])
+	);
+	return rows.map((item) => parseReusableBlock(item, versionsById));
+};
+
+export const getReusableBlockById = async (
+	id: string,
+	{ includeDeleted = false }: { includeDeleted?: boolean } = {}
+): Promise<ReusableBlock | null> => {
+	let query = supabaseAdmin.from(BLOCKS_TABLE).select('*').eq('id', id);
+	if (!includeDeleted) {
+		query = query.is('deleted_at', null);
+	}
+	const { data, error } = await query.maybeSingle();
 	if (error) throw error;
 	if (!data) return null;
 	const versionsById = await getVersionRowsById([
@@ -201,9 +235,28 @@ export const createReusableBlock = async (
 	return block;
 };
 
-export const deleteReusableBlock = async (id: string): Promise<void> => {
-	const { error } = await supabaseAdmin.from(BLOCKS_TABLE).delete().eq('id', id);
+export const softDeleteReusableBlock = async (id: string): Promise<void> => {
+	const { error } = await supabaseAdmin
+		.from(BLOCKS_TABLE)
+		.update({ deleted_at: new Date().toISOString() })
+		.eq('id', id)
+		.is('deleted_at', null);
 	if (error) throw error;
+};
+
+export const restoreReusableBlock = async (id: string): Promise<ReusableBlock> => {
+	const { error } = await supabaseAdmin
+		.from(BLOCKS_TABLE)
+		.update({ deleted_at: null, updated_at: new Date().toISOString() })
+		.eq('id', id);
+	if (error) throw error;
+
+	const block = await getReusableBlockById(id);
+	if (!block) {
+		throw new Error('Content not found after restore');
+	}
+
+	return block;
 };
 
 export const updateReusableBlock = async (

@@ -5,10 +5,11 @@ import { validatePagePathInput } from '$lib/pagePath';
 import { requireAuthenticatedUser } from '$lib/server/auth';
 import {
 	createPage,
-	deletePageById,
+	ensurePageCanBeDeleted,
 	draftPathSegmentExists,
 	getPageById,
-	getPages
+	getPages,
+	softDeletePageById
 } from '$lib/server/PagesController.server';
 import type { Page } from '$lib/types';
 
@@ -107,7 +108,8 @@ export const actions = {
 				return fail(400, { error: 'Root page cannot be deleted' });
 			}
 
-			await deletePageById(pageId);
+			await ensurePageCanBeDeleted(pageId);
+			await softDeletePageById(pageId);
 			return {
 				success: true,
 				pages: await getDashboardPages()

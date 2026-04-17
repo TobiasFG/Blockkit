@@ -13,5 +13,7 @@ Guidelines:
 - Do not copy design review points, open questions, risks, or follow-ups here unless they are actual future suggestions that belong in this file.
 
 # Suggestions
+- we currently have a "reset draft" button when editing pages or content, i do not like that, if something have changed, there should be a button saying revert changes to draft/published depending on whether the orignally displayed content was draft or published
+- I would like to get started on the feature where users can also manage media like images and videos in the content area. These should be stored in supabase and it should then be possible to use them in content blocks or on pages' seo. When creating new media content it should be possible to either upload a media file or provide a link. It should be possible to preview media content by clicking on it.
 
 # Bugs

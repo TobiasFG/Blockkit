@@ -8,7 +8,7 @@ import {
 	updateBlockFolder,
 	updateReusableBlock
 } from '$lib/server/ReusableBlocksController.server';
-import { error, fail } from '@sveltejs/kit';
+import { error, fail, redirect } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
 
 const isDescendantFolder = (folders: Awaited<ReturnType<typeof getBlockFolders>>, id: string, target: string) => {
@@ -23,10 +23,13 @@ const isDescendantFolder = (folders: Awaited<ReturnType<typeof getBlockFolders>>
 };
 
 export const load: PageServerLoad = async ({ params }) => {
-	const block = await getReusableBlockById(params.id);
+	const block = await getReusableBlockById(params.id, { includeDeleted: true });
 
 	if (!block) {
 		throw error(404, 'Content not found');
+	}
+	if (block.deleted_at) {
+		throw redirect(303, '/trash');
 	}
 
 	return {

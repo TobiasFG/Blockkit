@@ -26,9 +26,9 @@ Purpose: define first trash/restore workflow for pages and content so delete bec
 - In-use content:
   - Delete modal shows dependency warning with concrete usage list.
   - Primary action label becomes `Move to trash anyway`.
-  - Copy explains affected pages will lose live/draft references while item stays restorable from trash.
+  - Copy explains affected pages will lose live/draft references immediately while item stays restorable from trash.
 - Page with children:
-  - Keep current protective rule unless user explicitly wants subtree trash. First pass blocks delete when page has child pages.
+  - First pass blocks delete when page has child pages.
 - Root page:
   - Still cannot delete.
 
@@ -47,7 +47,7 @@ Purpose: define first trash/restore workflow for pages and content so delete bec
 ## Restore behavior
 - Restoring page/content clears deleted marker, restores visibility in normal CMS lists, preserves draft/published pointers.
 - If original parent page or folder is deleted/missing:
-  - Page restore becomes blocked until parent restored or reassigned.
+  - Page restore allows picking a new active parent.
   - Content restore falls back to no folder if folder missing.
 - If restoring content whose references were stripped from pages at delete time:
   - Do not auto-reinsert references in first pass.
@@ -75,8 +75,8 @@ Purpose: define first trash/restore workflow for pages and content so delete bec
 # Dependency handling
 ## Content usage detection
 - Reuse page-reference lookup already used by delete modal.
-- Before soft delete, remove content references from draft page content so editors do not keep invalid refs in editable drafts.
-- Published page output should also stop resolving deleted content. Since page rendering uses published content ids, deleted content must resolve as unavailable and render nothing or error upstream; implementation should prefer stripping draft refs plus treating deleted live content as unresolved.
+- Before soft delete, remove content references from both draft and published page content so deletion takes effect immediately everywhere it is used.
+- Current content model does not support content-to-content references. If that model changes later, same immediate-removal rule should extend there too.
 
 ## Page usage detection
 - Child pages count as dependency.
@@ -105,11 +105,6 @@ Purpose: define first trash/restore workflow for pages and content so delete bec
   - `LLMS/Documentation/cms/sidebar-navigation.md`
 - Add trash doc if route gets enough behavior to justify standalone page.
 
-# Review points
-- Should first pass block page deletion when page has children, or should it move whole subtree to trash together?
-- Should restore require exact original parent for pages, or allow picking new parent inline during restore?
-- Should deleted content keep published rendering alive until references are manually removed, or should delete always unpublish/remove immediately as proposed here?
-
 # Open questions
 - Do we want `deleted_by` surfaced in UI now, or skip until audit trail matters?
 - Is folder trash needed immediately for content management, or can folder delete remain current empty-folder hard delete rule?
@@ -127,5 +122,7 @@ Purpose: define first trash/restore workflow for pages and content so delete bec
 # Proposed defaults
 - First pass blocks page delete when children exist.
 - First pass soft-deletes pages and content only.
+- First pass removes deleted content from published and draft pages immediately.
+- First pass restores pages with explicit parent picker.
 - First pass restores content without auto-relinking removed page refs.
 - First pass skips `deleted_by` unless auth plumbing cost is tiny.

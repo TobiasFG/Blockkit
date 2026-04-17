@@ -20,6 +20,7 @@ export type Page = {
 	has_unpublished_changes?: boolean;
 	is_published?: boolean;
 	last_published_at?: string | null;
+	deleted_at?: string | null;
 };
 
 export type ReferencingPage = Pick<Page, 'id' | 'title' | 'path'>;
@@ -63,4 +64,5 @@ export type ReusableBlock = {
 	last_published_at: string | null;
 	created_at: string;
 	updated_at: string;
+	deleted_at?: string | null;
 };

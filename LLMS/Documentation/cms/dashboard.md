@@ -6,6 +6,7 @@ Purpose: describe CMS dashboard landing page as page-first surface with lightwei
 - The dashboard shows computed draft path preview before page creation.
 - Use the `Pages` section to open the most urgent draft work first, then the most recently updated pages.
 - Use Content summary only as link into Content library.
+- Use `Trash` from sidebar when you need to restore deleted pages or content.
 
 # Behavior
 - The dashboard copy should speak to editors and marketers rather than exposing scaffold or implementation wording.
@@ -18,6 +19,9 @@ Purpose: describe CMS dashboard landing page as page-first surface with lightwei
 - Page create/delete feedback is shown inside the `Pages` section near the new-page form instead of sharing a site-wide dashboard message area.
 - Pending states should be reflected on the action button that triggered the request when practical, including page creation and destructive actions.
 - Destructive actions on the dashboard should use the same confirmation-modal pattern for pages instead of deleting immediately on click.
+- Page delete now means `Move to trash`, not permanent removal.
+- Moving a page to trash must not delete content featured on that page.
+- Pages with child pages cannot be moved to trash in first pass.
 - Dashboard should feel visually aligned with page/content editors: warm-neutral light surfaces, restrained metadata labels, and no dark promotional hero treatment.
 
 # Constraints

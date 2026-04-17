@@ -5,7 +5,7 @@ import {
 	createBlockFolder,
 	createReusableBlock,
 	deleteBlockFolder,
-	deleteReusableBlock,
+	softDeleteReusableBlock,
 	getBlockFolders,
 	getReusableBlocks
 } from '$lib/server/ReusableBlocksController.server';
@@ -144,7 +144,7 @@ export const actions = {
 
 		try {
 			const pagesReferencingDeletedBlock = await removeReusableBlockReferencesFromPages(id);
-			await deleteReusableBlock(id);
+			await softDeleteReusableBlock(id);
 			return {
 				blockFolders: await getBlockFolders(),
 				reusableBlocks: await getReusableBlocks(),

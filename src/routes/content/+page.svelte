@@ -80,6 +80,10 @@
 		modalState = null;
 		deletePending = false;
 	};
+
+	$effect(() => {
+		reusableBlockPageReferences = data.reusableBlockPageReferences ?? {};
+	});
 </script>
 
 <svelte:head>
@@ -378,7 +382,9 @@
 		modalState?.kind === 'deleteFolder'
 			? `Delete “${modalState.name}” only if it has no child folders and no content items.`
 			: modalState?.kind === 'deleteBlock'
-				? `Deleting “${modalState.name}” will remove its live references from the following pages:`
+				? modalState.references.length > 0
+					? `Moving “${modalState.name}” to trash will remove it from published and draft pages using it:`
+					: `Move “${modalState.name}” to trash.`
 				: null
 	}
 	onClose={closeModal}
@@ -441,7 +447,7 @@
 				</ul>
 			{:else}
 				<div class="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600">
-					No draft pages currently reference this content item.
+					No pages currently reference this content item.
 				</div>
 			{/if}
 
@@ -466,7 +472,7 @@
 							if (result.type === 'success' && result.data) {
 								feedback = {
 									tone: 'success',
-									text: 'Content deleted.'
+									text: 'Content moved to trash.'
 								};
 								syncLibraryState(result.data as Record<string, unknown>);
 								closeModal();
@@ -488,7 +494,7 @@
 						class="inline-flex items-center rounded-2xl border border-red-200 bg-red-50 px-4 py-2.5 text-sm font-semibold text-red-700 transition hover:bg-red-100 disabled:cursor-not-allowed disabled:opacity-60"
 						disabled={deletePending}
 					>
-						{deletePending ? 'Deleting...' : 'Delete content'}
+						{deletePending ? 'Moving...' : modalState.references.length > 0 ? 'Move to trash anyway' : 'Move to trash'}
 					</button>
 				</form>
 			</div>
