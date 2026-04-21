@@ -1,6 +1,7 @@
 <script lang="ts">
 	import Self from './ReusableBlockLibraryTreeItem.svelte';
 	import type { ReusableBlocksTreeNode } from '$lib/components/cms/reusableBlocksTree';
+	import { getReusableBlockPublishState } from '$lib/reusableBlockStatus';
 
 	type Props = {
 		node: ReusableBlocksTreeNode;
@@ -23,6 +24,16 @@
 	const hasChildren = $derived(node.folders.length > 0 || node.blocks.length > 0);
 	const nodeId = $derived(node.folder?.id ?? '');
 	const isOpen = $derived(node.folder ? !closedNodes[nodeId] : true);
+	const getStateMeta = (state: 'unpublished' | 'published' | 'draft-changes') => {
+		switch (state) {
+			case 'draft-changes':
+				return { label: 'Saved draft', className: 'bg-sky-100 text-sky-800' };
+			case 'published':
+				return { label: 'Published', className: 'bg-emerald-100 text-emerald-800' };
+			default:
+				return { label: 'Unpublished', className: 'bg-amber-100 text-amber-800' };
+		}
+	};
 </script>
 
 {#if node.folder}
@@ -99,6 +110,7 @@
 				{/each}
 
 				{#each node.blocks as block (block.id)}
+					{@const stateMeta = getStateMeta(getReusableBlockPublishState(block))}
 					<div
 						class="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white px-4 py-3 shadow-[0_12px_36px_-28px_rgba(15,23,42,0.45)]"
 						style={`margin-left: ${(depth + 1) * 1.1}rem`}
@@ -106,11 +118,9 @@
 						<a href={`/content/${block.id}`} class="min-w-0 flex-1">
 							<div class="flex items-center gap-2">
 								<span class="truncate font-medium text-slate-900">{block.name}</span>
-								{#if !block.is_published || block.has_unpublished_changes}
-									<span class="rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.2em] text-amber-800">
-										Draft
-									</span>
-								{/if}
+								<span class={`rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.2em] ${stateMeta.className}`}>
+									{stateMeta.label}
+								</span>
 							</div>
 							<div class="mt-1 flex items-center gap-2 text-xs text-slate-500">
 								<span class="rounded-full bg-slate-100 px-2 py-0.5 font-semibold uppercase tracking-[0.2em] text-slate-600">

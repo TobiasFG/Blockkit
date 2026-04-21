@@ -19,7 +19,7 @@ Purpose: describe how the CMS sidebar derives and renders nested page navigation
 - `Content` section keeps quick link for folder creation and routes content creation to dedicated library page.
 - Content folders are collapsible and open automatically for active content item's folder ancestry.
 - Content items render as leaf items with block-type badge and link to `/content/[id]`.
-- Content items also show lightweight draft-status badge when unpublished or when they have unpublished draft changes.
+- Content items also show lightweight publish-state badge: `Unpublished`, `Published`, or `Saved draft`.
 - When page editor is open, content rows also expose a compact plus-icon quick-add control and `Insert into page` context-menu action that append live content reference into current draft.
 - Content folders and rows also expose visible `Actions` trigger so same operations remain available even when right-click/context-menu behavior is unreliable.
 - On wide pointer-capable page-editor layouts, content rows also act as drag sources so editors can drop them into explicit top-level page-editor insertion targets.

@@ -1,0 +1,2 @@
+When creating new things in the lib folder please follow these rules:
+- Package things in features: for example when creating a new system for toasts, package everything neatly into a "Toasts" folder and organize things in meaningful subfolders, for example a "Components" folder for UI elements.

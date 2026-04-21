@@ -11,6 +11,7 @@
     import { buildEditPagePath, isRootPage } from "$lib/pagePath";
     import { blockFoldersStore, reusableBlocksStore } from "$lib/client/reusableBlocksStore";
     import { Plus } from "$lib/icons";
+    import { getReusableBlockPublishState } from "$lib/reusableBlockStatus";
     import type { BlockFolder, Page, ReferencingPage, ReusableBlock } from "$lib/types";
     import ActionModal from "./ActionModal.svelte";
     import CmsIconButton from "./CmsIconButton.svelte";
@@ -100,6 +101,18 @@
     const reusableBlocksTree = $derived(
         buildReusableBlocksTree(currentBlockFolders, currentReusableBlocks),
     );
+    const getReusableBlockStateMeta = (
+        state: "unpublished" | "published" | "draft-changes",
+    ) => {
+        switch (state) {
+            case "draft-changes":
+                return { label: "Saved draft", className: "bg-sky-100 text-sky-800" };
+            case "published":
+                return { label: "Published", className: "bg-emerald-100 text-emerald-800" };
+            default:
+                return { label: "Unpublished", className: "bg-amber-100 text-amber-800" };
+        }
+    };
 
     const toggleNode = (pageId: string) => {
         closedNodes = {
@@ -427,6 +440,7 @@
                             />
                         {/each}
                         {#each reusableBlocksTree.blocks as block (block.id)}
+                            {@const stateMeta = getReusableBlockStateMeta(getReusableBlockPublishState(block))}
                             <div
                                 class={[
                                     "flex min-w-0 items-center justify-between gap-2 rounded-md px-3 py-2 text-sm transition",
@@ -446,11 +460,9 @@
                                         >
                                             <span class="min-w-0 flex-1 truncate font-medium">{block.name}</span>
                                             <div class="flex shrink-0 items-center gap-1.5">
-                                                {#if !block.is_published || block.has_unpublished_changes}
-                                                    <span class="rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-amber-800">
-                                                        Draft
-                                                    </span>
-                                                {/if}
+                                                <span class={`rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide ${stateMeta.className}`}>
+                                                    {stateMeta.label}
+                                                </span>
                                                 <span class="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-slate-500">
                                                     {block.block_type}
                                                 </span>

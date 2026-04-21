@@ -7,6 +7,7 @@
 	import BlockListEditor from '$lib/components/cms/BlockListEditor.svelte';
 	import type { BlockListLocation, BlockPath } from '$lib/pageContentEditor';
 	import type { BlockInstance, BlockValue } from '$lib/pageContent';
+	import { getReusableBlockPublishState, reusableBlockHasDraftChanges } from '$lib/reusableBlockStatus';
 	import { createDefaultBlockInstance } from '$lib/reusableBlocks';
 	import {
 		addNestedReusableBlockAtPath,
@@ -21,7 +22,7 @@
 
 	type LoadedSnapshot = {
 		name: string;
-		folderId: string | null;
+		folderId: string;
 		content: BlockInstance;
 		revertTargetLabel: 'draft' | 'published';
 	};
@@ -31,6 +32,8 @@
 	let { data }: PageProps = $props();
 
 	let block = $state<ReusableBlock>({} as ReusableBlock);
+	let name = $state('');
+	let folderId = $state('');
 	let blockFolders = $state<BlockFolder[]>([]);
 	let definitions = $state<BlockDefinition[]>([]);
 	let contentDraft = $state(createDefaultBlockInstance('text', 'placeholder-reusable-block'));
@@ -52,7 +55,33 @@
 		errorMessage = '';
 	};
 	const getRevertTargetLabel = (currentBlock: ReusableBlock) =>
-		currentBlock.is_published && !currentBlock.has_unpublished_changes ? 'published' : 'draft';
+		getReusableBlockPublishState(currentBlock) === 'published' ? 'published' : 'draft';
+	const publishState = $derived(getReusableBlockPublishState(block));
+	const getPublishStateLabel = (state: 'unpublished' | 'published' | 'draft-changes') => {
+		switch (state) {
+			case 'draft-changes':
+				return 'Saved draft';
+			case 'published':
+				return 'Published';
+			default:
+				return 'Unpublished';
+		}
+	};
+	const getPublishStateClass = (state: 'unpublished' | 'published' | 'draft-changes') => {
+		switch (state) {
+			case 'draft-changes':
+				return 'bg-sky-100 text-sky-800';
+			case 'published':
+				return 'bg-emerald-100 text-emerald-800';
+			default:
+				return 'bg-amber-100 text-amber-800';
+		}
+	};
+	const getDraftStateLabel = () => {
+		if (hasUnsavedChanges) return 'Unsaved changes';
+		if (reusableBlockHasDraftChanges(block)) return 'Saved draft changes';
+		return 'Up to date';
+	};
 
 	const currentDefinition = $derived(
 		definitions.find((entry) => entry.type === block.block_type) ?? null
@@ -62,8 +91,8 @@
 		if (!loadedSnapshot) return false;
 
 		return (
-			block.name !== loadedSnapshot.name ||
-			(block.folder_id ?? null) !== loadedSnapshot.folderId ||
+			name !== loadedSnapshot.name ||
+			folderId !== loadedSnapshot.folderId ||
 			JSON.stringify(contentDraft) !== JSON.stringify(loadedSnapshot.content)
 		);
 	});
@@ -72,7 +101,7 @@
 			? 'validation-error'
 			: hasUnsavedChanges
 				? 'save-draft'
-				: block.has_unpublished_changes
+				: reusableBlockHasDraftChanges(block)
 					? 'publish'
 					: 'all-saved'
 	);
@@ -114,12 +143,14 @@
 
 	$effect(() => {
 		block = data.block;
+		name = data.block.name;
+		folderId = data.block.folder_id ?? '';
 		blockFolders = data.blockFolders;
 		definitions = data.blockDefinitions;
 		contentDraft = createEditableReusableBlockContent(data.block.content);
 		loadedSnapshot = {
 			name: data.block.name,
-			folderId: data.block.folder_id ?? null,
+			folderId: data.block.folder_id ?? '',
 			content: createEditableReusableBlockContent(data.block.content),
 			revertTargetLabel: getRevertTargetLabel(data.block)
 		};
@@ -200,11 +231,8 @@
 	const resetDraft = () => {
 		if (!loadedSnapshot) return;
 
-		block = {
-			...block,
-			name: loadedSnapshot.name,
-			folder_id: loadedSnapshot.folderId
-		};
+		name = loadedSnapshot.name;
+		folderId = loadedSnapshot.folderId;
 		contentDraft = createEditableReusableBlockContent(loadedSnapshot.content);
 		validationErrors = {};
 		draggingPath = null;
@@ -218,7 +246,7 @@
 			<div class="max-w-3xl space-y-3">
 				<p class={captionClass}>Content editor</p>
 				<h1 class="text-[2.6rem] font-semibold tracking-[-0.045em] text-stone-950 sm:text-5xl">
-					{block.name}
+					{name || block.name}
 				</h1>
 				<p class="max-w-[62ch] text-base leading-7 text-stone-600">
 					Update content name, folder, and fields for this <span class="font-semibold text-stone-900">{block.block_type}</span> content item.
@@ -233,13 +261,12 @@
 		</div>
 	</header>
 
-	<div class="mt-8 grid gap-10 xl:grid-cols-[minmax(0,1fr)_22rem] xl:items-start">
 		<form
 			id="update-reusable-block-form"
 			method="POST"
 			action="?/updateReusableBlock"
-			class="space-y-8"
-			use:enhance={({ formElement, cancel, submitter }) => {
+			class="mt-8 grid gap-10 xl:grid-cols-[minmax(0,1fr)_22rem] xl:items-start"
+				use:enhance={({ formElement, cancel, submitter }) => {
 				const intent =
 					submitter instanceof HTMLButtonElement ? submitter.dataset.intent ?? 'save' : 'save';
 
@@ -271,18 +298,20 @@
 					saving = false;
 					publishing = false;
 
-					if (result.type === 'success' && result.data) {
-						successMessage =
-							intent === 'publish' ? 'Content published successfully!' : 'Content updated successfully!';
-						if ('block' in result.data) {
-							block = result.data.block as ReusableBlock;
-							contentDraft = createEditableReusableBlockContent(block.content);
-							loadedSnapshot = {
-								name: block.name,
-								folderId: block.folder_id ?? null,
-								content: createEditableReusableBlockContent(block.content),
-								revertTargetLabel: getRevertTargetLabel(block)
-							};
+						if (result.type === 'success' && result.data) {
+							successMessage =
+								intent === 'publish' ? 'Content published successfully!' : 'Content updated successfully!';
+							if ('block' in result.data) {
+								block = result.data.block as ReusableBlock;
+								name = block.name;
+								folderId = block.folder_id ?? '';
+								contentDraft = createEditableReusableBlockContent(block.content);
+								loadedSnapshot = {
+									name,
+									folderId,
+									content: createEditableReusableBlockContent(block.content),
+									revertTargetLabel: getRevertTargetLabel(block)
+								};
 							validationErrors = {};
 							draggingPath = null;
 							if (browser) {
@@ -322,20 +351,20 @@
 						</p>
 					</div>
 
-					<div class="grid gap-5 lg:grid-cols-[minmax(0,1.2fr)_minmax(16rem,0.8fr)]">
-						<div class="space-y-2">
-							<label for="name" class="text-sm font-medium text-stone-800">Name</label>
-							<input id="name" type="text" name="name" required value={block.name} class={inputClass} />
-						</div>
-						<div class="space-y-2">
-							<label for="folderId" class="text-sm font-medium text-stone-800">Folder</label>
-							<select id="folderId" name="folderId" class={inputClass}>
-								<option value="">Root</option>
-								{#each blockFolders as folder}
-									<option value={folder.id} selected={folder.id === block.folder_id}>{folder.name}</option>
-								{/each}
-							</select>
-						</div>
+						<div class="grid gap-5 lg:grid-cols-[minmax(0,1.2fr)_minmax(16rem,0.8fr)]">
+							<div class="space-y-2">
+								<label for="name" class="text-sm font-medium text-stone-800">Name</label>
+								<input id="name" type="text" name="name" required bind:value={name} class={inputClass} />
+							</div>
+							<div class="space-y-2">
+								<label for="folderId" class="text-sm font-medium text-stone-800">Folder</label>
+								<select id="folderId" name="folderId" bind:value={folderId} class={inputClass}>
+									<option value="">Root</option>
+									{#each blockFolders as folder}
+										<option value={folder.id}>{folder.name}</option>
+									{/each}
+								</select>
+							</div>
 					</div>
 				</section>
 
@@ -438,59 +467,32 @@
 					</div>
 				</section>
 			</div>
-		</form>
-
-		<aside class="border-t border-stone-300/70 pt-8 xl:sticky xl:top-6 xl:border-l xl:border-t-0 xl:pl-8 xl:pt-0">
-			<div class="space-y-8">
-					<section class="space-y-4 border-b border-stone-200 pb-8">
+			<aside class="space-y-4">
+				<div class="space-y-4 xl:sticky xl:top-6">
+					<section class="rounded-[1.75rem] border border-stone-200/80 bg-white/92 p-5 shadow-[0_22px_60px_-42px_rgba(41,37,36,0.2)]">
 						<div class="space-y-2">
-							<p class={captionClass}>Draft panel</p>
-							<h2 class="text-[1.35rem] font-semibold tracking-[-0.03em] text-stone-950">Save and publish</h2>
-						</div>
-
-						<div class="space-y-3">
-							<div class="flex flex-wrap gap-2">
-								<span class="rounded-full bg-stone-950 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-stone-50">
-									{block.block_type}
-								</span>
-								{#if block.is_published}
-									<span class="rounded-full bg-emerald-100 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-emerald-800">
-										Published
-									</span>
+							<p class={captionClass}>Draft state</p>
+							<h2 class="text-[1.25rem] font-semibold tracking-[-0.03em] text-stone-950">{getDraftStateLabel()}</h2>
+							<p class="text-sm leading-6 text-stone-600">
+								{#if hasUnsavedChanges}
+									Current form changes live only in browser until you save draft.
+								{:else if reusableBlockHasDraftChanges(block)}
+									Draft differs from published content.
 								{:else}
-									<span class="rounded-full bg-amber-100 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-amber-800">
-										Unpublished
-									</span>
+									Draft matches published content.
 								{/if}
-								{#if block.has_unpublished_changes}
-									<span class="rounded-full bg-sky-100 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-sky-800">
-										Draft changes
-									</span>
-								{/if}
-							</div>
-
-							<div class="space-y-3">
-								<div class="flex items-center justify-between gap-3">
-									<span class="text-sm text-stone-600">Draft state</span>
-									<span class="text-sm font-medium text-stone-950">
-										{hasUnsavedChanges
-											? 'Unsaved changes'
-											: block.has_unpublished_changes
-												? 'Saved draft changes'
-												: 'Up to date'}
-									</span>
-								</div>
-							</div>
+							</p>
 						</div>
 
-						<div class="space-y-3">
-							{#if showPrimaryAction}
-								<button
-									in:fly={actionMotion}
-									out:fly={actionMotion}
-									type="submit"
-									formaction={primaryActionFormAction}
-									data-intent={primaryActionIntent}
+						<div class="mt-4 flex flex-col gap-2">
+								{#if showPrimaryAction}
+									<button
+										in:fly={actionMotion}
+										out:fly={actionMotion}
+										type="submit"
+										form="update-reusable-block-form"
+										formaction={primaryActionFormAction}
+										data-intent={primaryActionIntent}
 									class={`inline-flex min-h-11 w-full items-center justify-center rounded-full px-5 py-3 text-sm font-semibold transition focus-visible:outline-none focus-visible:ring-4 disabled:cursor-not-allowed disabled:opacity-70 ${primaryActionClass}`}
 									disabled={primaryActionDisabled}
 								>
@@ -523,13 +525,25 @@
 						{/if}
 					</section>
 
-					<section class="space-y-3">
-						<p class={captionClass}>Content record</p>
-						<div class="space-y-3 text-sm text-stone-700">
+					<section class="rounded-[1.75rem] border border-stone-200/80 bg-white/92 p-5 shadow-[0_22px_60px_-42px_rgba(41,37,36,0.2)]">
+						<div class="space-y-2">
+							<p class={captionClass}>Publish state</p>
+							<div class="flex items-center gap-2">
+								<span class={`rounded-full px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.16em] ${getPublishStateClass(publishState)}`}>
+									{getPublishStateLabel(publishState)}
+								</span>
+								<span class="rounded-full bg-stone-950 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-stone-50">
+									{block.block_type}
+								</span>
+							</div>
+							<p class="text-sm leading-6 text-stone-600">Publish uses current saved draft content and naming.</p>
+						</div>
+
+						<div class="mt-4 space-y-3 border-t border-stone-200 pt-4 text-sm text-stone-700">
 							<div class="flex items-center justify-between gap-3">
 								<span class="text-stone-500">Folder</span>
 								<span class="text-right text-stone-950">
-									{blockFolders.find((folder) => folder.id === block.folder_id)?.name ?? 'Root'}
+									{blockFolders.find((folder) => folder.id === folderId)?.name ?? 'Root'}
 								</span>
 							</div>
 							<div class="flex items-center justify-between gap-3">
@@ -545,8 +559,8 @@
 								<span class="text-right tabular-nums text-stone-950">{formatTimestamp(block.updated_at)}</span>
 							</div>
 						</div>
-					</section>
-			</div>
-		</aside>
-	</div>
-</main>
+						</section>
+				</div>
+			</aside>
+		</form>
+	</main>

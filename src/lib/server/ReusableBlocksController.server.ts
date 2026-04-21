@@ -21,6 +21,12 @@ type ReusableBlockVersionRow = {
 	published_at: string | null;
 };
 
+type ReusableBlockRow = Record<string, unknown> & {
+	id: string;
+	draft_version_id: string | null;
+	published_version_id: string | null;
+};
+
 const parseFolder = (data: Record<string, unknown>): BlockFolder => ({
 	id: String(data.id),
 	name: String(data.name),
@@ -105,6 +111,34 @@ const getVersionRowsById = async (versionIds: string[]): Promise<Map<string, Reu
 	if (error) throw error;
 
 	return new Map(((data ?? []) as ReusableBlockVersionRow[]).map((row) => [row.id, row]));
+};
+
+const getReusableBlockRowById = async (id: string): Promise<ReusableBlockRow | null> => {
+	const { data, error } = await supabaseAdmin.from(BLOCKS_TABLE).select('*').eq('id', id).maybeSingle();
+	if (error) throw error;
+	return (data as ReusableBlockRow | null) ?? null;
+};
+
+const getReusableBlockVersionById = async (id: string): Promise<ReusableBlockVersionRow | null> => {
+	const { data, error } = await supabaseAdmin
+		.from(BLOCK_VERSIONS_TABLE)
+		.select('*')
+		.eq('id', id)
+		.maybeSingle();
+	if (error) throw error;
+	return (data as ReusableBlockVersionRow | null) ?? null;
+};
+
+const getNextReusableBlockRevision = async (reusableBlockId: string) => {
+	const { data, error } = await supabaseAdmin
+		.from(BLOCK_VERSIONS_TABLE)
+		.select('revision')
+		.eq('reusable_block_id', reusableBlockId)
+		.order('revision', { ascending: false })
+		.limit(1)
+		.maybeSingle();
+	if (error) throw error;
+	return Number(data?.revision ?? 0) + 1;
 };
 
 export const getBlockFolders = async (): Promise<BlockFolder[]> => {
@@ -219,15 +253,41 @@ export const createReusableBlock = async (
 	folderId: string | null
 ): Promise<ReusableBlock> => {
 	const content = createDefaultBlockInstance(type, crypto.randomUUID());
-	const { data, error } = await supabaseAdmin.rpc('create_reusable_block', {
-		_name: name,
-		_block_type: type,
-		_folder_id: folderId,
-		_content: content
-	});
-	if (error) throw error;
+	const { data: blockRow, error: blockError } = await supabaseAdmin
+		.from(BLOCKS_TABLE)
+		.insert({
+			name,
+			block_type: type,
+			folder_id: folderId,
+			content
+		})
+		.select('id')
+		.single();
+	if (blockError) throw blockError;
 
-	const block = await getReusableBlockById(String(data ?? ''));
+	const blockId = String(blockRow.id);
+	const { data: draftRow, error: draftError } = await supabaseAdmin
+		.from(BLOCK_VERSIONS_TABLE)
+		.insert({
+			reusable_block_id: blockId,
+			status: 'draft',
+			content,
+			revision: 1
+		})
+		.select('id')
+		.single();
+	if (draftError) throw draftError;
+
+	const { error: updateError } = await supabaseAdmin
+		.from(BLOCKS_TABLE)
+		.update({
+			draft_version_id: String(draftRow.id),
+			updated_at: new Date().toISOString()
+		})
+		.eq('id', blockId);
+	if (updateError) throw updateError;
+
+	const block = await getReusableBlockById(blockId);
 	if (!block) {
 		throw new Error('Reusable block was created but could not be loaded');
 	}
@@ -272,11 +332,43 @@ export const updateReusableBlock = async (
 	}
 
 	if (content) {
-		const { error } = await supabaseAdmin.rpc('save_reusable_block_draft', {
-			_reusable_block_id: id,
-			_content: content
-		});
-		if (error) throw error;
+		const blockRow = await getReusableBlockRowById(id);
+		if (!blockRow) {
+			throw new Error(`Reusable block ${id} not found before draft save`);
+		}
+
+		if (blockRow.draft_version_id) {
+			const { error: archiveError } = await supabaseAdmin
+				.from(BLOCK_VERSIONS_TABLE)
+				.update({ status: 'archived' })
+				.eq('id', blockRow.draft_version_id)
+				.eq('status', 'draft');
+			if (archiveError) throw archiveError;
+		}
+
+		const nextRevision = await getNextReusableBlockRevision(id);
+		const { data: draftRow, error: draftError } = await supabaseAdmin
+			.from(BLOCK_VERSIONS_TABLE)
+			.insert({
+				reusable_block_id: id,
+				status: 'draft',
+				content,
+				parent_id: blockRow.draft_version_id,
+				revision: nextRevision
+			})
+			.select('id')
+			.single();
+		if (draftError) throw draftError;
+
+		const { error: updateError } = await supabaseAdmin
+			.from(BLOCKS_TABLE)
+			.update({
+				content,
+				draft_version_id: String(draftRow.id),
+				updated_at: new Date().toISOString()
+			})
+			.eq('id', id);
+		if (updateError) throw updateError;
 	}
 
 	const block = await getReusableBlockById(id);
@@ -288,10 +380,73 @@ export const updateReusableBlock = async (
 };
 
 export const publishReusableBlock = async (id: string): Promise<ReusableBlock> => {
-	const { error } = await supabaseAdmin.rpc('publish_reusable_block', {
-		_reusable_block_id: id
-	});
-	if (error) throw error;
+	const blockRow = await getReusableBlockRowById(id);
+	if (!blockRow) {
+		throw new Error(`Reusable block ${id} not found before publish`);
+	}
+	if (!blockRow.draft_version_id) {
+		throw new Error(`Reusable block ${id} is missing a draft version`);
+	}
+
+	const draftVersion = await getReusableBlockVersionById(blockRow.draft_version_id);
+	if (!draftVersion) {
+		throw new Error(`Draft version ${blockRow.draft_version_id} not found for reusable block ${id}`);
+	}
+
+	if (blockRow.published_version_id) {
+		const { error: archivePublishedError } = await supabaseAdmin
+			.from(BLOCK_VERSIONS_TABLE)
+			.update({ status: 'archived' })
+			.eq('id', blockRow.published_version_id)
+			.eq('status', 'published');
+		if (archivePublishedError) throw archivePublishedError;
+	}
+
+	const { error: archiveDraftError } = await supabaseAdmin
+		.from(BLOCK_VERSIONS_TABLE)
+		.update({ status: 'archived' })
+		.eq('id', draftVersion.id)
+		.eq('status', 'draft');
+	if (archiveDraftError) throw archiveDraftError;
+
+	const publishedRevision = await getNextReusableBlockRevision(id);
+	const { data: publishedRow, error: publishError } = await supabaseAdmin
+		.from(BLOCK_VERSIONS_TABLE)
+		.insert({
+			reusable_block_id: id,
+			status: 'published',
+			content: draftVersion.content,
+			parent_id: draftVersion.id,
+			revision: publishedRevision,
+			published_at: new Date().toISOString()
+		})
+		.select('id')
+		.single();
+	if (publishError) throw publishError;
+
+	const { data: cleanDraftRow, error: cleanDraftError } = await supabaseAdmin
+		.from(BLOCK_VERSIONS_TABLE)
+		.insert({
+			reusable_block_id: id,
+			status: 'draft',
+			content: draftVersion.content,
+			parent_id: String(publishedRow.id),
+			revision: publishedRevision + 1
+		})
+		.select('id')
+		.single();
+	if (cleanDraftError) throw cleanDraftError;
+
+	const { error: updateError } = await supabaseAdmin
+		.from(BLOCKS_TABLE)
+		.update({
+			content: draftVersion.content,
+			published_version_id: String(publishedRow.id),
+			draft_version_id: String(cleanDraftRow.id),
+			updated_at: new Date().toISOString()
+		})
+		.eq('id', id);
+	if (updateError) throw updateError;
 
 	const block = await getReusableBlockById(id);
 	if (!block) {

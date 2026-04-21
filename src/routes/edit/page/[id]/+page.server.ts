@@ -62,23 +62,38 @@ export const actions = {
 		});
 
 		const formData = await event.request.formData();
-		const title = String(formData.get('title') ?? '').trim();
-		const parentPageIdRaw = String(formData.get('parentPageId') ?? '').trim();
-		const urlName = String(formData.get('urlName') ?? '').trim();
-		const seo = {
-			title: String(formData.get('seoTitle') ?? '').trim(),
-			description: String(formData.get('seoDescription') ?? '').trim(),
-			canonicalUrl: String(formData.get('canonicalUrl') ?? '').trim(),
-			ogImageUrl: String(formData.get('ogImageUrl') ?? '').trim(),
-			noIndex: formData.get('noIndex') === 'on',
-			noFollow: formData.get('noFollow') === 'on'
-		};
-		const content = parseSubmittedPageContent(String(formData.get('content') ?? ''));
 		const page = await getPageById(event.params.id);
 
 		if (!page) {
 			return fail(404, { error: 'Page not found' });
 		}
+
+		const draftVersion = page.draft_version_id ? await getDraftVersionById(page.draft_version_id) : null;
+		const currentSeo = parsePageSeoMeta(draftVersion?.meta);
+		const title = formData.has('title') ? String(formData.get('title') ?? '').trim() : page.title;
+		const parentPageIdRaw = formData.has('parentPageId')
+			? String(formData.get('parentPageId') ?? '').trim()
+			: (draftVersion?.parent_page_id ?? '');
+		const urlName = formData.has('urlName')
+			? String(formData.get('urlName') ?? '').trim()
+			: (draftVersion?.url_name ?? '');
+		const seo = {
+			title: formData.has('seoTitle')
+				? String(formData.get('seoTitle') ?? '').trim()
+				: currentSeo.title,
+			description: formData.has('seoDescription')
+				? String(formData.get('seoDescription') ?? '').trim()
+				: currentSeo.description,
+			canonicalUrl: formData.has('canonicalUrl')
+				? String(formData.get('canonicalUrl') ?? '').trim()
+				: currentSeo.canonicalUrl,
+			ogImageUrl: formData.has('ogImageUrl')
+				? String(formData.get('ogImageUrl') ?? '').trim()
+				: currentSeo.ogImageUrl,
+			noIndex: formData.has('noIndex') ? formData.get('noIndex') === 'on' : currentSeo.noIndex,
+			noFollow: formData.has('noFollow') ? formData.get('noFollow') === 'on' : currentSeo.noFollow
+		};
+		const content = parseSubmittedPageContent(String(formData.get('content') ?? ''));
 
 		const isRoot = page.parent_page_id === null;
 		const parentPageId = isRoot ? null : parentPageIdRaw || null;

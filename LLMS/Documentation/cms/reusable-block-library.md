@@ -13,6 +13,7 @@ Content items use draft/publish workflow so editor can save changes without chan
 - Use side-rail secondary action button to `Revert changes to draft` or `Revert changes to published` when you want to discard unsaved edits and return to currently loaded source state. Hide it when no unsaved edits exist.
 - When page editor is open, use sidebar `Add` action or row context menu to insert content into current page without leaving library tree.
 - Content editor uses same calmer shell direction as page editor: editable fields in main column, draft/publish state and record metadata in secondary rail.
+- `/content/[id]` now mirrors page editor rail structure: separate draft-state and publish-state panels, same action labels, same revert wording, same idle-action hiding.
 - Draft-rail action buttons animate in and out as state changes instead of lingering disabled.
 
 # Behavior
@@ -21,11 +22,12 @@ Content items use draft/publish workflow so editor can save changes without chan
 - Content names are human-friendly labels and do not need to be unique.
 - Content items keep stable top-level id while content is versioned as draft/published rows.
 - Newly created content items start unpublished until first explicit publish.
-- Sidebar shows lightweight status badges for unpublished content and content with unpublished draft changes.
+- After publish, CMS creates fresh clean draft from newly published content so editor returns to clean published state until next edit.
+- Sidebar and content-library rows show lightweight publish-state badges: `Unpublished`, `Published`, or `Saved draft`.
 - `/content` route shows same status badges and exposes creation controls for folders and content.
 - Sidebar keeps structural folder actions nearby and acts as content source for page-editor insertion actions and drag/drop.
 - Container-style content items can edit nested `blocks` fields inline in `/content/[id]` editor.
-- `/content/[id]` keeps draft action controls grouped in one persistent side-rail panel instead of scattering status and actions across multiple top-level cards.
+- `/content/[id]` keeps draft/publish controls in persistent side rail instead of scattering status and actions across multiple top-level cards.
 - Nested block lists support the same add, remove, drag-and-drop, and Up/Down reordering controls used on the page editor.
 - Pages can reference content items as top-level page-content nodes from page editor.
 - Page references continue storing stable content id and should resolve to published content.
@@ -37,4 +39,5 @@ Content items use draft/publish workflow so editor can save changes without chan
 - Content validation uses shared block registry, including nested `allowedTypes` restrictions.
 - Deleting content now shows confirmation modal listing pages that reference it and removes those references from both published and draft pages immediately as part of delete flow.
 - Unpublished content items do not have live content yet, so any live-resolution path must treat them as unavailable until published.
+- Publish creates new published version from current saved draft, then creates fresh clean draft clone from that published revision.
 - Restoring deleted content does not reinsert removed page references automatically.

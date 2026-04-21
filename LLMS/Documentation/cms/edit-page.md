@@ -15,6 +15,7 @@ The current layout treats the page body as the primary editing region:
 - Use the draft panel in the side rail as the primary source of save state, then use its single primary action button for next step.
 - When edits are unsaved the button shows `Save draft`, when saved draft changes are ready it shows `Publish`, when validation fails it stays visible as disabled `Validation error`, and when nothing is pending it disappears instead of showing idle disabled state.
 - Open the `Discovery & Sharing` tab when you need search or sharing metadata.
+- Saving from `Content` or `Discovery & Sharing` keeps current identity fields even though those inputs are not mounted in active tab.
 - Create and edit content in `/content`, not inside the page editor.
 - Use Content sidebar plus-icon quick add or `Insert into page` context-menu action to append selected content into current page draft.
 - Use block-row `Actions` control to move row, remove it, or open inline content picker for insertion before that row when you do not want to drag.

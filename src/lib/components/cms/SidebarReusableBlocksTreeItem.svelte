@@ -3,6 +3,7 @@
 	import CmsIconButton from './CmsIconButton.svelte';
 	import SidebarReusableBlocksTreeItem from './SidebarReusableBlocksTreeItem.svelte';
 	import { ChevronRight, Plus } from '$lib/icons';
+	import { getReusableBlockPublishState } from '$lib/reusableBlockStatus';
 	import { setReusableBlockDragData } from './reusableBlockInsertion';
 	import type { ReusableBlocksTreeNode } from './reusableBlocksTree';
 
@@ -39,6 +40,16 @@
 	const hasChildren = $derived(node.folders.length > 0 || node.blocks.length > 0);
 	const nodeId = $derived(node.folder?.id ?? '');
 	const isOpen = $derived(node.folder ? !closedNodes[nodeId] : true);
+	const getStateMeta = (state: 'unpublished' | 'published' | 'draft-changes') => {
+		switch (state) {
+			case 'draft-changes':
+				return { label: 'Saved draft', className: 'bg-sky-100 text-sky-800' };
+			case 'published':
+				return { label: 'Published', className: 'bg-emerald-100 text-emerald-800' };
+			default:
+				return { label: 'Unpublished', className: 'bg-amber-100 text-amber-800' };
+		}
+	};
 </script>
 
 {#if node.folder}
@@ -124,6 +135,7 @@
 				{/each}
 
 				{#each node.blocks as block (block.id)}
+					{@const stateMeta = getStateMeta(getReusableBlockPublishState(block))}
 					<div
 						class={[
 							'flex min-w-0 items-center justify-between gap-2 rounded-md py-2 pr-3 text-sm transition',
@@ -144,11 +156,9 @@
 								>
 									<span class="min-w-0 flex-1 truncate font-medium">{block.name}</span>
 									<div class="flex shrink-0 items-center gap-1.5">
-										{#if !block.is_published || block.has_unpublished_changes}
-											<span class="rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-amber-800">
-												Draft
-											</span>
-										{/if}
+										<span class={`rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide ${stateMeta.className}`}>
+											{stateMeta.label}
+										</span>
 										<span class="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-slate-500">
 											{block.block_type}
 										</span>

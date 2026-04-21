@@ -10,4 +10,5 @@
 - If the user asks to perform a specific task, do that task only; do not expand scope.
 - Before implementing a `LLMS/Changes.md` item backed by a design, check whether the design has unresolved review points, open questions, follow-ups, or risks that need user input. If so, stop and ask for answers or approval before implementation instead of guessing.
 - If a task is unclear, blocked, impossible, or depends on unfinished work, state that it is blocked and why.
+- For Svelte 5 state, follow `LLMS/Documentation/svelte/state-patterns.md`. Use it for shared state APIs, context-scoped feature state, side effects, destructuring rules, stores vs runes, and SSR-safe patterns.
 - use bun not npm
