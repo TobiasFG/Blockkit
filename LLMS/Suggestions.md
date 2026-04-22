@@ -1,4 +1,4 @@
-Read `AGENTS.md` at the repo root.
+Read `AGENTS.md` at repo root, then `docs/agents/INDEX.md`.
 
 File purpose: capture optional ideas and improvements that are not yet committed to the roadmap as well as bug reports.
 

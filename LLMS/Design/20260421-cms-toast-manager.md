@@ -51,7 +51,7 @@ Purpose: replace repeated inline CMS action feedback with one shared toast syste
 
 # State and architecture
 - Create feature package under `src/lib/Toasts/`.
-- Use context-scoped class pattern from `LLMS/Documentation/svelte/state-patterns.md`.
+- Use context-scoped class pattern from `docs/agents/conventions/svelte-state.md`.
 - Provider lives in root CMS subtree so each app instance/request gets isolated state.
 - State owns:
   - toast list

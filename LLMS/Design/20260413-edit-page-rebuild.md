@@ -101,7 +101,7 @@ Purpose: define cleaner, more coherent rebuild of CMS page edit screen without c
 2. Introduce page-scoped style tokens/classes for rebuilt layout and reduce repeated surface wrappers around form groups.
 3. Adjust `BlockListEditor` invocation wrapper styling only as needed so content area fits new shell cleanly.
 4. Update edit-page documentation to describe new layout and action placement.
-5. Run `npm run check` and targeted tests if needed.
+5. Run `bun run check` and targeted tests if needed.
 
 # Review points
 - Put SEO in secondary side rail instead of inline before content.

@@ -51,7 +51,7 @@ The feature should speed up a common editing flow, but it must stay accessible t
 # Implementation Notes
 - Favor a shared page-editor insertion API or store over direct DOM manipulation between sidebar and editor.
 - Reuse existing page-content validation so inserted references still go through the same save path as select-created references.
-- Document both drag and non-drag insertion paths in `LLMS/Documentation/cms/edit-page.md` and related sidebar docs when implemented.
+- Document both drag and non-drag insertion paths in `docs/agents/workflows/page-editor.md` and `docs/agents/workflows/content-library.md` when implemented.
 
 # Approved Decisions
 - First pass should support between-row insertion targets.

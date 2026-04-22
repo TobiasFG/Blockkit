@@ -100,9 +100,9 @@ Purpose: define first trash/restore workflow for pages and content so delete bec
 
 # Docs
 - Update:
-  - `LLMS/Documentation/cms/dashboard.md`
-  - `LLMS/Documentation/cms/reusable-block-library.md`
-  - `LLMS/Documentation/cms/sidebar-navigation.md`
+  - `docs/agents/workflows/trash.md`
+  - `docs/agents/workflows/content-library.md`
+  - `docs/agents/workflows/page-editor.md`
 - Add trash doc if route gets enough behavior to justify standalone page.
 
 # Open questions

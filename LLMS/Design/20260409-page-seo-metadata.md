@@ -87,7 +87,7 @@ Recommendation: choose option 1 for this feature unless draft revision history i
 - Add page-version server helpers for fetching the current draft version by page id.
 - Add typed metadata parsing/serialization helpers so the UI does not work with raw `jsonb` objects.
 - Avoid adding SEO columns to `public.pages`.
-- Document the editor behavior in `LLMS/Documentation/cms/edit-page.md` when implemented.
+- Document the editor behavior in `docs/agents/workflows/page-editor.md` when implemented.
 - Add or update tests around metadata parsing and edit-page saves if test coverage exists for this area.
 
 # Risks

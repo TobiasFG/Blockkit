@@ -1,20 +1,38 @@
-- `LLMS/Documentation` holds human + agent documentation (features, library docs, component docs). Start with `LLMS/Documentation/AGENTS-INDEX.md` and follow `LLMS/Documentation/AGENTS-GUIDE.md`. Always check for existing docs before building or changing a feature, and keep docs accurate, up to date, organized, and agent-friendly.
-- `LLMS/Design` is required for new larger features. Write a design here for review before implementation. Not required for small fixes. When relevant, designs should explicitly capture review points, open questions, risks, follow-ups, and proposed defaults/decisions so implementation blockers are visible before work starts. If there is reasonable doubt about whether a suggestion is a larger feature, treat it as requiring a design until reviewed.
-- `LLMS/Changes.md` lists feature requests, changes, bugs, and investigations to be handled later. Follow the guidance at the top of the file. If the user's entry point is `LLMS/Changes.md`, treat that as a request to choose a relevant open item from the file and complete it according to the documented flow, unless the user narrows the request to a specific item. When implementing an item from `LLMS/Changes.md`, also create or update all relevant documentation in `LLMS/Documentation`, including `LLMS/Documentation/AGENTS-INDEX.md` when docs are added, moved, or removed.
-- `LLMS/Suggestions.md` is for optional ideas and improvements. Follow the guidance at the top of the file. If the user's entry point is `LLMS/Suggestions.md`, treat that as a request to choose a relevant suggestion from the file and carry it out according to the documented flow, unless the user narrows the request to a specific item. The required flow is: pick one suggestion, promote it into `LLMS/Changes.md` before starting implementation, decide whether it needs a design, write the design in `LLMS/Design` and stop for review if it is a larger feature, then implement only after that workflow is satisfied. Do not implement a suggestion directly from `LLMS/Suggestions.md` without first promoting it. Do not move review points, open questions, risks, or follow-ups into `LLMS/Suggestions.md` unless they are themselves future suggestions or development ideas.
-- Early-development default: do not spend time on backward compatibility, migrations, compatibility shims, or legacy-preservation work unless user explicitly asks for it. Prefer replacing old paths/workflows outright when product direction changes.
-- If a task, suggestion, or documentation note names a skill or recommends a skill fit, use that skill. Do not ignore suggested or explicitly named skills when they apply to the requested work.
-- Use the tools available if relevant.
-- If the user reports a bug, feature, change, or investigation, add it to `LLMS/Changes.md`.
-- If the user asks to perform a specific task, do that task only; do not expand scope.
-- Before implementing a `LLMS/Changes.md` item backed by a design, check whether the design has unresolved review points, open questions, follow-ups, or risks that need user input. If so, stop and ask for answers or approval before implementation instead of guessing.
-- If a task is unclear, blocked, impossible, or depends on unfinished work, state that it is blocked and why.
-- For Svelte 5 state, follow `LLMS/Documentation/svelte/state-patterns.md`. Use it for shared state APIs, context-scoped feature state, side effects, destructuring rules, stores vs runes, and SSR-safe patterns.
-- For UI work, do not default to generic learned UI priors from training when app style or reference images exist. Follow existing app art direction, design system, and visual grammar first - and ALWAYS use the frontend-skill.
-- When reference images are provided, implement them as literally and precisely as possible. Do not redesign, embellish, or “modernize” unless user explicitly asks for interpretation instead of replication.
-- When shadcn-svelte documentation references a component and that component is not installed in the repo yet, install it instead of reimplementing or hand-rolling a substitute. Use the install command provided in the documentation, adapted to repo package-manager rules when needed.
-- When creating brand-new visual concepts or aesthetics without a strong existing reference, prefer using available image-generation tools to explore stronger visual directions instead of producing generic AI-looking UI by default.
-- Do not bias toward patching existing code when a rewrite, replacement, or discarding wrong structure will produce a cleaner implementation or codebase. Patch only when scope is truly small and local; otherwise prefer clean replacement.
-- If visual details from a reference image are hard to interpret precisely, first try to infer them carefully from the image itself. If important details still remain genuinely ambiguous, ask focused follow-up questions about exact values or relationships such as border radius, padding, spacing, shadows, or sizing instead of guessing.
-- For visual implementation tasks, prefer this order: extract concrete visual tokens from reference or app style, choose existing repo primitives/components that fit, implement one precise version, then generalize only after visual match is correct.
-- use bun not npm
+## Scope
+- Repo-wide policy for Codex.
+- Keep always-on guidance small. Load detail from `docs/agents/INDEX.md`, nearest local `AGENTS.md`, and repo skills only when task matches.
+
+## Commands
+- Use `bun`.
+- Core commands:
+  - `bun run dev`
+  - `bun run check`
+  - `bun run test:unit -- --run`
+  - `bun run test:e2e`
+
+## Read First
+- Start with `docs/agents/INDEX.md`.
+- Before edits in subtree, read nearest local `AGENTS.md`.
+- Task from `LLMS/Changes.md` or `LLMS/Suggestions.md`: read `docs/agents/workflows/change-management.md`.
+- Need historical rationale or unresolved design context: read matching file in `LLMS/Design/`.
+
+## Repo-wide Rules
+- Read only docs needed for task.
+- Use repo skills only when task matches their trigger; do not load them by default.
+- Update affected agent docs in same task when behavior or paths change.
+- If docs move/add/delete, update `docs/agents/INDEX.md`.
+- If user reports bug, feature, change, or investigation, add entry to `LLMS/Changes.md`.
+- `LLMS/Suggestions.md` never source of truth for direct implementation. Promote chosen item into `LLMS/Changes.md` first.
+- If user asked for specific task, keep scope tight.
+- Early-development default: no backward-compat shims, migrations, or legacy preservation unless user asks.
+- Prefer clean replacement over layering fixes onto wrong structure.
+
+## Verification Expectations
+- Run smallest check set that proves change.
+- Use repo verification skill/doc when scope unclear.
+- Final response must state what was verified and what was not.
+
+## Safety Boundaries
+- Supabase service-role key stays server-only.
+- Keep CMS auth gate intact on protected routes/actions.
+- Confirm destructive or irreversible operations before running them.

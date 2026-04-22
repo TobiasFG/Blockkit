@@ -147,7 +147,7 @@ Recommended initial routes:
 Keep folder management inline in the sidebar or in simple modal forms rather than separate pages.
 
 # Documentation requirements after approval
-Implementation should update the CMS docs in `LLMS/Documentation` as part of the same change.
+Implementation should update the CMS docs in `docs/agents/` as part of the same change.
 
 Expected docs to create or update:
 - document reusable block library behavior and constraints

@@ -1,21 +1,22 @@
 # Blockkit
 
-SvelteKit + Tailwind + Supabase (local-first) CMS experiment.
+SvelteKit + TypeScript + Tailwind + Supabase CMS experiment.
 
-## Setup (local)
+## Setup
+1. `bun install`
+2. `supabase start`
+3. Put Supabase values in `.env` from `.env.example`
+4. `supabase db reset`
+5. `bun run dev -- --open`
 
-1. Install deps:
-   - `bun install` (or `npm install`)
-2. Start Supabase:
-   - `supabase start`
-3. Put your Supabase API URL + `service_role` key into `.env` (see `.env.example`):
-   - `supabase status`
-4. Apply migrations (creates `public.pages` and seeds `Home`):
-   - `supabase db reset`
-5. Run the app:
-   - `bun run dev -- --open` (or `npm run dev -- --open`)
+## Verify
+- Type check: `bun run check`
+- Unit tests: `bun run test:unit -- --run`
+- E2E: `bun run test:e2e`
 
-## Notes
+## Agent Docs
+- Start: `AGENTS.md`
+- Index: `docs/agents/INDEX.md`
 
-- Server-side page CRUD uses the Supabase `service_role` key (`src/lib/server/supabase.server.ts`). Never expose it to the browser or commit it to git.
-
+## Note
+- `SUPABASE_SERVICE_ROLE_KEY` stays server-only. Never expose in browser code.
