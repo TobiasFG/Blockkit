@@ -1,7 +1,8 @@
-<script lang="ts">
-	import { browser } from '$app/environment';
-	import { applyAction, enhance } from '$app/forms';
-	import { blockFoldersStore, reusableBlocksStore } from '$lib/client/reusableBlocksStore';
+	<script lang="ts">
+		import { browser } from '$app/environment';
+		import { applyAction, enhance } from '$app/forms';
+		import { getToastState } from '$lib/Toasts/toastState.svelte';
+		import { blockFoldersStore, reusableBlocksStore } from '$lib/client/reusableBlocksStore';
 	import { listBlockDefinitions } from '$lib/blocks/registry';
 	import ActionModal from '$lib/components/cms/ActionModal.svelte';
 	import { buildReusableBlocksTree } from '$lib/components/cms/reusableBlocksTree';
@@ -12,7 +13,6 @@
 	let { data }: PageProps = $props();
 
 	let closedNodes = $state<Record<string, boolean>>({});
-	let feedback = $state<{ tone: 'success' | 'error'; text: string } | null>(null);
 	let createFolderSubmitting = $state(false);
 	let createBlockSubmitting = $state(false);
 	let deletePending = $state(false);
@@ -23,6 +23,7 @@
 	>(null);
 	let reusableBlockPageReferences = $state<Record<string, ReferencingPage[]>>({});
 
+	const toastState = getToastState();
 	const currentBlockFolders = $derived(
 		browser ? ($blockFoldersStore ?? data.blockFolders) : data.blockFolders
 	);
@@ -33,10 +34,6 @@
 	const reusableBlocksTree = $derived(
 		buildReusableBlocksTree(currentBlockFolders, currentReusableBlocks)
 	);
-
-	const resetFeedback = () => {
-		feedback = null;
-	};
 
 	const syncLibraryState = (result: {
 		blockFolders?: BlockFolder[];
@@ -62,12 +59,10 @@
 	};
 
 	const openDeleteFolderModal = (id: string, name: string) => {
-		feedback = null;
 		modalState = { kind: 'deleteFolder', id, name };
 	};
 
 	const openDeleteBlockModal = (id: string, name: string) => {
-		feedback = null;
 		modalState = {
 			kind: 'deleteBlock',
 			id,
@@ -122,26 +117,12 @@
 		</div>
 	</section>
 
-	{#if feedback}
-		<div
-			class={[
-				'rounded-2xl border px-4 py-3 text-sm shadow-sm',
-				feedback.tone === 'success'
-					? 'border-emerald-200 bg-emerald-50 text-emerald-800'
-					: 'border-red-200 bg-red-50 text-red-800'
-			].join(' ')}
-		>
-			{feedback.text}
-		</div>
-	{/if}
-
 	<section class="grid gap-6 lg:grid-cols-[0.95fr_1.05fr]">
 		<form
 			method="POST"
 			action="?/createBlockFolder"
 			class="rounded-[1.75rem] border border-slate-900/10 bg-white p-5 shadow-[0_24px_70px_-48px_rgba(15,23,42,0.6)]"
 			use:enhance={({ formElement }) => {
-				resetFeedback();
 				createFolderSubmitting = true;
 
 				return async ({ result, update }) => {
@@ -149,16 +130,12 @@
 
 					if (result.type === 'success' && result.data) {
 						formElement.reset();
-						feedback = {
-							tone: 'success',
-							text: 'Folder created.'
-						};
+						toastState.success('Folder created.');
 						syncLibraryState(result.data as Record<string, unknown>);
 					} else if (result.type === 'failure') {
-						feedback = {
-							tone: 'error',
-							text: `Failed to create folder: ${result.data?.error ?? 'Unknown error'}`
-						};
+						toastState.error(
+							`Failed to create folder: ${result.data?.error ?? 'Unknown error'}`
+						);
 					}
 
 					await applyAction(result);
@@ -214,7 +191,6 @@
 			action="?/createReusableBlock"
 			class="rounded-[1.75rem] border border-slate-900/10 bg-white p-5 shadow-[0_24px_70px_-48px_rgba(15,23,42,0.6)]"
 			use:enhance={({ formElement }) => {
-				resetFeedback();
 				createBlockSubmitting = true;
 
 				return async ({ result, update }) => {
@@ -222,16 +198,12 @@
 
 					if (result.type === 'success' && result.data) {
 						formElement.reset();
-						feedback = {
-							tone: 'success',
-							text: 'Shared content created.'
-						};
+						toastState.success('Shared content created.');
 						syncLibraryState(result.data as Record<string, unknown>);
 					} else if (result.type === 'failure') {
-						feedback = {
-							tone: 'error',
-							text: `Failed to create shared content: ${result.data?.error ?? 'Unknown error'}`
-						};
+						toastState.error(
+							`Failed to create shared content: ${result.data?.error ?? 'Unknown error'}`
+						);
 					}
 
 					await applyAction(result);
@@ -401,25 +373,20 @@
 			<form
 				method="POST"
 				action="?/deleteBlockFolder"
-			use:enhance={() => {
+				use:enhance={() => {
 					deletePending = true;
-					resetFeedback();
 
 					return async ({ result, update }) => {
 						deletePending = false;
 
 						if (result.type === 'success' && result.data) {
-							feedback = {
-								tone: 'success',
-								text: 'Folder deleted.'
-							};
+							toastState.success('Folder deleted.');
 							syncLibraryState(result.data as Record<string, unknown>);
 							closeModal();
 						} else if (result.type === 'failure') {
-							feedback = {
-								tone: 'error',
-								text: `Failed to delete folder: ${result.data?.error ?? 'Unknown error'}`
-							};
+							toastState.error(
+								`Failed to delete folder: ${result.data?.error ?? 'Unknown error'}`
+							);
 						}
 
 						await applyAction(result);
@@ -462,26 +429,21 @@
 				<form
 					method="POST"
 					action="?/deleteReusableBlock"
-					use:enhance={() => {
-						deletePending = true;
-						resetFeedback();
+				use:enhance={() => {
+					deletePending = true;
 
-						return async ({ result, update }) => {
-							deletePending = false;
+					return async ({ result, update }) => {
+						deletePending = false;
 
-							if (result.type === 'success' && result.data) {
-								feedback = {
-									tone: 'success',
-									text: 'Content moved to trash.'
-								};
-								syncLibraryState(result.data as Record<string, unknown>);
-								closeModal();
-							} else if (result.type === 'failure') {
-								feedback = {
-									tone: 'error',
-									text: `Failed to delete content: ${result.data?.error ?? 'Unknown error'}`
-								};
-							}
+						if (result.type === 'success' && result.data) {
+							toastState.success('Content moved to trash.');
+							syncLibraryState(result.data as Record<string, unknown>);
+							closeModal();
+						} else if (result.type === 'failure') {
+							toastState.error(
+								`Failed to delete content: ${result.data?.error ?? 'Unknown error'}`
+							);
+						}
 
 							await applyAction(result);
 							await update({ reset: false, invalidateAll: false });

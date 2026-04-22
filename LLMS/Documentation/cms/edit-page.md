@@ -41,7 +41,7 @@ The current layout treats the page body as the primary editing region:
 - SEO title is optional and intended to fall back to current published or draft page title if frontend rendering leaves it empty.
 - The initial SEO fields are SEO title, meta description, canonical URL, Open Graph image URL, no-index, and no-follow.
 - The current editor labels these with more editor-facing copy such as “Title for search”, “Preferred link”, and “Image for sharing”.
-- Save, revert, success, and error messaging is grouped in the side rail so content editing stays visually primary.
+- Save and revert controls stay in the side rail, but transient save/publish/guard feedback now shows as shared CMS toasts instead of inline banners inside the editor.
 - Publish state in the side rail uses three states: `Unpublished`, `Published`, and `Draft changes`.
 - `Last published` in the side rail comes from current published page version.
 - After publish, CMS creates fresh clean draft from newly published revision so page reads as clean until it changes again.

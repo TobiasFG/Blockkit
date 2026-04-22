@@ -4,6 +4,7 @@ Purpose: describe CMS trash behavior for deleted pages and content.
 - Open `/trash` from sidebar to review deleted pages and content items.
 - Restore a deleted page by choosing an active parent page, then submit `Restore page`.
 - Restore a deleted content item with `Restore content`.
+- Restore success and failure feedback appears in shared CMS toast stack, not inline page banner.
 
 # Behavior
 - Moving a page to trash removes it from normal CMS lists but does not delete content featured on that page.

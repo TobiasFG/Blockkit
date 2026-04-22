@@ -15,6 +15,7 @@ Content items use draft/publish workflow so editor can save changes without chan
 - Content editor uses same calmer shell direction as page editor: editable fields in main column, draft/publish state and record metadata in secondary rail.
 - `/content/[id]` now mirrors page editor rail structure: separate draft-state and publish-state panels, same action labels, same revert wording, same idle-action hiding.
 - Draft-rail action buttons animate in and out as state changes instead of lingering disabled.
+- `/content`, `/content/[id]`, and related delete flows now use shared CMS toast feedback for create/save/publish/delete results instead of page-local feedback banners.
 
 # Behavior
 - Content items are stored independently from page content.

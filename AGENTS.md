@@ -6,9 +6,15 @@
 - If a task, suggestion, or documentation note names a skill or recommends a skill fit, use that skill. Do not ignore suggested or explicitly named skills when they apply to the requested work.
 - Use the tools available if relevant.
 - If the user reports a bug, feature, change, or investigation, add it to `LLMS/Changes.md`.
-- If the user asks to execute a specific todo item, complete only that item.
 - If the user asks to perform a specific task, do that task only; do not expand scope.
 - Before implementing a `LLMS/Changes.md` item backed by a design, check whether the design has unresolved review points, open questions, follow-ups, or risks that need user input. If so, stop and ask for answers or approval before implementation instead of guessing.
 - If a task is unclear, blocked, impossible, or depends on unfinished work, state that it is blocked and why.
 - For Svelte 5 state, follow `LLMS/Documentation/svelte/state-patterns.md`. Use it for shared state APIs, context-scoped feature state, side effects, destructuring rules, stores vs runes, and SSR-safe patterns.
+- For UI work, do not default to generic learned UI priors from training when app style or reference images exist. Follow existing app art direction, design system, and visual grammar first - and ALWAYS use the frontend-skill.
+- When reference images are provided, implement them as literally and precisely as possible. Do not redesign, embellish, or “modernize” unless user explicitly asks for interpretation instead of replication.
+- When shadcn-svelte documentation references a component and that component is not installed in the repo yet, install it instead of reimplementing or hand-rolling a substitute. Use the install command provided in the documentation, adapted to repo package-manager rules when needed.
+- When creating brand-new visual concepts or aesthetics without a strong existing reference, prefer using available image-generation tools to explore stronger visual directions instead of producing generic AI-looking UI by default.
+- Do not bias toward patching existing code when a rewrite, replacement, or discarding wrong structure will produce a cleaner implementation or codebase. Patch only when scope is truly small and local; otherwise prefer clean replacement.
+- If visual details from a reference image are hard to interpret precisely, first try to infer them carefully from the image itself. If important details still remain genuinely ambiguous, ask focused follow-up questions about exact values or relationships such as border radius, padding, spacing, shadows, or sizing instead of guessing.
+- For visual implementation tasks, prefer this order: extract concrete visual tokens from reference or app style, choose existing repo primitives/components that fit, implement one precise version, then generalize only after visual match is correct.
 - use bun not npm

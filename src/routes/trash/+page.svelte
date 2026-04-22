@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { applyAction, enhance } from '$app/forms';
+	import { getToastState } from '$lib/Toasts/toastState.svelte';
 	import { pagesStore } from '$lib/client/pagesStore';
 	import { reusableBlocksStore } from '$lib/client/reusableBlocksStore';
 	import type { Page, ReusableBlock } from '$lib/types';
@@ -8,11 +9,11 @@
 
 	let { data }: PageProps = $props();
 
-	let feedback = $state<{ tone: 'success' | 'error'; text: string } | null>(null);
 	let restoringPageId = $state<string | null>(null);
 	let restoringBlockId = $state<string | null>(null);
 	let pageParentSelections = $state<Record<string, string>>({});
 
+	const toastState = getToastState();
 	const activePages = $derived(data.pages ?? []);
 	const deletedPages = $derived(data.deletedPages ?? []);
 	const deletedReusableBlocks = $derived(data.deletedReusableBlocks ?? []);
@@ -63,19 +64,6 @@
 		</p>
 	</section>
 
-	{#if feedback}
-		<div
-			class={[
-				'rounded-2xl border px-4 py-3 text-sm',
-				feedback.tone === 'success'
-					? 'border-emerald-300/70 bg-emerald-50 text-emerald-950'
-					: 'border-red-300/70 bg-red-50 text-red-950'
-			].join(' ')}
-		>
-			{feedback.text}
-		</div>
-	{/if}
-
 	<section class="grid gap-6 xl:grid-cols-[1.2fr_1fr]">
 		<div class="rounded-[1.75rem] border border-stone-200/80 bg-white p-5 shadow-[0_18px_55px_-42px_rgba(41,37,36,0.3)]">
 			<div class="space-y-2 border-b border-stone-200 pb-4">
@@ -115,23 +103,18 @@
 								action="?/restorePage"
 								class="mt-4 space-y-3"
 								use:enhance={() => {
-									feedback = null;
 									restoringPageId = page.id;
 
 									return async ({ result, update }) => {
 										restoringPageId = null;
 
 										if (result.type === 'success' && result.data) {
-											feedback = {
-												tone: 'success',
-												text: 'Page restored.'
-											};
+											toastState.success('Page restored.');
 											pagesStore.set((result.data.pages as Page[]) ?? []);
 										} else if (result.type === 'failure') {
-											feedback = {
-												tone: 'error',
-												text: `Failed to restore page: ${result.data?.error ?? 'Unknown error'}`
-											};
+											toastState.error(
+												`Failed to restore page: ${result.data?.error ?? 'Unknown error'}`
+											);
 										}
 
 										await applyAction(result);
@@ -203,23 +186,18 @@
 								action="?/restoreReusableBlock"
 								class="mt-4"
 								use:enhance={() => {
-									feedback = null;
 									restoringBlockId = block.id;
 
 									return async ({ result, update }) => {
 										restoringBlockId = null;
 
 										if (result.type === 'success' && result.data) {
-											feedback = {
-												tone: 'success',
-												text: 'Content restored. Removed page references stay removed.'
-											};
+											toastState.success('Content restored. Removed page references stay removed.');
 											reusableBlocksStore.set((result.data.reusableBlocks as ReusableBlock[]) ?? []);
 										} else if (result.type === 'failure') {
-											feedback = {
-												tone: 'error',
-												text: `Failed to restore content: ${result.data?.error ?? 'Unknown error'}`
-											};
+											toastState.error(
+												`Failed to restore content: ${result.data?.error ?? 'Unknown error'}`
+											);
 										}
 
 										await applyAction(result);

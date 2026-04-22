@@ -3,6 +3,7 @@
 	import { fly } from 'svelte/transition';
 	import { browser } from '$app/environment';
 	import { applyAction, enhance } from '$app/forms';
+	import { getToastState } from '$lib/Toasts/toastState.svelte';
 	import { pagesStore } from '$lib/client/pagesStore';
 	import BlockListEditor from '$lib/components/cms/BlockListEditor.svelte';
 	import { registerReusableBlockInsertHandler } from '$lib/components/cms/reusableBlockInsertion';
@@ -50,8 +51,6 @@
 	let reusableBlocks = $state<ReusableBlock[]>([]);
 	let formSubmitting = $state(false);
 	let publishing = $state(false);
-	let successMessage = $state('');
-	let errorMessage = $state('');
 	let contentErrors = $state<PageContentValidationErrors>({});
 	let draggingPath = $state<string | null>(null);
 	let canDragBlocks = $state(false);
@@ -59,6 +58,7 @@
 	let loadedSnapshot = $state<LoadedSnapshot | null>(null);
 	let activeTab = $state<'identity' | 'content' | 'discovery'>('content');
 
+	const toastState = getToastState();
 	const serializedContent = $derived(JSON.stringify(content));
 	const hasValidationErrors = $derived(Object.keys(contentErrors).length > 0);
 	const isRoot = $derived(page ? isRootPage(page) : false);
@@ -105,10 +105,6 @@
 	const hasDraftChanges = $derived(page ? pageHasDraftChanges(page) : false);
 	const publishState = $derived(page ? getPagePublishState(page) : 'unpublished');
 
-	const resetMessages = () => {
-		successMessage = '';
-		errorMessage = '';
-	};
 	const getRevertTargetLabel = (currentPage: Page | null) => {
 		if (!currentPage) return 'draft' as const;
 		return currentPage.is_published && !pageHasDraftChanges(currentPage) ? 'published' : 'draft';
@@ -223,8 +219,7 @@
 		};
 		const unregisterReusableInsert = registerReusableBlockInsertHandler(({ reusableBlockId }) => {
 			insertReusableReference(reusableBlockId, content.blocks.length);
-			successMessage = 'Content added to page draft.';
-			errorMessage = '';
+			toastState.success('Content added to page draft.');
 		});
 
 		updateDragMode();
@@ -284,7 +279,6 @@
 		content = createEditablePageContent(loadedSnapshot.content);
 		contentErrors = {};
 		draggingPath = null;
-		resetMessages();
 	};
 </script>
 
@@ -298,13 +292,12 @@
 				const intent =
 					submitter instanceof HTMLButtonElement ? submitter.dataset.intent ?? 'save' : 'save';
 
-				resetMessages();
-
 				if (!syncContentErrors()) {
-					errorMessage =
+					toastState.error(
 						intent === 'publish'
 							? 'Fix highlighted content fields before publishing.'
-							: 'Fix highlighted content fields before saving.';
+							: 'Fix highlighted content fields before saving.'
+					);
 					cancel();
 					formElement.reportValidity();
 					return;
@@ -312,7 +305,7 @@
 
 				if (intent === 'publish') {
 					if (hasUnsavedChanges) {
-						errorMessage = 'Save draft before publishing current page changes.';
+						toastState.error('Save draft before publishing current page changes.');
 						cancel();
 						return;
 					}
@@ -327,13 +320,13 @@
 					publishing = false;
 
 					if (result.type === 'success') {
-						successMessage =
-							intent === 'publish' ? 'Page published successfully!' : 'Draft saved successfully!';
+						toastState.success(intent === 'publish' ? 'Page published.' : 'Page draft saved.');
 					} else if (result.type === 'failure') {
-						errorMessage =
+						toastState.error(
 							intent === 'publish'
 								? `Failed to publish page: ${result.data?.error ?? 'Unknown error'}`
-								: `Failed to update page: ${result.data?.error ?? 'Unknown error'}`;
+								: `Failed to update page: ${result.data?.error ?? 'Unknown error'}`
+						);
 					}
 
 					await applyAction(result);
@@ -637,17 +630,6 @@
 									</button>
 								{/if}
 							</div>
-
-							{#if successMessage}
-								<div class="mt-4 rounded-2xl border border-emerald-300/70 bg-emerald-50 px-4 py-3 text-sm text-emerald-900">
-									{successMessage}
-								</div>
-							{/if}
-							{#if errorMessage}
-								<div class="mt-4 rounded-2xl border border-red-300/70 bg-red-50 px-4 py-3 text-sm text-red-900">
-									{errorMessage}
-								</div>
-							{/if}
 						</section>
 
 						<section class="rounded-[1.75rem] border border-stone-200/80 bg-white/92 p-5 shadow-[0_22px_60px_-42px_rgba(41,37,36,0.2)]">

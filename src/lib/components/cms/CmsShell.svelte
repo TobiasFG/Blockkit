@@ -7,6 +7,7 @@
 	import { onMount } from 'svelte';
 	import type { Snippet } from 'svelte';
 	import Sidebar from './Sidebar.svelte';
+	import ToastProvider from '$lib/Toasts/ToastProvider.svelte';
 
 	let { pages, blockFolders, reusableBlocks, reusableBlockPageReferences, user, children } = $props<{
 		pages: Page[];
@@ -90,66 +91,68 @@
 	};
 </script>
 
-<div class="relative min-h-screen bg-slate-50">
-	<div
-		aria-hidden="true"
-		class={[
-			'pointer-events-none absolute inset-0 z-40 bg-slate-50 transition-opacity ease-[cubic-bezier(0.22,1,0.36,1)]',
-			prefersReducedMotion ? 'duration-100' : 'duration-[440ms]',
-			entered && !exiting ? 'opacity-0' : 'opacity-100'
-		].join(' ')}
-	></div>
-
-	{#if !exiting}
+<ToastProvider>
+	<div class="relative min-h-screen bg-slate-50">
 		<div
-			out:sidebarOutro={{ reducedMotion: prefersReducedMotion }}
+			aria-hidden="true"
 			class={[
-				'transition-opacity ease-[cubic-bezier(0.22,1,0.36,1)]',
-				prefersReducedMotion ? 'duration-100' : 'duration-[320ms]',
-				entered ? 'opacity-100' : 'opacity-0'
+				'pointer-events-none absolute inset-0 z-40 bg-slate-50 transition-opacity ease-[cubic-bezier(0.22,1,0.36,1)]',
+				prefersReducedMotion ? 'duration-100' : 'duration-[440ms]',
+				entered && !exiting ? 'opacity-0' : 'opacity-100'
 			].join(' ')}
-		>
-			<Sidebar
-				pages={pages}
-				blockFolders={blockFolders}
-				reusableBlocks={reusableBlocks}
-				reusableBlockPageReferences={reusableBlockPageReferences}
-				user={user}
-				mobileOpen={mobileOpen}
-				onClose={closeMobile}
-				logoutEnhanceSubmit={logoutSubmit}
-			/>
-		</div>
-	{/if}
+		></div>
 
-	{#if !exiting}
-		<div
-			out:contentOutro={{ reducedMotion: prefersReducedMotion }}
-			onoutroend={handleContentOutroEnd}
-			class={[
-				'lg:pl-72 transition-opacity ease-[cubic-bezier(0.22,1,0.36,1)]',
-				prefersReducedMotion ? 'duration-100 delay-0' : 'duration-[360ms] delay-[80ms]',
-				entered ? 'opacity-100' : 'opacity-0'
-			].join(' ')}
-		>
-			<header class="sticky top-0 z-30 flex h-14 items-center gap-3 border-b border-slate-200 bg-white/80 px-4 backdrop-blur lg:hidden">
-				<button
-					type="button"
-					class="inline-flex h-9 w-9 items-center justify-center rounded-md text-slate-700 hover:bg-slate-100"
-					aria-label="Open sidebar"
-					aria-expanded={mobileOpen}
-					onclick={() => (mobileOpen = true)}
-				>
-					<svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2">
-						<path d="M4 6h16M4 12h16M4 18h16" />
-					</svg>
-				</button>
-				<div class="text-sm font-semibold text-slate-900">Blockkit CMS</div>
-			</header>
-
-			<div class="p-4 lg:p-8">
-				{@render children()}
+		{#if !exiting}
+			<div
+				out:sidebarOutro={{ reducedMotion: prefersReducedMotion }}
+				class={[
+					'transition-opacity ease-[cubic-bezier(0.22,1,0.36,1)]',
+					prefersReducedMotion ? 'duration-100' : 'duration-[320ms]',
+					entered ? 'opacity-100' : 'opacity-0'
+				].join(' ')}
+			>
+				<Sidebar
+					pages={pages}
+					blockFolders={blockFolders}
+					reusableBlocks={reusableBlocks}
+					reusableBlockPageReferences={reusableBlockPageReferences}
+					user={user}
+					mobileOpen={mobileOpen}
+					onClose={closeMobile}
+					logoutEnhanceSubmit={logoutSubmit}
+				/>
 			</div>
-		</div>
-	{/if}
-</div>
+		{/if}
+
+		{#if !exiting}
+			<div
+				out:contentOutro={{ reducedMotion: prefersReducedMotion }}
+				onoutroend={handleContentOutroEnd}
+				class={[
+					'lg:pl-72 transition-opacity ease-[cubic-bezier(0.22,1,0.36,1)]',
+					prefersReducedMotion ? 'duration-100 delay-0' : 'duration-[360ms] delay-[80ms]',
+					entered ? 'opacity-100' : 'opacity-0'
+				].join(' ')}
+			>
+				<header class="sticky top-0 z-30 flex h-14 items-center gap-3 border-b border-slate-200 bg-white/80 px-4 backdrop-blur lg:hidden">
+					<button
+						type="button"
+						class="inline-flex h-9 w-9 items-center justify-center rounded-md text-slate-700 hover:bg-slate-100"
+						aria-label="Open sidebar"
+						aria-expanded={mobileOpen}
+						onclick={() => (mobileOpen = true)}
+					>
+						<svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2">
+							<path d="M4 6h16M4 12h16M4 18h16" />
+						</svg>
+					</button>
+					<div class="text-sm font-semibold text-slate-900">Blockkit CMS</div>
+				</header>
+
+				<div class="p-4 lg:p-8">
+					{@render children()}
+				</div>
+			</div>
+		{/if}
+	</div>
+</ToastProvider>

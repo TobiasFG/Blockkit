@@ -2,6 +2,7 @@
 	import { fly } from 'svelte/transition';
 	import { browser } from '$app/environment';
 	import { applyAction, enhance } from '$app/forms';
+	import { getToastState } from '$lib/Toasts/toastState.svelte';
 	import { type BlockDefinition, type BlockFieldDefinition } from '$lib/blocks/registry';
 	import { blockFoldersStore, reusableBlocksStore } from '$lib/client/reusableBlocksStore';
 	import BlockListEditor from '$lib/components/cms/BlockListEditor.svelte';
@@ -39,21 +40,16 @@
 	let contentDraft = $state(createDefaultBlockInstance('text', 'placeholder-reusable-block'));
 	let validationErrors = $state<Record<string, string>>({});
 	let draggingPath = $state<string | null>(null);
-	let successMessage = $state('');
-	let errorMessage = $state('');
 	let saving = $state(false);
 	let publishing = $state(false);
 	let prefersReducedMotion = $state(false);
 	let loadedSnapshot = $state<LoadedSnapshot | null>(null);
 
+	const toastState = getToastState();
 	const inputClass =
 		'w-full rounded-2xl border border-stone-300/80 bg-white px-4 py-3 text-sm text-stone-900 shadow-[0_1px_0_rgba(41,37,36,0.04)] outline-none transition placeholder:text-stone-400 focus:border-stone-500 focus:ring-4 focus:ring-stone-200/70';
 	const captionClass = 'text-[10px] font-medium uppercase tracking-[0.24em] text-stone-500';
 
-	const resetMessages = () => {
-		successMessage = '';
-		errorMessage = '';
-	};
 	const getRevertTargetLabel = (currentBlock: ReusableBlock) =>
 		getReusableBlockPublishState(currentBlock) === 'published' ? 'published' : 'draft';
 	const publishState = $derived(getReusableBlockPublishState(block));
@@ -236,7 +232,6 @@
 		contentDraft = createEditableReusableBlockContent(loadedSnapshot.content);
 		validationErrors = {};
 		draggingPath = null;
-		resetMessages();
 	};
 </script>
 
@@ -261,30 +256,30 @@
 		</div>
 	</header>
 
-		<form
-			id="update-reusable-block-form"
-			method="POST"
-			action="?/updateReusableBlock"
-			class="mt-8 grid gap-10 xl:grid-cols-[minmax(0,1fr)_22rem] xl:items-start"
-				use:enhance={({ formElement, cancel, submitter }) => {
+	<form
+		id="update-reusable-block-form"
+		method="POST"
+		action="?/updateReusableBlock"
+		class="mt-8 grid gap-10 xl:grid-cols-[minmax(0,1fr)_22rem] xl:items-start"
+		use:enhance={({ formElement, cancel, submitter }) => {
 				const intent =
 					submitter instanceof HTMLButtonElement ? submitter.dataset.intent ?? 'save' : 'save';
 
-				resetMessages();
 				validationErrors = validateReusableBlockEditorState(contentDraft);
 				if (Object.keys(validationErrors).length > 0) {
 					cancel();
-					errorMessage =
+					toastState.error(
 						intent === 'publish'
 							? 'Fix highlighted block fields before publishing.'
-							: 'Fix the highlighted block fields before saving.';
+							: 'Fix the highlighted block fields before saving.'
+					);
 					formElement.reportValidity();
 					return;
 				}
 
 				if (intent === 'publish') {
 					if (hasUnsavedChanges) {
-						errorMessage = 'Save draft before publishing current content changes.';
+						toastState.error('Save draft before publishing current content changes.');
 						cancel();
 						return;
 					}
@@ -298,20 +293,19 @@
 					saving = false;
 					publishing = false;
 
-						if (result.type === 'success' && result.data) {
-							successMessage =
-								intent === 'publish' ? 'Content published successfully!' : 'Content updated successfully!';
-							if ('block' in result.data) {
-								block = result.data.block as ReusableBlock;
-								name = block.name;
-								folderId = block.folder_id ?? '';
-								contentDraft = createEditableReusableBlockContent(block.content);
-								loadedSnapshot = {
-									name,
-									folderId,
-									content: createEditableReusableBlockContent(block.content),
-									revertTargetLabel: getRevertTargetLabel(block)
-								};
+					if (result.type === 'success' && result.data) {
+						toastState.success(intent === 'publish' ? 'Content published.' : 'Content draft saved.');
+						if ('block' in result.data) {
+							block = result.data.block as ReusableBlock;
+							name = block.name;
+							folderId = block.folder_id ?? '';
+							contentDraft = createEditableReusableBlockContent(block.content);
+							loadedSnapshot = {
+								name,
+								folderId,
+								content: createEditableReusableBlockContent(block.content),
+								revertTargetLabel: getRevertTargetLabel(block)
+							};
 							validationErrors = {};
 							draggingPath = null;
 							if (browser) {
@@ -327,10 +321,11 @@
 							}
 						}
 					} else if (result.type === 'failure') {
-						errorMessage =
+						toastState.error(
 							intent === 'publish'
 								? `Failed to publish content: ${result.data?.error ?? 'Unknown error'}`
-								: `Failed to update content: ${result.data?.error ?? 'Unknown error'}`;
+								: `Failed to update content: ${result.data?.error ?? 'Unknown error'}`
+						);
 					}
 
 					await applyAction(result);
@@ -338,11 +333,11 @@
 					formElement.reportValidity();
 				};
 			}}
-		>
-			<input type="hidden" name="content" value={JSON.stringify(contentDraft)} />
+	>
+		<input type="hidden" name="content" value={JSON.stringify(contentDraft)} />
 
 			<div class="space-y-8">
-				<section class="space-y-5">
+			<section class="space-y-5">
 					<div class="space-y-2">
 						<p class={captionClass}>Identity</p>
 						<h2 class="text-[1.65rem] font-semibold tracking-[-0.035em] text-stone-950">Name and location</h2>
@@ -351,20 +346,20 @@
 						</p>
 					</div>
 
-						<div class="grid gap-5 lg:grid-cols-[minmax(0,1.2fr)_minmax(16rem,0.8fr)]">
-							<div class="space-y-2">
-								<label for="name" class="text-sm font-medium text-stone-800">Name</label>
-								<input id="name" type="text" name="name" required bind:value={name} class={inputClass} />
-							</div>
-							<div class="space-y-2">
-								<label for="folderId" class="text-sm font-medium text-stone-800">Folder</label>
-								<select id="folderId" name="folderId" bind:value={folderId} class={inputClass}>
-									<option value="">Root</option>
-									{#each blockFolders as folder}
-										<option value={folder.id}>{folder.name}</option>
-									{/each}
-								</select>
-							</div>
+					<div class="grid gap-5 lg:grid-cols-[minmax(0,1.2fr)_minmax(16rem,0.8fr)]">
+						<div class="space-y-2">
+							<label for="name" class="text-sm font-medium text-stone-800">Name</label>
+							<input id="name" type="text" name="name" required bind:value={name} class={inputClass} />
+						</div>
+						<div class="space-y-2">
+							<label for="folderId" class="text-sm font-medium text-stone-800">Folder</label>
+							<select id="folderId" name="folderId" bind:value={folderId} class={inputClass}>
+								<option value="">Root</option>
+								{#each blockFolders as folder}
+									<option value={folder.id}>{folder.name}</option>
+								{/each}
+							</select>
+						</div>
 					</div>
 				</section>
 
@@ -511,18 +506,6 @@
 								</button>
 							{/if}
 						</div>
-
-						{#if successMessage}
-							<div class="rounded-2xl border border-emerald-300/70 bg-emerald-50 px-4 py-3 text-sm text-emerald-950">
-								{successMessage}
-							</div>
-						{/if}
-
-						{#if errorMessage}
-							<div class="rounded-2xl border border-red-300/70 bg-red-50 px-4 py-3 text-sm text-red-950">
-								{errorMessage}
-							</div>
-						{/if}
 					</section>
 
 					<section class="rounded-[1.75rem] border border-stone-200/80 bg-white/92 p-5 shadow-[0_22px_60px_-42px_rgba(41,37,36,0.2)]">
