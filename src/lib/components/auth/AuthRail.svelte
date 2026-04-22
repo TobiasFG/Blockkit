@@ -1,6 +1,10 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
 	import type { SubmitFunction } from '@sveltejs/kit';
+	import * as Alert from '$lib/components/ui/alert/index.js';
+	import { Button } from '$lib/components/ui/button/index.js';
+	import { Input } from '$lib/components/ui/input/index.js';
+	import { Label } from '$lib/components/ui/label/index.js';
 
 	type Feedback = { tone: 'error' | 'success'; text: string } | null;
 	type Mode = 'login' | 'signup';
@@ -54,118 +58,111 @@
 
 <section
 	out:railOutro={{ reducedMotion }}
-	class="relative z-20 flex min-h-screen flex-col border-r border-black/5 bg-white/80 p-6 shadow-[18px_0_60px_-38px_rgba(15,23,42,0.45)] backdrop-blur-xl sm:p-8 lg:absolute lg:inset-y-0 lg:left-0 lg:w-[27rem] lg:p-10"
+	class="relative z-20 flex min-h-screen flex-col border-r border-border/60 bg-card/85 p-6 shadow-[18px_0_60px_-38px_rgba(15,23,42,0.45)] backdrop-blur-xl sm:p-8 lg:absolute lg:inset-y-0 lg:left-0 lg:w-[27rem] lg:p-10"
 >
 	<div class="flex items-center gap-3">
-		<div class="grid h-11 w-11 place-items-center rounded-2xl bg-slate-900 text-sm font-semibold tracking-[0.22em] text-white">
+		<div class="grid h-11 w-11 place-items-center rounded-2xl bg-primary text-sm font-semibold tracking-[0.22em] text-primary-foreground">
 			BK
 		</div>
 		<div>
-			<p class="text-[11px] font-semibold uppercase tracking-[0.32em] text-slate-500">Blockkit</p>
+			<p class="text-[11px] font-semibold uppercase tracking-[0.32em] text-muted-foreground">Blockkit</p>
 			<h1 class="font-serif text-2xl tracking-tight">Editorial CMS</h1>
 		</div>
 	</div>
 
 	<div class="mt-10 space-y-4">
-		<p class="text-xs font-semibold uppercase tracking-[0.28em] text-slate-500">Access</p>
+		<p class="text-xs font-semibold uppercase tracking-[0.28em] text-muted-foreground">Access</p>
 		<h2 class="max-w-sm font-serif text-4xl leading-tight tracking-tight">
 			Open workspace. Shape pages. Keep shared content tight.
 		</h2>
-		<p class="max-w-md text-sm leading-6 text-slate-600">
+		<p class="max-w-md text-sm leading-6 text-muted-foreground">
 			Log in first. Sign up stays one switch away when you need a new editor account.
 		</p>
 	</div>
 
-	<div class="mt-8 rounded-[1.75rem] border border-slate-200/80 bg-white/88 p-5 shadow-[0_22px_48px_-38px_rgba(15,23,42,0.45)]">
-		<div class="flex rounded-2xl bg-slate-100 p-1">
-			<button
+	<div class="mt-8 rounded-[1.75rem] border border-border/80 bg-card/92 p-5 shadow-[0_22px_48px_-38px_rgba(15,23,42,0.45)]">
+		<div class="flex rounded-2xl bg-muted p-1">
+			<Button
 				type="button"
-				class={[
-					'flex-1 rounded-xl px-3 py-2 text-sm font-medium transition',
-					mode === 'login' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'
-				].join(' ')}
+				variant={mode === 'login' ? 'secondary' : 'ghost'}
+				class="h-10 flex-1 rounded-xl"
 				onclick={() => onSetMode('login')}
 			>
 				Log in
-			</button>
-			<button
+			</Button>
+			<Button
 				type="button"
-				class={[
-					'flex-1 rounded-xl px-3 py-2 text-sm font-medium transition',
-					mode === 'signup' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'
-				].join(' ')}
+				variant={mode === 'signup' ? 'secondary' : 'ghost'}
+				class="h-10 flex-1 rounded-xl"
 				onclick={() => onSetMode('signup')}
 			>
 				Sign up
-			</button>
+			</Button>
 		</div>
 
 		{#if feedback}
-			<div
-				class={[
-					'mt-4 rounded-2xl border px-4 py-3 text-sm',
-					feedback.tone === 'error'
-						? 'border-red-200 bg-red-50 text-red-800'
-						: 'border-emerald-200 bg-emerald-50 text-emerald-800'
-				].join(' ')}
+			<Alert.Root
+				class="mt-4"
+				variant={feedback.tone === 'error' ? 'destructive' : 'default'}
 			>
-				{feedback.text}
-			</div>
+				<Alert.Description>{feedback.text}</Alert.Description>
+			</Alert.Root>
 		{/if}
 
 		<form method="POST" action={actionForMode} class="mt-4 space-y-4" use:enhance={enhanceSubmit}>
 			<input type="hidden" name="redirectTo" value={redirectTo} />
 
 			<div class="space-y-1.5">
-				<label for="email" class="text-sm font-medium text-slate-700">Email</label>
-				<input
+				<Label for="email">Email</Label>
+				<Input
 					id="email"
 					name="email"
 					type="email"
 					required
 					autocomplete="email"
 					value={emailValue}
-					class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 shadow-sm outline-none transition focus:border-emerald-300 focus:ring-2 focus:ring-emerald-100"
+					class="h-11 rounded-2xl"
 					placeholder="editor@blockkit.local"
 				/>
 			</div>
 
 			<div class="space-y-1.5">
-				<label for="password" class="text-sm font-medium text-slate-700">Password</label>
-				<input
+				<Label for="password">Password</Label>
+				<Input
 					id="password"
 					name="password"
 					type="password"
 					required
-					minlength="6"
+					minlength={6}
 					autocomplete={mode === 'login' ? 'current-password' : 'new-password'}
-					class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 shadow-sm outline-none transition focus:border-emerald-300 focus:ring-2 focus:ring-emerald-100"
+					class="h-11 rounded-2xl"
 					placeholder="Minimum 6 characters"
 				/>
 			</div>
 
-			<button
+			<Button
 				type="submit"
-				class="inline-flex w-full items-center justify-center rounded-2xl bg-slate-900 px-4 py-3 text-sm font-semibold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-70"
+				class="h-11 w-full rounded-2xl"
 				disabled={pending}
 			>
 				{pending ? 'Working...' : submitLabel}
-			</button>
+			</Button>
 		</form>
 
-		<div class="mt-4 flex items-center justify-between gap-3 border-t border-slate-100 pt-4 text-sm text-slate-600">
+		<div class="mt-4 flex items-center justify-between gap-3 border-t border-border/60 pt-4 text-sm text-muted-foreground">
 			<span>{switchLabel}</span>
-			<button
+			<Button
 				type="button"
-				class="font-semibold text-slate-900 underline decoration-slate-300 underline-offset-4 transition hover:decoration-slate-900"
+				variant="link"
+				class="h-auto p-0 font-semibold"
 				onclick={onToggleMode}
 			>
 				{switchActionLabel}
-			</button>
+			</Button>
 		</div>
 	</div>
 
-	<div class="mt-auto pt-8 text-xs leading-6 text-slate-500">
+	<div class="mt-auto pt-8 text-xs leading-6 text-muted-foreground">
 		Local auth uses Supabase email/password. Any signed-in editor can access CMS in this pass.
 	</div>
 </section>

@@ -4,6 +4,7 @@
 	import type { SubmitFunction } from '@sveltejs/kit';
 	import AuthPreviewStage from '$lib/components/auth/AuthPreviewStage.svelte';
 	import AuthRail from '$lib/components/auth/AuthRail.svelte';
+	import ThemeToggle from '$lib/components/ThemeToggle.svelte';
 	import { onMount } from 'svelte';
 	import type { PageProps } from './$types';
 
@@ -108,21 +109,25 @@
 	<title>Blockkit login</title>
 </svelte:head>
 
-<div class="min-h-screen overflow-hidden bg-[linear-gradient(140deg,#f5f1e8_0%,#fbfaf7_38%,#e8efe6_100%)] text-slate-900">
+<div class="min-h-screen overflow-hidden bg-[linear-gradient(140deg,color-mix(in_oklab,var(--background)_88%,oklch(0.97_0.02_95))_0%,var(--background)_42%,color-mix(in_oklab,var(--background)_84%,oklch(0.89_0.03_160))_100%)] text-foreground">
 	<div class="relative min-h-screen">
 		<div
 			aria-hidden="true"
 			class={[
-				'pointer-events-none absolute inset-0 z-40 bg-[linear-gradient(140deg,#f5f1e8_0%,#fbfaf7_38%,#e8efe6_100%)] transition-opacity ease-[cubic-bezier(0.22,1,0.36,1)]',
+				'pointer-events-none absolute inset-0 z-40 bg-[linear-gradient(140deg,color-mix(in_oklab,var(--background)_88%,oklch(0.97_0.02_95))_0%,var(--background)_42%,color-mix(in_oklab,var(--background)_84%,oklch(0.89_0.03_160))_100%)] transition-opacity ease-[cubic-bezier(0.22,1,0.36,1)]',
 				prefersReducedMotion ? 'duration-100' : 'duration-[440ms]',
 				entered && !exiting ? 'opacity-0' : 'opacity-100'
 			].join(' ')}
 		></div>
 
 		<div class="pointer-events-none absolute inset-0 overflow-hidden">
-			<div class="absolute -left-16 top-12 h-56 w-56 rounded-full bg-amber-300/35 blur-3xl"></div>
-			<div class="absolute right-0 top-0 h-72 w-72 rounded-full bg-emerald-200/45 blur-3xl"></div>
-			<div class="absolute bottom-0 right-12 h-64 w-64 rounded-full bg-sky-200/30 blur-3xl"></div>
+			<div class="absolute -left-16 top-12 h-56 w-56 rounded-full bg-amber-400/20 blur-3xl"></div>
+			<div class="absolute right-0 top-0 h-72 w-72 rounded-full bg-emerald-400/18 blur-3xl"></div>
+			<div class="absolute bottom-0 right-12 h-64 w-64 rounded-full bg-sky-500/18 blur-3xl"></div>
+		</div>
+
+		<div class="absolute right-4 top-4 z-30">
+			<ThemeToggle />
 		</div>
 
 		<div class="relative min-h-screen">

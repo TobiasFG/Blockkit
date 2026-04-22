@@ -39,10 +39,10 @@
 	);
 	const publishStateClass = $derived(
 		publishState === 'draft-changes'
-			? 'bg-sky-100 text-sky-800'
+			? 'bg-sky-500/15 text-sky-700 dark:text-sky-300'
 			: publishState === 'published'
-				? 'bg-emerald-100 text-emerald-800'
-				: 'bg-amber-100 text-amber-800'
+				? 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-300'
+				: 'bg-amber-500/15 text-amber-700 dark:text-amber-300'
 	);
 </script>
 
@@ -53,7 +53,7 @@
 			class={[
 				'flex min-w-0 flex-1 items-center justify-between gap-3 rounded-md py-2 pr-3 text-sm transition',
 				depth === 0 ? 'pl-3' : '',
-				isActive ? 'bg-slate-100 text-slate-900' : 'text-slate-700 hover:bg-slate-100'
+				isActive ? 'bg-muted text-foreground' : 'text-muted-foreground hover:bg-muted hover:text-foreground'
 			].join(' ')}
 			style={depth > 0 ? `padding-left: ${depth * 1.25 + 0.75}rem` : undefined}
 			onclick={onClose}
@@ -64,13 +64,13 @@
 					{publishStateLabel}
 				</span>
 			</div>
-			<span class="shrink-0 font-mono text-xs text-slate-500">{displayPath(node.page.path)}</span>
+			<span class="shrink-0 font-mono text-xs text-muted-foreground">{displayPath(node.page.path)}</span>
 		</a>
 
 		{#if hasChildren}
 			<button
 				type="button"
-				class="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-md text-slate-500 transition hover:bg-slate-100 hover:text-slate-700 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-slate-200/70"
+				class="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-md text-muted-foreground transition hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-ring/30"
 				aria-label={isOpen ? `Collapse ${node.page.title}` : `Expand ${node.page.title}`}
 				aria-expanded={isOpen}
 				onclick={() => onToggle(node.page.id)}

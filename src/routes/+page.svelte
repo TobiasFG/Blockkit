@@ -4,6 +4,11 @@
 	import { flip } from 'svelte/animate';
 
 	import { pagesStore } from '$lib/client/pagesStore';
+	import * as Alert from '$lib/components/ui/alert/index.js';
+	import { Badge } from '$lib/components/ui/badge/index.js';
+	import { Button } from '$lib/components/ui/button/index.js';
+	import { Input } from '$lib/components/ui/input/index.js';
+	import { Label } from '$lib/components/ui/label/index.js';
 	import { buildEditPagePath, buildPagePathPreview, isRootPage } from '$lib/pagePath';
 	import { getPagePublishState, pageHasDraftChanges } from '$lib/pageStatus';
 	import type { Page } from '$lib/types';
@@ -31,11 +36,9 @@
 		year: 'numeric'
 	});
 
-	const captionClass = 'text-[10px] font-medium uppercase tracking-[0.24em] text-stone-500';
+	const captionClass = 'text-[10px] font-medium uppercase tracking-[0.24em] text-muted-foreground';
 	const panelClass =
-		'rounded-[1.75rem] border border-stone-200/80 bg-white/92 p-5 shadow-[0_22px_60px_-42px_rgba(41,37,36,0.2)]';
-	const inputClass =
-		'w-full rounded-2xl border border-stone-300/80 bg-white px-4 py-3 text-sm text-stone-900 shadow-[0_1px_0_rgba(41,37,36,0.04)] outline-none transition placeholder:text-stone-400 focus:border-stone-500 focus:ring-4 focus:ring-stone-200/70';
+		'rounded-[1.75rem] border border-border/80 bg-card/92 p-5 shadow-[0_22px_60px_-42px_rgba(15,23,42,0.24)]';
 
 	function sortDashboardPages(items: Page[]) {
 		return [...items].sort((a, b) => {
@@ -89,9 +92,9 @@
 	};
 	const getPublishStateClass = (page: Page) => {
 		const state = getPagePublishState(page);
-		if (state === 'draft-changes') return 'bg-sky-100 text-sky-800';
-		if (state === 'published') return 'bg-emerald-100 text-emerald-800';
-		return 'bg-amber-100 text-amber-800';
+		if (state === 'draft-changes') return 'bg-sky-500/15 text-sky-700 dark:text-sky-300';
+		if (state === 'published') return 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-300';
+		return 'bg-amber-500/15 text-amber-700 dark:text-amber-300';
 	};
 
 	$effect(() => {
@@ -107,31 +110,31 @@
 
 <main class="mx-auto max-w-[96rem] px-4 pb-10 pt-6 sm:px-6 lg:px-8">
 	<div class="space-y-8">
-		<header class="border-b border-stone-300/70 pb-8">
+		<header class="border-b border-border/70 pb-8">
 			<div class="grid gap-8 xl:grid-cols-[minmax(0,1fr)_24rem] xl:items-start">
 				<div class="space-y-5">
 					<div class="space-y-2">
 						<p class={captionClass}>Dashboard</p>
-						<h1 class="max-w-3xl text-[2.6rem] font-semibold tracking-[-0.045em] text-stone-950 sm:text-5xl">
+						<h1 class="max-w-3xl text-[2.6rem] font-semibold tracking-[-0.045em] text-foreground sm:text-5xl">
 							Pages first. Shared content stays close, not loud.
 						</h1>
-						<p class="max-w-[66ch] text-base leading-7 text-stone-600">
+						<p class="max-w-[66ch] text-base leading-7 text-muted-foreground">
 							Open draft work first, create next page fast, leave shared content structure to dedicated Content library.
 						</p>
 					</div>
 
-					<div class="flex flex-wrap gap-6 border-t border-stone-200 pt-5">
+					<div class="flex flex-wrap gap-6 border-t border-border pt-5">
 						<div class="space-y-1">
 							<p class={captionClass}>Pages</p>
-							<p class="text-3xl font-semibold tracking-[-0.04em] text-stone-950">{dashboardPages.length}</p>
+							<p class="text-3xl font-semibold tracking-[-0.04em] text-foreground">{dashboardPages.length}</p>
 						</div>
 						<div class="space-y-1">
 							<p class={captionClass}>Draft work</p>
-							<p class="text-3xl font-semibold tracking-[-0.04em] text-stone-950">{draftPageCount}</p>
+							<p class="text-3xl font-semibold tracking-[-0.04em] text-foreground">{draftPageCount}</p>
 						</div>
 						<div class="space-y-1">
 							<p class={captionClass}>Content items</p>
-							<p class="text-3xl font-semibold tracking-[-0.04em] text-stone-950">{reusableBlockCount}</p>
+							<p class="text-3xl font-semibold tracking-[-0.04em] text-foreground">{reusableBlockCount}</p>
 						</div>
 					</div>
 				</div>
@@ -139,21 +142,17 @@
 				<section id="create" class={`${panelClass} scroll-mt-20`}>
 					<div class="space-y-1">
 						<p class={captionClass}>New page</p>
-						<h2 class="text-[1.35rem] font-semibold tracking-[-0.03em] text-stone-950">Create next draft</h2>
-						<p class="text-sm leading-6 text-stone-600">Start with page name, parent, optional URL override.</p>
+						<h2 class="text-[1.35rem] font-semibold tracking-[-0.03em] text-foreground">Create next draft</h2>
+						<p class="text-sm leading-6 text-muted-foreground">Start with page name, parent, optional URL override.</p>
 					</div>
 
 					{#if pageFeedback}
-						<div
-							class={[
-								'mt-4 rounded-2xl px-4 py-3 text-sm',
-								pageFeedback.tone === 'success'
-									? 'border border-emerald-300/70 bg-emerald-50 text-emerald-950'
-									: 'border border-red-300/70 bg-red-50 text-red-950'
-							].join(' ')}
+						<Alert.Root
+							class="mt-4"
+							variant={pageFeedback.tone === 'success' ? 'default' : 'destructive'}
 						>
-							{pageFeedback.text}
-						</div>
+							<Alert.Description>{pageFeedback.text}</Alert.Description>
+						</Alert.Root>
 					{/if}
 
 					<form
@@ -196,25 +195,25 @@
 						}}
 					>
 						<div class="space-y-2">
-							<label for="title" class="text-sm font-medium text-stone-800">Page title</label>
-							<input
+							<Label for="title">Page title</Label>
+							<Input
 								id="title"
 								type="text"
 								name="title"
 								placeholder="About us"
 								required
 								bind:value={createTitle}
-								class={inputClass}
+								class="h-11 rounded-2xl"
 							/>
 						</div>
 						<div class="space-y-2">
-							<label for="parentPageId" class="text-sm font-medium text-stone-800">Parent page</label>
+							<Label for="parentPageId">Parent page</Label>
 							<select
 								id="parentPageId"
 								name="parentPageId"
 								required
 								bind:value={createParentPageId}
-								class={inputClass}
+								class="border-input bg-background focus-visible:border-ring focus-visible:ring-ring/50 flex h-11 w-full rounded-2xl border px-4 py-3 text-sm outline-none focus-visible:ring-3"
 							>
 								{#each pages as page (page.id)}
 									<option value={page.id}>{page.title} ({displayPath(page.path)})</option>
@@ -222,28 +221,28 @@
 							</select>
 						</div>
 						<div class="space-y-2">
-							<label for="urlName" class="text-sm font-medium text-stone-800">URL name</label>
-							<input
+							<Label for="urlName">URL name</Label>
+							<Input
 								id="urlName"
 								type="text"
 								name="urlName"
 								placeholder="about-us"
 								bind:value={createUrlName}
-								class={`${inputClass} font-mono text-[13px]`}
+								class="h-11 rounded-2xl font-mono text-[13px]"
 							/>
-							<p class="text-sm leading-6 text-stone-500">Optional. Leave empty to derive URL from title.</p>
+							<p class="text-sm leading-6 text-muted-foreground">Optional. Leave empty to derive URL from title.</p>
 						</div>
-						<div class="rounded-2xl border border-stone-200/80 bg-stone-50 px-4 py-3">
+						<div class="rounded-2xl border border-border/80 bg-muted/50 px-4 py-3">
 							<p class={captionClass}>Path preview</p>
-							<p class="mt-1 font-mono text-sm text-stone-800">{displayPath(createPathPreview)}</p>
+							<p class="mt-1 font-mono text-sm text-foreground">{displayPath(createPathPreview)}</p>
 						</div>
-						<button
+						<Button
 							type="submit"
-							class="inline-flex min-h-11 w-full items-center justify-center rounded-full bg-stone-950 px-5 py-3 text-sm font-semibold text-stone-50 transition hover:bg-stone-800 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-stone-300/70 disabled:cursor-not-allowed disabled:opacity-70"
+							class="h-11 w-full rounded-full"
 							disabled={formSubmitting}
 						>
 							{formSubmitting ? 'Creating...' : 'Create page'}
-						</button>
+						</Button>
 					</form>
 				</section>
 			</div>
@@ -251,31 +250,31 @@
 
 		<section class="grid gap-8 xl:grid-cols-[minmax(0,1fr)_22rem] xl:items-start">
 			<div class="space-y-5">
-				<div class="flex flex-col gap-3 border-b border-stone-200 pb-4 sm:flex-row sm:items-end sm:justify-between">
+				<div class="flex flex-col gap-3 border-b border-border pb-4 sm:flex-row sm:items-end sm:justify-between">
 					<div class="space-y-2">
 						<p class={captionClass}>Pages</p>
-						<h2 class="text-[1.7rem] font-semibold tracking-[-0.035em] text-stone-950">Open current page work</h2>
-						<p class="max-w-[62ch] text-base leading-7 text-stone-600">
+						<h2 class="text-[1.7rem] font-semibold tracking-[-0.035em] text-foreground">Open current page work</h2>
+						<p class="max-w-[62ch] text-base leading-7 text-muted-foreground">
 							Draft changes sort first, then most recently updated pages.
 						</p>
 					</div>
-					<span class="text-sm font-medium text-stone-500">{dashboardPages.length} total</span>
+					<span class="text-sm font-medium text-muted-foreground">{dashboardPages.length} total</span>
 				</div>
 
 				{#if dashboardPages.length > 0}
-					<ul class="divide-y divide-stone-200 border-t border-stone-200">
+					<ul class="divide-y divide-border border-t border-border">
 						{#each dashboardPages as page (page.id)}
 							<li animate:flip={{ duration: 300 }} class="py-5">
 								<div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
 									<div class="min-w-0 space-y-2">
 										<div class="flex flex-wrap items-center gap-2">
-											<h3 class="text-[1.12rem] font-semibold tracking-[-0.02em] text-stone-950">{page.title}</h3>
-											<span class={`rounded-full px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.16em] ${getPublishStateClass(page)}`}>
+											<h3 class="text-[1.12rem] font-semibold tracking-[-0.02em] text-foreground">{page.title}</h3>
+											<Badge class={`rounded-full px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.16em] ${getPublishStateClass(page)}`}>
 												{getPublishStateLabel(page)}
-											</span>
+											</Badge>
 										</div>
-										<div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-stone-500">
-											<span class="font-mono text-[12px] text-stone-600">{displayPath(page.path)}</span>
+										<div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-muted-foreground">
+											<span class="font-mono text-[12px] text-foreground">{displayPath(page.path)}</span>
 											{#if page.live_path && page.live_path !== page.path}
 												<span>Live path {displayPath(page.live_path)}</span>
 											{/if}
@@ -286,21 +285,22 @@
 										</div>
 									</div>
 									<div class="flex items-center gap-2 sm:justify-end">
-										<a
+										<Button
 											href={editHref(page.id)}
-											class="inline-flex min-h-10 items-center justify-center rounded-full bg-stone-950 px-4 py-2 text-sm font-medium text-stone-50 transition hover:bg-stone-800 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-stone-300/70"
+											class="rounded-full"
 										>
 											Edit
-										</a>
+										</Button>
 										{#if !isRootPage(page)}
-											<button
+											<Button
 												type="button"
-												class="inline-flex min-h-10 items-center justify-center rounded-full border border-red-300/70 bg-red-50 px-4 py-2 text-sm font-medium text-red-800 transition hover:bg-red-100 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-red-200/70 disabled:cursor-not-allowed disabled:opacity-60"
+												variant="destructive"
+												class="rounded-full"
 												disabled={deletingPage === page.id}
 												onclick={() => openDeletePageModal(page)}
 											>
 												{deletingPage === page.id ? 'Deleting...' : 'Delete'}
-											</button>
+											</Button>
 										{/if}
 									</div>
 								</div>
@@ -308,7 +308,7 @@
 						{/each}
 					</ul>
 				{:else}
-					<div class="rounded-[1.5rem] border border-dashed border-stone-300/80 bg-stone-50/60 px-6 py-8 text-sm text-stone-600">
+					<div class="rounded-[1.5rem] border border-dashed border-border bg-muted/40 px-6 py-8 text-sm text-muted-foreground">
 						No pages yet. Create first page draft to start building site structure.
 					</div>
 				{/if}
@@ -317,29 +317,30 @@
 			<aside class={panelClass}>
 				<div class="space-y-2">
 					<p class={captionClass}>Content library</p>
-					<h2 class="text-[1.35rem] font-semibold tracking-[-0.03em] text-stone-950">Shared content stays separate</h2>
-					<p class="text-sm leading-6 text-stone-600">
+					<h2 class="text-[1.35rem] font-semibold tracking-[-0.03em] text-foreground">Shared content stays separate</h2>
+					<p class="text-sm leading-6 text-muted-foreground">
 						Use Content library to create, organize, and update reusable content items without crowding page workflow.
 					</p>
 				</div>
 
-				<div class="mt-4 space-y-3 border-t border-stone-200 pt-4">
+				<div class="mt-4 space-y-3 border-t border-border pt-4">
 					<div class="flex items-center justify-between gap-3">
-						<span class="text-sm text-stone-600">Content items</span>
-						<span class="text-lg font-semibold text-stone-950">{reusableBlockCount}</span>
+						<span class="text-sm text-muted-foreground">Content items</span>
+						<span class="text-lg font-semibold text-foreground">{reusableBlockCount}</span>
 					</div>
 					<div class="flex items-center justify-between gap-3">
-						<span class="text-sm text-stone-600">Home page</span>
-						<span class="font-mono text-xs text-stone-900">/</span>
+						<span class="text-sm text-muted-foreground">Home page</span>
+						<span class="font-mono text-xs text-foreground">/</span>
 					</div>
 				</div>
 
-				<a
+				<Button
 					href="/content"
-					class="mt-5 inline-flex min-h-11 w-full items-center justify-center rounded-full border border-stone-300 bg-white px-5 py-3 text-sm font-medium text-stone-700 transition hover:border-stone-400 hover:bg-stone-50 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-stone-200/70"
+					variant="outline"
+					class="mt-5 h-11 w-full rounded-full"
 				>
 					Open Content
-				</a>
+				</Button>
 			</aside>
 		</section>
 	</div>

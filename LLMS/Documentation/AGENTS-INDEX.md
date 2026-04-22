@@ -20,6 +20,7 @@ Agent note: if you have not read `AGENTS.md` at the repo root yet, do that first
 - `cms/trash.md` — CMS trash route, restore flow, and delete/restore constraints for pages and content.
 - `cms/page-content-model.md` — Initial typed page content shape, block registry, and validation rules.
 - `cms/sidebar-navigation.md` — CMS sidebar page tree behavior and collapse rules.
+- `cms/ui-framework.md` — CMS-wide shadcn-svelte usage defaults, theme-token guidance, and dark-mode baseline.
 - `svelte/state-patterns.md` — Repo conventions for Svelte 5 rune state, shared state APIs, side effects, and SSR-safe patterns.
 
 # Component docs (shadcn-svelte)

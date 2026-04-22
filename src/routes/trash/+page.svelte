@@ -4,6 +4,9 @@
 	import { getToastState } from '$lib/Toasts/toastState.svelte';
 	import { pagesStore } from '$lib/client/pagesStore';
 	import { reusableBlocksStore } from '$lib/client/reusableBlocksStore';
+	import { Badge } from '$lib/components/ui/badge/index.js';
+	import { Button } from '$lib/components/ui/button/index.js';
+	import { Label } from '$lib/components/ui/label/index.js';
 	import type { Page, ReusableBlock } from '$lib/types';
 	import type { PageProps } from './$types';
 
@@ -53,49 +56,49 @@
 </svelte:head>
 
 <main class="space-y-8">
-	<section class="rounded-[2rem] border border-stone-200/80 bg-white/95 px-6 py-8 shadow-[0_24px_70px_-48px_rgba(41,37,36,0.35)] sm:px-8">
-		<p class="text-xs font-semibold uppercase tracking-[0.32em] text-stone-500">Trash</p>
-		<h1 class="mt-2 text-[2.4rem] font-semibold tracking-[-0.045em] text-stone-950 sm:text-5xl">
+	<section class="rounded-[2rem] border border-border/80 bg-card/95 px-6 py-8 shadow-[0_24px_70px_-48px_rgba(15,23,42,0.3)] sm:px-8">
+		<p class="text-xs font-semibold uppercase tracking-[0.32em] text-muted-foreground">Trash</p>
+		<h1 class="mt-2 text-[2.4rem] font-semibold tracking-[-0.045em] text-foreground sm:text-5xl">
 			Deleted work stays recoverable.
 		</h1>
-		<p class="mt-3 max-w-3xl text-base leading-7 text-stone-600">
+		<p class="mt-3 max-w-3xl text-base leading-7 text-muted-foreground">
 			Pages and content moved here stay out of normal CMS lists until restored. Deleted content does not
 			auto-reinsert into pages it was removed from.
 		</p>
 	</section>
 
 	<section class="grid gap-6 xl:grid-cols-[1.2fr_1fr]">
-		<div class="rounded-[1.75rem] border border-stone-200/80 bg-white p-5 shadow-[0_18px_55px_-42px_rgba(41,37,36,0.3)]">
-			<div class="space-y-2 border-b border-stone-200 pb-4">
-				<p class="text-xs font-semibold uppercase tracking-[0.28em] text-stone-500">Pages</p>
-				<h2 class="text-[1.45rem] font-semibold tracking-[-0.03em] text-stone-950">Deleted pages</h2>
-				<p class="text-sm leading-6 text-stone-600">
+		<div class="rounded-[1.75rem] border border-border/80 bg-card p-5 shadow-[0_18px_55px_-42px_rgba(15,23,42,0.3)]">
+			<div class="space-y-2 border-b border-border pb-4">
+				<p class="text-xs font-semibold uppercase tracking-[0.28em] text-muted-foreground">Pages</p>
+				<h2 class="text-[1.45rem] font-semibold tracking-[-0.03em] text-foreground">Deleted pages</h2>
+				<p class="text-sm leading-6 text-muted-foreground">
 					Pages with child pages still cannot be deleted. Restoring can target a new parent.
 				</p>
 			</div>
 
 			<div class="mt-5 space-y-4">
 				{#if deletedPages.length === 0}
-					<div class="rounded-2xl border border-dashed border-stone-300 bg-stone-50 px-4 py-6 text-sm text-stone-600">
+					<div class="rounded-2xl border border-dashed border-border bg-muted/40 px-4 py-6 text-sm text-muted-foreground">
 						No deleted pages.
 					</div>
 				{:else}
 					{#each deletedPages as page (page.id)}
-						<div class="rounded-2xl border border-stone-200 bg-stone-50/70 p-4">
+						<div class="rounded-2xl border border-border bg-muted/35 p-4">
 							<div class="flex flex-wrap items-start justify-between gap-3">
 								<div class="space-y-1">
 									<div class="flex flex-wrap items-center gap-2">
-										<h3 class="text-lg font-semibold text-stone-950">{page.title}</h3>
-										<span class="rounded-full bg-stone-200 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-stone-700">
+										<h3 class="text-lg font-semibold text-foreground">{page.title}</h3>
+										<Badge variant="outline" class="uppercase tracking-[0.18em]">
 											Page
-										</span>
+										</Badge>
 									</div>
-									<div class="flex flex-wrap gap-x-3 gap-y-1 text-sm text-stone-500">
-										<span class="font-mono text-[12px] text-stone-700">{displayPath(page.path)}</span>
+									<div class="flex flex-wrap gap-x-3 gap-y-1 text-sm text-muted-foreground">
+										<span class="font-mono text-[12px] text-foreground">{displayPath(page.path)}</span>
 										<span>Deleted {formatDate(page.deleted_at)}</span>
 									</div>
 								</div>
-								<span class="text-sm font-medium text-stone-500">Editor unavailable while trashed</span>
+								<span class="text-sm font-medium text-muted-foreground">Editor unavailable while trashed</span>
 							</div>
 
 							<form
@@ -124,12 +127,12 @@
 							>
 								<input type="hidden" name="pageId" value={page.id} />
 								<div class="space-y-1">
-									<label for={`parent-${page.id}`} class="text-sm font-medium text-stone-800">Restore under parent</label>
+									<Label for={`parent-${page.id}`}>Restore under parent</Label>
 									<select
 										id={`parent-${page.id}`}
 										name="parentPageId"
 										bind:value={pageParentSelections[page.id]}
-										class="w-full rounded-2xl border border-stone-300/80 bg-white px-4 py-3 text-sm text-stone-900 outline-none focus:border-stone-500 focus:ring-4 focus:ring-stone-200/70"
+										class="border-input bg-background focus-visible:border-ring focus-visible:ring-ring/50 flex h-11 w-full rounded-2xl border px-4 py-3 text-sm outline-none focus-visible:ring-3"
 									>
 										<option value="" disabled>Select parent page</option>
 										{#each parentOptions(page.id) as parent (parent.id)}
@@ -137,13 +140,13 @@
 										{/each}
 									</select>
 								</div>
-								<button
+								<Button
 									type="submit"
-									class="inline-flex min-h-11 items-center justify-center rounded-full bg-stone-950 px-5 py-3 text-sm font-semibold text-stone-50 transition hover:bg-stone-800 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-stone-300/70 disabled:cursor-not-allowed disabled:opacity-60"
+									class="h-11 rounded-full"
 									disabled={restoringPageId === page.id || !pageParentSelections[page.id]}
 								>
 									{restoringPageId === page.id ? 'Restoring...' : 'Restore page'}
-								</button>
+								</Button>
 							</form>
 						</div>
 					{/each}
@@ -151,31 +154,31 @@
 			</div>
 		</div>
 
-		<div class="rounded-[1.75rem] border border-stone-200/80 bg-white p-5 shadow-[0_18px_55px_-42px_rgba(41,37,36,0.3)]">
-			<div class="space-y-2 border-b border-stone-200 pb-4">
-				<p class="text-xs font-semibold uppercase tracking-[0.28em] text-stone-500">Content</p>
-				<h2 class="text-[1.45rem] font-semibold tracking-[-0.03em] text-stone-950">Deleted content</h2>
-				<p class="text-sm leading-6 text-stone-600">
+		<div class="rounded-[1.75rem] border border-border/80 bg-card p-5 shadow-[0_18px_55px_-42px_rgba(15,23,42,0.3)]">
+			<div class="space-y-2 border-b border-border pb-4">
+				<p class="text-xs font-semibold uppercase tracking-[0.28em] text-muted-foreground">Content</p>
+				<h2 class="text-[1.45rem] font-semibold tracking-[-0.03em] text-foreground">Deleted content</h2>
+				<p class="text-sm leading-6 text-muted-foreground">
 					Restoring content makes item available again, but does not reinsert removed page references.
 				</p>
 			</div>
 
 			<div class="mt-5 space-y-4">
 				{#if deletedReusableBlocks.length === 0}
-					<div class="rounded-2xl border border-dashed border-stone-300 bg-stone-50 px-4 py-6 text-sm text-stone-600">
+					<div class="rounded-2xl border border-dashed border-border bg-muted/40 px-4 py-6 text-sm text-muted-foreground">
 						No deleted content.
 					</div>
 				{:else}
 					{#each deletedReusableBlocks as block (block.id)}
-						<div class="rounded-2xl border border-stone-200 bg-stone-50/70 p-4">
+						<div class="rounded-2xl border border-border bg-muted/35 p-4">
 							<div class="space-y-1">
 								<div class="flex flex-wrap items-center gap-2">
-									<h3 class="text-lg font-semibold text-stone-950">{block.name}</h3>
-									<span class="rounded-full bg-amber-100 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-amber-800">
+									<h3 class="text-lg font-semibold text-foreground">{block.name}</h3>
+									<Badge class="bg-amber-500/15 text-[10px] font-semibold uppercase tracking-[0.18em] text-amber-700 dark:text-amber-300">
 										{block.block_type}
-									</span>
+									</Badge>
 								</div>
-								<div class="flex flex-wrap gap-x-3 gap-y-1 text-sm text-stone-500">
+								<div class="flex flex-wrap gap-x-3 gap-y-1 text-sm text-muted-foreground">
 									<span>Deleted {formatDate(block.deleted_at)}</span>
 									<span>{block.is_published ? 'Had published version' : 'Draft only'}</span>
 								</div>
@@ -206,13 +209,13 @@
 								}}
 							>
 								<input type="hidden" name="id" value={block.id} />
-								<button
+								<Button
 									type="submit"
-									class="inline-flex min-h-11 items-center justify-center rounded-full bg-stone-950 px-5 py-3 text-sm font-semibold text-stone-50 transition hover:bg-stone-800 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-stone-300/70 disabled:cursor-not-allowed disabled:opacity-60"
+									class="h-11 rounded-full"
 									disabled={restoringBlockId === block.id}
 								>
 									{restoringBlockId === block.id ? 'Restoring...' : 'Restore content'}
-								</button>
+								</Button>
 							</form>
 						</div>
 					{/each}

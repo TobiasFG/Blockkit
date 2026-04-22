@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
+	import { Button } from '$lib/components/ui/button/index.js';
 
 	type Props = {
 		label: string;
@@ -22,16 +23,15 @@
 	}: Props = $props();
 </script>
 
-<button
+<Button
 	{type}
+	variant="outline"
+	size="icon-sm"
 	aria-label={label}
 	{title}
 	{disabled}
-	class={[
-		'inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-slate-200 bg-white text-slate-600 transition hover:border-slate-300 hover:bg-slate-50 hover:text-slate-900 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-slate-200/70 disabled:cursor-not-allowed disabled:opacity-60',
-		className
-	].join(' ')}
+	class={className}
 	{onclick}
 >
 	{@render children()}
-</button>
+</Button>

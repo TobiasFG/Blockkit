@@ -7,6 +7,9 @@
     import { page } from "$app/stores";
     import type { SubmitFunction } from "@sveltejs/kit";
     import type { User } from "@supabase/supabase-js";
+    import { Button } from "$lib/components/ui/button/index.js";
+    import { Input } from "$lib/components/ui/input/index.js";
+    import ThemeToggle from "$lib/components/ThemeToggle.svelte";
     import { pagesStore } from "$lib/client/pagesStore";
     import { buildEditPagePath, isRootPage } from "$lib/pagePath";
     import { blockFoldersStore, reusableBlocksStore } from "$lib/client/reusableBlocksStore";
@@ -106,11 +109,11 @@
     ) => {
         switch (state) {
             case "draft-changes":
-                return { label: "Saved draft", className: "bg-sky-100 text-sky-800" };
+                return { label: "Saved draft", className: "bg-sky-500/15 text-sky-700 dark:text-sky-300" };
             case "published":
-                return { label: "Published", className: "bg-emerald-100 text-emerald-800" };
+                return { label: "Published", className: "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300" };
             default:
-                return { label: "Unpublished", className: "bg-amber-100 text-amber-800" };
+                return { label: "Unpublished", className: "bg-amber-500/15 text-amber-700 dark:text-amber-300" };
         }
     };
 
@@ -286,16 +289,19 @@
 {#snippet NavContent()}
     <div class="flex h-full flex-col">
         <div
-            class="flex h-14 items-center gap-2 border-b border-slate-200 px-4"
+            class="flex h-14 items-center gap-2 border-b border-border px-4"
         >
             <div
-                class="grid h-9 w-9 place-items-center rounded-lg bg-slate-900 text-sm font-semibold text-white"
+                class="grid h-9 w-9 place-items-center rounded-lg bg-primary text-sm font-semibold text-primary-foreground"
             >
                 BK
             </div>
             <div class="leading-tight">
-                <div class="text-sm font-semibold text-slate-900">Blockkit</div>
-                <div class="text-xs text-slate-500">CMS editor</div>
+                <div class="text-sm font-semibold text-foreground">Blockkit</div>
+                <div class="text-xs text-muted-foreground">CMS editor</div>
+            </div>
+            <div class="ml-auto">
+                <ThemeToggle />
             </div>
         </div>
 
@@ -306,8 +312,8 @@
                     class={[
                         "flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition",
                         isActive("/")
-                            ? "bg-slate-100 text-slate-900"
-                            : "text-slate-700 hover:bg-slate-100",
+                            ? "bg-muted text-foreground"
+                            : "text-muted-foreground hover:bg-muted hover:text-foreground",
                     ].join(" ")}
                     onclick={onClose}
                 >
@@ -327,7 +333,7 @@
 
                 <a
                     href="/#create"
-                    class="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-100"
+                    class="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition hover:bg-muted hover:text-foreground"
                     onclick={onClose}
                 >
                     <svg
@@ -347,8 +353,8 @@
                     class={[
                         "flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition",
                         isActive("/trash")
-                            ? "bg-slate-100 text-slate-900"
-                            : "text-slate-700 hover:bg-slate-100",
+                            ? "bg-muted text-foreground"
+                            : "text-muted-foreground hover:bg-muted hover:text-foreground",
                     ].join(" ")}
                     onclick={onClose}
                 >
@@ -369,13 +375,13 @@
 
             <div class="space-y-2">
                 <div
-                    class="px-3 text-xs font-semibold uppercase tracking-wide text-slate-500"
+                    class="px-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground"
                 >
                     Pages
                 </div>
                 <div class="space-y-1">
                     {#if currentPages.length === 0}
-                        <div class="px-3 py-2 text-sm text-slate-500">
+                        <div class="px-3 py-2 text-sm text-muted-foreground">
                             No pages yet
                         </div>
                     {:else}
@@ -395,13 +401,13 @@
 
             <div class="space-y-2">
                 <div
-                    class="flex items-center justify-between px-3 text-xs font-semibold uppercase tracking-wide text-slate-500"
+                    class="flex items-center justify-between px-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground"
                 >
                     <a
                         href="/content"
                         class={[
                             "transition hover:text-slate-700",
-                            isContentLibraryActive ? "text-slate-900" : "text-slate-500",
+                            isContentLibraryActive ? "text-foreground" : "text-muted-foreground hover:text-foreground",
                         ].join(" ")}
                         onclick={onClose}
                     >
@@ -410,7 +416,7 @@
                     <div class="flex items-center gap-1">
                         <a
                             href="/content#create-block-folder"
-                            class="rounded px-1.5 py-0.5 text-[10px] font-semibold text-slate-500 transition hover:bg-slate-100 hover:text-slate-700"
+                            class="rounded px-1.5 py-0.5 text-[10px] font-semibold text-muted-foreground transition hover:bg-muted hover:text-foreground"
                             onclick={onClose}
                         >
                             Folder
@@ -419,7 +425,7 @@
                 </div>
                 <div class="space-y-1">
                     {#if currentBlockFolders.length === 0 && currentReusableBlocks.length === 0}
-                        <div class="px-3 py-2 text-sm text-slate-500">
+                        <div class="px-3 py-2 text-sm text-muted-foreground">
                             No content yet
                         </div>
                     {:else}
@@ -445,8 +451,8 @@
                                 class={[
                                     "flex min-w-0 items-center justify-between gap-2 rounded-md px-3 py-2 text-sm transition",
                                     activeReusableBlockId === block.id
-                                        ? "bg-slate-100 text-slate-900"
-                                        : "text-slate-700 hover:bg-slate-100",
+                                        ? "bg-muted text-foreground"
+                                        : "text-muted-foreground hover:bg-muted hover:text-foreground",
                                 ].join(" ")}
                             >
                                 <ContextMenu.Root>
@@ -463,7 +469,7 @@
                                                 <span class={`rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide ${stateMeta.className}`}>
                                                     {stateMeta.label}
                                                 </span>
-                                                <span class="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-slate-500">
+                                                <span class="rounded-full bg-muted px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
                                                     {block.block_type}
                                                 </span>
                                             </div>
@@ -523,7 +529,7 @@
                     {/if}
 
                     {#if actionPending}
-                        <div class="mx-3 rounded-md border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-600">
+                        <div class="mx-3 rounded-md border border-border bg-muted/40 px-3 py-2 text-xs text-muted-foreground">
                             Applying sidebar action…
                         </div>
                     {:else if actionNotice}
@@ -531,8 +537,8 @@
                             class={[
                                 "mx-3 rounded-md px-3 py-2 text-xs",
                                 actionNotice.tone === "success"
-                                    ? "border border-green-200 bg-green-50 text-green-800"
-                                    : "border border-red-200 bg-red-50 text-red-800",
+                                    ? "border border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300"
+                                    : "border border-destructive/30 bg-destructive/10 text-destructive",
                             ].join(" ")}
                         >
                             {actionNotice.text}
@@ -542,19 +548,19 @@
             </div>
         </nav>
 
-        <div class="border-t border-slate-200 p-3">
-            <div class="rounded-2xl border border-slate-200 bg-slate-50 p-3">
-                <div class="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">
+        <div class="border-t border-border p-3">
+            <div class="rounded-2xl border border-border bg-muted/40 p-3">
+                <div class="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
                     Signed in
                 </div>
-                <div class="mt-2 text-sm font-semibold text-slate-900">{displayName}</div>
-                <div class="truncate text-xs text-slate-500">{user.email}</div>
+                <div class="mt-2 text-sm font-semibold text-foreground">{displayName}</div>
+                <div class="truncate text-xs text-muted-foreground">{user.email}</div>
 
-                <div class="mt-3 text-xs text-slate-500">
-                    <span class="font-medium text-slate-700">{currentPages.length}</span>
+                <div class="mt-3 text-xs text-muted-foreground">
+                    <span class="font-medium text-foreground">{currentPages.length}</span>
                     page{currentPages.length === 1 ? "" : "s"}
-                    <span class="mx-1.5 text-slate-300">•</span>
-                    <span class="font-medium text-slate-700">{currentReusableBlocks.length}</span>
+                    <span class="mx-1.5 text-border">•</span>
+                    <span class="font-medium text-foreground">{currentReusableBlocks.length}</span>
                     content item{currentReusableBlocks.length === 1 ? "" : "s"}
                 </div>
 
@@ -564,12 +570,13 @@
                     class="mt-3"
                     use:enhance={logoutEnhanceSubmit}
                 >
-                    <button
+                    <Button
                         type="submit"
-                        class="inline-flex w-full items-center justify-center rounded-md border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-100"
+                        variant="outline"
+                        class="mt-3 w-full"
                     >
                         Log out
-                    </button>
+                    </Button>
                 </form>
             </div>
         </div>
@@ -625,46 +632,45 @@
             }}
         >
             <div class="space-y-1">
-                <label for="sidebar-folder-name" class="text-sm font-medium text-slate-700">
+                <label for="sidebar-folder-name" class="text-sm font-medium text-foreground">
                     Folder name
                 </label>
-                <input
+                <Input
                     id="sidebar-folder-name"
                     type="text"
-                    class="w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 shadow-sm outline-none ring-0 transition focus:border-slate-300 focus:ring-2 focus:ring-slate-200"
+                    class="w-full"
                     bind:value={modalState.name}
                     required
                 />
             </div>
             <div class="flex items-center justify-end gap-2">
-                <button
+                <Button
                     type="button"
-                    class="inline-flex items-center rounded-md border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
+                    variant="outline"
                     onclick={closeModal}
                 >
                     Cancel
-                </button>
-                <button
+                </Button>
+                <Button
                     type="submit"
-                    class="inline-flex items-center rounded-md bg-slate-900 px-3 py-2 text-sm font-medium text-white transition hover:bg-slate-800"
                     disabled={actionPending || modalState.name.trim().length === 0}
                 >
                     Create folder
-                </button>
+                </Button>
             </div>
         </form>
     {:else if modalState?.kind === "deleteFolder"}
         <div class="flex items-center justify-end gap-2">
-            <button
+            <Button
                 type="button"
-                class="inline-flex items-center rounded-md border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
+                variant="outline"
                 onclick={closeModal}
             >
                 Cancel
-            </button>
-            <button
+            </Button>
+            <Button
                 type="button"
-                class="inline-flex items-center rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm font-medium text-red-700 transition hover:bg-red-100 disabled:cursor-not-allowed disabled:opacity-60"
+                variant="destructive"
                 disabled={actionPending}
                 onclick={() => {
                     if (modalState?.kind !== "deleteFolder") {
@@ -679,33 +685,33 @@
                 }}
             >
                 Delete folder
-            </button>
+            </Button>
         </div>
     {:else if modalState?.kind === "deleteBlock"}
         <div class="space-y-4">
             {#if modalState.references.length > 0}
-                <ul class="max-h-56 space-y-2 overflow-y-auto rounded-2xl border border-slate-200 bg-slate-50 p-3 text-sm text-slate-700">
+                <ul class="max-h-56 space-y-2 overflow-y-auto rounded-2xl border border-border bg-muted/40 p-3 text-sm text-foreground">
                     {#each modalState.references as page (page.id)}
-                        <li class="rounded-xl bg-white px-3 py-2 shadow-sm">{page.title} <span class="text-slate-500">({page.path})</span></li>
+                        <li class="rounded-xl bg-card px-3 py-2 shadow-sm">{page.title} <span class="text-muted-foreground">({page.path})</span></li>
                     {/each}
                 </ul>
             {:else}
-                <div class="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600">
+                <div class="rounded-2xl border border-border bg-muted/40 px-4 py-3 text-sm text-muted-foreground">
                     No pages currently reference this content item.
                 </div>
             {/if}
 
             <div class="flex items-center justify-end gap-2">
-                <button
+                <Button
                     type="button"
-                    class="inline-flex items-center rounded-md border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
+                    variant="outline"
                     onclick={closeModal}
                 >
                     Cancel
-                </button>
-                <button
+                </Button>
+                <Button
                     type="button"
-                    class="inline-flex items-center rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm font-medium text-red-700 transition hover:bg-red-100 disabled:cursor-not-allowed disabled:opacity-60"
+                    variant="destructive"
                     disabled={actionPending}
                     onclick={() => {
                         if (modalState?.kind !== "deleteBlock") {
@@ -720,7 +726,7 @@
                     }}
                 >
                     {modalState.references.length > 0 ? "Move to trash anyway" : "Move to trash"}
-                </button>
+                </Button>
             </div>
         </div>
     {/if}
@@ -728,7 +734,7 @@
 
 <!-- Desktop -->
 <aside
-    class="hidden border-r border-slate-200 bg-white lg:fixed lg:inset-y-0 lg:left-0 lg:flex lg:w-72 lg:flex-col"
+    class="hidden border-r border-border bg-background lg:fixed lg:inset-y-0 lg:left-0 lg:flex lg:w-72 lg:flex-col"
 >
     {@render NavContent()}
 </aside>
@@ -736,22 +742,23 @@
 <!-- Mobile drawer -->
 {#if mobileOpen}
     <div
-        class="fixed inset-0 z-40 bg-black/30 lg:hidden"
+        class="fixed inset-0 z-40 bg-black/40 lg:hidden"
         aria-hidden="true"
         onclick={onClose}
     ></div>
     <div
-        class="fixed inset-y-0 left-0 z-50 w-72 border-r border-slate-200 bg-white shadow-lg lg:hidden"
+        class="fixed inset-y-0 left-0 z-50 w-72 border-r border-border bg-background shadow-lg lg:hidden"
         role="dialog"
         aria-modal="true"
         aria-label="Sidebar"
     >
         <div
-            class="flex h-14 items-center justify-end border-b border-slate-200 px-2"
+            class="flex h-14 items-center justify-end border-b border-border px-2"
         >
-            <button
+            <Button
                 type="button"
-                class="inline-flex h-9 w-9 items-center justify-center rounded-md text-slate-700 hover:bg-slate-100"
+                variant="ghost"
+                size="icon-sm"
                 aria-label="Close sidebar"
                 onclick={onClose}
             >
@@ -764,7 +771,7 @@
                 >
                     <path d="M18 6 6 18M6 6l12 12" />
                 </svg>
-            </button>
+            </Button>
         </div>
         {@render NavContent()}
     </div>

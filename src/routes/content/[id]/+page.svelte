@@ -5,6 +5,11 @@
 	import { getToastState } from '$lib/Toasts/toastState.svelte';
 	import { type BlockDefinition, type BlockFieldDefinition } from '$lib/blocks/registry';
 	import { blockFoldersStore, reusableBlocksStore } from '$lib/client/reusableBlocksStore';
+	import { Badge } from '$lib/components/ui/badge/index.js';
+	import { Button } from '$lib/components/ui/button/index.js';
+	import { Input } from '$lib/components/ui/input/index.js';
+	import { Label } from '$lib/components/ui/label/index.js';
+	import { Textarea } from '$lib/components/ui/textarea/index.js';
 	import BlockListEditor from '$lib/components/cms/BlockListEditor.svelte';
 	import type { BlockListLocation, BlockPath } from '$lib/pageContentEditor';
 	import type { BlockInstance, BlockValue } from '$lib/pageContent';
@@ -47,8 +52,8 @@
 
 	const toastState = getToastState();
 	const inputClass =
-		'w-full rounded-2xl border border-stone-300/80 bg-white px-4 py-3 text-sm text-stone-900 shadow-[0_1px_0_rgba(41,37,36,0.04)] outline-none transition placeholder:text-stone-400 focus:border-stone-500 focus:ring-4 focus:ring-stone-200/70';
-	const captionClass = 'text-[10px] font-medium uppercase tracking-[0.24em] text-stone-500';
+		'h-11 rounded-2xl';
+	const captionClass = 'text-[10px] font-medium uppercase tracking-[0.24em] text-muted-foreground';
 
 	const getRevertTargetLabel = (currentBlock: ReusableBlock) =>
 		getReusableBlockPublishState(currentBlock) === 'published' ? 'published' : 'draft';
@@ -236,23 +241,24 @@
 </script>
 
 <main class="mx-auto max-w-[96rem] px-4 pb-10 pt-6 sm:px-6 lg:px-8">
-	<header class="border-b border-stone-300/70 pb-8">
+	<header class="border-b border-border/70 pb-8">
 		<div class="flex flex-wrap items-start justify-between gap-6">
 			<div class="max-w-3xl space-y-3">
 				<p class={captionClass}>Content editor</p>
-				<h1 class="text-[2.6rem] font-semibold tracking-[-0.045em] text-stone-950 sm:text-5xl">
+				<h1 class="text-[2.6rem] font-semibold tracking-[-0.045em] text-foreground sm:text-5xl">
 					{name || block.name}
 				</h1>
-				<p class="max-w-[62ch] text-base leading-7 text-stone-600">
+				<p class="max-w-[62ch] text-base leading-7 text-muted-foreground">
 					Update content name, folder, and fields for this <span class="font-semibold text-stone-900">{block.block_type}</span> content item.
 				</p>
 			</div>
-			<a
+			<Button
 				href="/content"
-				class="inline-flex items-center rounded-full border border-stone-300 bg-white px-4 py-2 text-sm font-medium text-stone-700 transition hover:border-stone-400 hover:bg-stone-50 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-stone-200/70"
+				variant="outline"
+				class="rounded-full"
 			>
 				Back to Content
-			</a>
+			</Button>
 		</div>
 	</header>
 
@@ -340,20 +346,20 @@
 			<section class="space-y-5">
 					<div class="space-y-2">
 						<p class={captionClass}>Identity</p>
-						<h2 class="text-[1.65rem] font-semibold tracking-[-0.035em] text-stone-950">Name and location</h2>
-						<p class="max-w-[62ch] text-base leading-7 text-stone-600">
+						<h2 class="text-[1.65rem] font-semibold tracking-[-0.035em] text-foreground">Name and location</h2>
+						<p class="max-w-[62ch] text-base leading-7 text-muted-foreground">
 							Keep content name recognizable in sidebar and page insertion flows.
 						</p>
 					</div>
 
 					<div class="grid gap-5 lg:grid-cols-[minmax(0,1.2fr)_minmax(16rem,0.8fr)]">
 						<div class="space-y-2">
-							<label for="name" class="text-sm font-medium text-stone-800">Name</label>
-							<input id="name" type="text" name="name" required bind:value={name} class={inputClass} />
+							<Label for="name">Name</Label>
+							<Input id="name" type="text" name="name" required bind:value={name} class={inputClass} />
 						</div>
 						<div class="space-y-2">
-							<label for="folderId" class="text-sm font-medium text-stone-800">Folder</label>
-							<select id="folderId" name="folderId" bind:value={folderId} class={inputClass}>
+							<Label for="folderId">Folder</Label>
+							<select id="folderId" name="folderId" bind:value={folderId} class="border-input bg-background focus-visible:border-ring focus-visible:ring-ring/50 flex h-11 w-full rounded-2xl border px-4 py-3 text-sm outline-none focus-visible:ring-3">
 								<option value="">Root</option>
 								{#each blockFolders as folder}
 									<option value={folder.id}>{folder.name}</option>
@@ -366,31 +372,29 @@
 				<section class="space-y-5">
 					<div class="space-y-2">
 						<p class={captionClass}>Fields</p>
-						<h2 class="text-[1.65rem] font-semibold tracking-[-0.035em] text-stone-950">Content fields</h2>
-						<p class="max-w-[62ch] text-base leading-7 text-stone-600">
+						<h2 class="text-[1.65rem] font-semibold tracking-[-0.035em] text-foreground">Content fields</h2>
+						<p class="max-w-[62ch] text-base leading-7 text-muted-foreground">
 							Edit primitive fields inline and build nested block content where this content type allows it.
 						</p>
 					</div>
 
-					<div class="space-y-4 border-t border-stone-200 pt-5">
+					<div class="space-y-4 border-t border-border pt-5">
 						{#if currentDefinition}
 							{#each currentDefinition.fields as field (field.key)}
 								<div class="space-y-2">
-									<label for={`field-${field.key}`} class="text-sm font-medium text-stone-800">
-										{field.label}
-									</label>
+									<Label for={`field-${field.key}`}>{field.label}</Label>
 									{#if field.type === 'string' && isTextareaField(field)}
-										<textarea
+										<Textarea
 											id={`field-${field.key}`}
-											rows="4"
+											rows={4}
 											value={String(contentDraft.fields[field.key] ?? '')}
 											required={field.required}
-											class={inputClass}
+											class="min-h-28 rounded-2xl"
 											oninput={(event) =>
 												handleRootFieldUpdate(field.key, parseStringValue((event.currentTarget as HTMLTextAreaElement).value, field))}
-										></textarea>
+										/>
 									{:else if field.type === 'string'}
-										<input
+										<Input
 											id={`field-${field.key}`}
 											type="text"
 											value={String(contentDraft.fields[field.key] ?? '')}
@@ -400,7 +404,7 @@
 												handleRootFieldUpdate(field.key, parseStringValue((event.currentTarget as HTMLInputElement).value, field))}
 										/>
 									{:else if field.type === 'date'}
-										<input
+										<Input
 											id={`field-${field.key}`}
 											type="date"
 											value={String(contentDraft.fields[field.key] ?? '')}
@@ -409,7 +413,7 @@
 												handleRootFieldUpdate(field.key, parseStringValue((event.currentTarget as HTMLInputElement).value, field))}
 										/>
 									{:else if field.type === 'number'}
-										<input
+										<Input
 											id={`field-${field.key}`}
 											type="number"
 											value={contentDraft.fields[field.key] ?? ''}
@@ -418,22 +422,19 @@
 												handleRootFieldUpdate(field.key, parseStringValue((event.currentTarget as HTMLInputElement).value, field))}
 										/>
 									{:else if field.type === 'boolean'}
-										<label
-											for={`field-${field.key}`}
-											class="flex items-start gap-3 rounded-2xl border border-stone-300/80 bg-stone-50 px-4 py-3 text-sm text-stone-700"
-										>
+										<label for={`field-${field.key}`} class="flex items-start gap-3 rounded-2xl border border-border bg-muted/40 px-4 py-3 text-sm text-foreground">
 											<input
 												id={`field-${field.key}`}
 												type="checkbox"
 												checked={Boolean(contentDraft.fields[field.key])}
-												class="mt-0.5 h-4 w-4 rounded border-stone-400 text-stone-950 focus:ring-stone-300"
+												class="mt-0.5 h-4 w-4 rounded border-border text-primary focus:ring-ring"
 												onchange={(event) =>
 													handleRootFieldUpdate(field.key, (event.currentTarget as HTMLInputElement).checked)}
 											/>
-											<span class="block text-stone-900">{field.label}</span>
+											<span class="block text-foreground">{field.label}</span>
 										</label>
 									{:else}
-										<div class="border-t border-stone-200 pt-4">
+										<div class="border-t border-border pt-4">
 											<BlockListEditor
 												blocks={getNestedBlocks(contentDraft.fields[field.key])}
 												location={{ parentPath: [], fieldKey: field.key }}
@@ -448,7 +449,7 @@
 												onRemoveBlock={handleRemoveBlock}
 												onMoveBlock={handleMoveBlock}
 												onUpdateField={handleNestedFieldUpdate}
-												onStartDrag={(path) => (draggingPath = path.join('.'))}
+												onStartDrag={(path: number[]) => (draggingPath = path.join('.'))}
 												onEndDrag={() => (draggingPath = null)}
 											/>
 										</div>
@@ -464,11 +465,11 @@
 			</div>
 			<aside class="space-y-4">
 				<div class="space-y-4 xl:sticky xl:top-6">
-					<section class="rounded-[1.75rem] border border-stone-200/80 bg-white/92 p-5 shadow-[0_22px_60px_-42px_rgba(41,37,36,0.2)]">
+					<section class="rounded-[1.75rem] border border-border/80 bg-card/92 p-5 shadow-[0_22px_60px_-42px_rgba(15,23,42,0.2)]">
 						<div class="space-y-2">
 							<p class={captionClass}>Draft state</p>
-							<h2 class="text-[1.25rem] font-semibold tracking-[-0.03em] text-stone-950">{getDraftStateLabel()}</h2>
-							<p class="text-sm leading-6 text-stone-600">
+							<h2 class="text-[1.25rem] font-semibold tracking-[-0.03em] text-foreground">{getDraftStateLabel()}</h2>
+							<p class="text-sm leading-6 text-muted-foreground">
 								{#if hasUnsavedChanges}
 									Current form changes live only in browser until you save draft.
 								{:else if reusableBlockHasDraftChanges(block)}
@@ -481,65 +482,63 @@
 
 						<div class="mt-4 flex flex-col gap-2">
 								{#if showPrimaryAction}
-									<button
-										in:fly={actionMotion}
-										out:fly={actionMotion}
+									<Button
 										type="submit"
 										form="update-reusable-block-form"
 										formaction={primaryActionFormAction}
 										data-intent={primaryActionIntent}
-									class={`inline-flex min-h-11 w-full items-center justify-center rounded-full px-5 py-3 text-sm font-semibold transition focus-visible:outline-none focus-visible:ring-4 disabled:cursor-not-allowed disabled:opacity-70 ${primaryActionClass}`}
+										variant={primaryActionState === 'validation-error' ? 'destructive' : primaryActionState === 'publish' ? 'secondary' : 'default'}
+										class="h-11 w-full rounded-full"
 									disabled={primaryActionDisabled}
 								>
 									{primaryActionLabel}
-								</button>
+									</Button>
 							{/if}
 							{#if showRevertAction}
-								<button
-									in:fly={actionMotion}
-									out:fly={actionMotion}
+								<Button
 									type="button"
-									class="inline-flex min-h-11 w-full items-center justify-center rounded-full border border-stone-300 bg-white px-5 py-3 text-sm font-medium text-stone-700 transition hover:bg-stone-50 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-stone-200/70 disabled:cursor-not-allowed disabled:opacity-60"
+									variant="outline"
+									class="h-11 w-full rounded-full"
 									onclick={resetDraft}
 								>
 									Revert changes to {loadedSnapshot?.revertTargetLabel ?? 'draft'}
-								</button>
+								</Button>
 							{/if}
 						</div>
 					</section>
 
-					<section class="rounded-[1.75rem] border border-stone-200/80 bg-white/92 p-5 shadow-[0_22px_60px_-42px_rgba(41,37,36,0.2)]">
+					<section class="rounded-[1.75rem] border border-border/80 bg-card/92 p-5 shadow-[0_22px_60px_-42px_rgba(15,23,42,0.2)]">
 						<div class="space-y-2">
 							<p class={captionClass}>Publish state</p>
 							<div class="flex items-center gap-2">
-								<span class={`rounded-full px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.16em] ${getPublishStateClass(publishState)}`}>
+								<Badge class={`rounded-full px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.16em] ${getPublishStateClass(publishState)}`}>
 									{getPublishStateLabel(publishState)}
-								</span>
-								<span class="rounded-full bg-stone-950 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-stone-50">
+								</Badge>
+								<Badge variant="secondary" class="text-[10px] font-semibold uppercase tracking-[0.16em]">
 									{block.block_type}
-								</span>
+								</Badge>
 							</div>
-							<p class="text-sm leading-6 text-stone-600">Publish uses current saved draft content and naming.</p>
+							<p class="text-sm leading-6 text-muted-foreground">Publish uses current saved draft content and naming.</p>
 						</div>
 
-						<div class="mt-4 space-y-3 border-t border-stone-200 pt-4 text-sm text-stone-700">
+						<div class="mt-4 space-y-3 border-t border-border pt-4 text-sm text-foreground">
 							<div class="flex items-center justify-between gap-3">
-								<span class="text-stone-500">Folder</span>
-								<span class="text-right text-stone-950">
+								<span class="text-muted-foreground">Folder</span>
+								<span class="text-right text-foreground">
 									{blockFolders.find((folder) => folder.id === folderId)?.name ?? 'Root'}
 								</span>
 							</div>
 							<div class="flex items-center justify-between gap-3">
-								<span class="text-stone-500">Last published</span>
-								<span class="text-right tabular-nums text-stone-950">{formatTimestamp(block.last_published_at)}</span>
+								<span class="text-muted-foreground">Last published</span>
+								<span class="text-right tabular-nums text-foreground">{formatTimestamp(block.last_published_at)}</span>
 							</div>
 							<div class="flex items-center justify-between gap-3">
-								<span class="text-stone-500">Created</span>
-								<span class="text-right tabular-nums text-stone-950">{formatTimestamp(block.created_at)}</span>
+								<span class="text-muted-foreground">Created</span>
+								<span class="text-right tabular-nums text-foreground">{formatTimestamp(block.created_at)}</span>
 							</div>
 							<div class="flex items-center justify-between gap-3">
-								<span class="text-stone-500">Updated</span>
-								<span class="text-right tabular-nums text-stone-950">{formatTimestamp(block.updated_at)}</span>
+								<span class="text-muted-foreground">Updated</span>
+								<span class="text-right tabular-nums text-foreground">{formatTimestamp(block.updated_at)}</span>
 							</div>
 						</div>
 						</section>

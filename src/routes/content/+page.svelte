@@ -3,6 +3,10 @@
 		import { applyAction, enhance } from '$app/forms';
 		import { getToastState } from '$lib/Toasts/toastState.svelte';
 		import { blockFoldersStore, reusableBlocksStore } from '$lib/client/reusableBlocksStore';
+	import { Badge } from '$lib/components/ui/badge/index.js';
+	import { Button } from '$lib/components/ui/button/index.js';
+	import { Input } from '$lib/components/ui/input/index.js';
+	import { Label } from '$lib/components/ui/label/index.js';
 	import { listBlockDefinitions } from '$lib/blocks/registry';
 	import ActionModal from '$lib/components/cms/ActionModal.svelte';
 	import { buildReusableBlocksTree } from '$lib/components/cms/reusableBlocksTree';
@@ -86,7 +90,7 @@
 </svelte:head>
 
 <main class="space-y-8">
-	<section class="relative overflow-hidden rounded-[2rem] border border-slate-900/10 bg-[linear-gradient(135deg,oklch(0.18_0.035_250)_0%,oklch(0.24_0.03_245)_48%,oklch(0.95_0.02_94)_48%,oklch(0.97_0.015_88)_100%)] px-6 py-8 text-white shadow-[0_30px_90px_-38px_rgba(15,23,42,0.75)] sm:px-8">
+	<section class="relative overflow-hidden rounded-[2rem] border border-border/70 bg-[linear-gradient(135deg,color-mix(in_oklab,var(--foreground)_88%,oklch(0.18_0.03_250))_0%,color-mix(in_oklab,var(--foreground)_78%,oklch(0.22_0.03_245))_44%,color-mix(in_oklab,var(--background)_92%,oklch(0.95_0.02_94))_44%,color-mix(in_oklab,var(--background)_98%,oklch(0.97_0.015_88))_100%)] px-6 py-8 text-white shadow-[0_30px_90px_-38px_rgba(15,23,42,0.75)] sm:px-8">
 		<div class="absolute inset-y-0 right-0 hidden w-1/3 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.18),transparent_70%)] lg:block"></div>
 		<div class="relative grid gap-8 lg:grid-cols-[1.2fr_0.8fr]">
 			<div class="space-y-4">
@@ -121,7 +125,7 @@
 		<form
 			method="POST"
 			action="?/createBlockFolder"
-			class="rounded-[1.75rem] border border-slate-900/10 bg-white p-5 shadow-[0_24px_70px_-48px_rgba(15,23,42,0.6)]"
+			class="rounded-[1.75rem] border border-border/80 bg-card p-5 shadow-[0_24px_70px_-48px_rgba(15,23,42,0.45)]"
 			use:enhance={({ formElement }) => {
 				createFolderSubmitting = true;
 
@@ -144,31 +148,31 @@
 			}}
 		>
 			<div class="space-y-2">
-				<p class="text-xs font-semibold uppercase tracking-[0.3em] text-slate-500">Folder admin</p>
-				<h2 class="text-2xl font-black tracking-tight text-slate-950">New folder</h2>
-				<p class="max-w-prose text-sm leading-6 text-slate-600">
+				<p class="text-xs font-semibold uppercase tracking-[0.3em] text-muted-foreground">Folder admin</p>
+				<h2 class="text-2xl font-black tracking-tight text-foreground">New folder</h2>
+				<p class="max-w-prose text-sm leading-6 text-muted-foreground">
 					Use folders to shape the library tree before you create shared content.
 				</p>
 			</div>
 
 			<div class="mt-5 grid gap-4">
 				<div class="space-y-1">
-					<label for="folder-name" class="text-sm font-medium text-slate-700">Folder name</label>
-					<input
+					<Label for="folder-name">Folder name</Label>
+					<Input
 						id="folder-name"
 						type="text"
 						name="name"
 						required
 						placeholder="Homepage, Product, Footer"
-						class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 shadow-sm outline-none ring-0 transition placeholder:text-slate-400 focus:border-slate-300 focus:ring-2 focus:ring-slate-200"
+						class="h-11 rounded-2xl"
 					/>
 				</div>
 				<div class="space-y-1">
-					<label for="folder-parent" class="text-sm font-medium text-slate-700">Parent folder</label>
+					<Label for="folder-parent">Parent folder</Label>
 					<select
 						id="folder-parent"
 						name="parentId"
-						class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 shadow-sm outline-none ring-0 transition focus:border-slate-300 focus:ring-2 focus:ring-slate-200"
+						class="border-input bg-background focus-visible:border-ring focus-visible:ring-ring/50 flex h-11 w-full rounded-2xl border px-4 py-3 text-sm outline-none focus-visible:ring-3"
 					>
 						<option value="">Root</option>
 						{#each currentBlockFolders as folder}
@@ -176,20 +180,20 @@
 						{/each}
 					</select>
 				</div>
-				<button
+				<Button
 					type="submit"
-					class="inline-flex items-center justify-center rounded-2xl bg-slate-950 px-4 py-3 text-sm font-semibold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-70"
+					class="h-11 rounded-2xl"
 					disabled={createFolderSubmitting}
 				>
 					{createFolderSubmitting ? 'Creating folder...' : 'Create folder'}
-				</button>
+				</Button>
 			</div>
 		</form>
 
 		<form
 			method="POST"
 			action="?/createReusableBlock"
-			class="rounded-[1.75rem] border border-slate-900/10 bg-white p-5 shadow-[0_24px_70px_-48px_rgba(15,23,42,0.6)]"
+			class="rounded-[1.75rem] border border-border/80 bg-card p-5 shadow-[0_24px_70px_-48px_rgba(15,23,42,0.45)]"
 			use:enhance={({ formElement }) => {
 				createBlockSubmitting = true;
 
@@ -212,32 +216,32 @@
 			}}
 		>
 			<div class="space-y-2">
-				<p class="text-xs font-semibold uppercase tracking-[0.3em] text-slate-500">Content item</p>
-				<h2 class="text-2xl font-black tracking-tight text-slate-950">New content item</h2>
-				<p class="max-w-prose text-sm leading-6 text-slate-600">
+				<p class="text-xs font-semibold uppercase tracking-[0.3em] text-muted-foreground">Content item</p>
+				<h2 class="text-2xl font-black tracking-tight text-foreground">New content item</h2>
+				<p class="max-w-prose text-sm leading-6 text-muted-foreground">
 					Choose a registered block type, give it a clear name, and place it in the tree.
 				</p>
 			</div>
 
 			<div class="mt-5 grid gap-4">
 				<div class="space-y-1">
-					<label for="block-name" class="text-sm font-medium text-slate-700">Content name</label>
-					<input
+					<Label for="block-name">Content name</Label>
+					<Input
 						id="block-name"
 						type="text"
 						name="name"
 						required
 						placeholder="Homepage hero, Footer note"
-						class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 shadow-sm outline-none ring-0 transition placeholder:text-slate-400 focus:border-slate-300 focus:ring-2 focus:ring-slate-200"
+						class="h-11 rounded-2xl"
 					/>
 				</div>
 				<div class="space-y-1">
-					<label for="block-type" class="text-sm font-medium text-slate-700">Block type</label>
+					<Label for="block-type">Block type</Label>
 					<select
 						id="block-type"
 						name="blockType"
 						required
-						class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 shadow-sm outline-none ring-0 transition focus:border-slate-300 focus:ring-2 focus:ring-slate-200"
+						class="border-input bg-background focus-visible:border-ring focus-visible:ring-ring/50 flex h-11 w-full rounded-2xl border px-4 py-3 text-sm outline-none focus-visible:ring-3"
 					>
 						{#each currentBlockDefinitions as definition}
 							<option value={definition.type}>{definition.label}</option>
@@ -245,11 +249,11 @@
 					</select>
 				</div>
 				<div class="space-y-1">
-					<label for="block-folder" class="text-sm font-medium text-slate-700">Folder</label>
+					<Label for="block-folder">Folder</Label>
 					<select
 						id="block-folder"
 						name="folderId"
-						class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 shadow-sm outline-none ring-0 transition focus:border-slate-300 focus:ring-2 focus:ring-slate-200"
+						class="border-input bg-background focus-visible:border-ring focus-visible:ring-ring/50 flex h-11 w-full rounded-2xl border px-4 py-3 text-sm outline-none focus-visible:ring-3"
 					>
 						<option value="">Root</option>
 						{#each currentBlockFolders as folder}
@@ -257,35 +261,36 @@
 						{/each}
 					</select>
 				</div>
-				<button
+				<Button
 					type="submit"
-					class="inline-flex items-center justify-center rounded-2xl bg-amber-400 px-4 py-3 text-sm font-black text-slate-950 transition hover:bg-amber-300 disabled:cursor-not-allowed disabled:opacity-70"
+					variant="secondary"
+					class="h-11 rounded-2xl"
 					disabled={createBlockSubmitting}
 				>
 					{createBlockSubmitting ? 'Creating content...' : 'Create content'}
-				</button>
+				</Button>
 			</div>
 		</form>
 	</section>
 
-	<section class="rounded-[2rem] border border-slate-900/10 bg-white p-5 shadow-[0_24px_70px_-48px_rgba(15,23,42,0.6)]">
+	<section class="rounded-[2rem] border border-border/80 bg-card p-5 shadow-[0_24px_70px_-48px_rgba(15,23,42,0.45)]">
 		<div class="flex flex-wrap items-start justify-between gap-4">
 			<div class="space-y-2">
-				<p class="text-xs font-semibold uppercase tracking-[0.3em] text-slate-500">Library tree</p>
-				<h2 class="text-2xl font-black tracking-tight text-slate-950">Folders and content items</h2>
-				<p class="max-w-2xl text-sm leading-6 text-slate-600">
+				<p class="text-xs font-semibold uppercase tracking-[0.3em] text-muted-foreground">Library tree</p>
+				<h2 class="text-2xl font-black tracking-tight text-foreground">Folders and content items</h2>
+				<p class="max-w-2xl text-sm leading-6 text-muted-foreground">
 					Open any content item to edit it in dedicated editor. Delete actions stay behind confirmation.
 				</p>
 			</div>
-			<div class="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600">
-				<span class="font-semibold text-slate-900">{currentBlockFolders.length}</span> folders,
-				<span class="font-semibold text-slate-900">{currentReusableBlocks.length}</span> content items
+			<div class="rounded-2xl border border-border bg-muted/50 px-4 py-3 text-sm text-muted-foreground">
+				<span class="font-semibold text-foreground">{currentBlockFolders.length}</span> folders,
+				<span class="font-semibold text-foreground">{currentReusableBlocks.length}</span> content items
 			</div>
 		</div>
 
 		<div class="mt-6">
 			{#if currentBlockFolders.length === 0 && currentReusableBlocks.length === 0}
-				<div class="rounded-[1.5rem] border border-dashed border-slate-300 bg-slate-50 px-6 py-10 text-sm text-slate-500">
+				<div class="rounded-[1.5rem] border border-dashed border-border bg-muted/40 px-6 py-10 text-sm text-muted-foreground">
 					No content yet. Create first folder or content item above.
 				</div>
 			{:else}
@@ -302,27 +307,29 @@
 					{/each}
 
 					{#each reusableBlocksTree.blocks as block (block.id)}
-						<div class="flex items-center gap-3 rounded-2xl border border-slate-200 bg-slate-50/80 px-4 py-3 shadow-[0_12px_36px_-28px_rgba(15,23,42,0.45)]">
+						<div class="flex items-center gap-3 rounded-2xl border border-border bg-muted/35 px-4 py-3 shadow-[0_12px_36px_-28px_rgba(15,23,42,0.45)]">
 							<a href={`/content/${block.id}`} class="min-w-0 flex-1">
 								<div class="flex items-center gap-2">
-									<span class="truncate font-medium text-slate-900">{block.name}</span>
+									<span class="truncate font-medium text-foreground">{block.name}</span>
 									{#if !block.is_published || block.has_unpublished_changes}
-										<span class="rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.2em] text-amber-800">
+										<Badge class="bg-amber-500/15 text-[10px] font-semibold uppercase tracking-[0.2em] text-amber-700 dark:text-amber-300">
 											Draft
-										</span>
+										</Badge>
 									{/if}
 								</div>
-								<div class="mt-1 flex items-center gap-2 text-xs text-slate-500">
-									<span class="rounded-full bg-slate-100 px-2 py-0.5 font-semibold uppercase tracking-[0.2em] text-slate-600">
+								<div class="mt-1 flex items-center gap-2 text-xs text-muted-foreground">
+									<Badge variant="outline" class="uppercase tracking-[0.2em]">
 										{block.block_type}
-									</span>
+									</Badge>
 									<span>Open in the editor to refine the draft and publish it.</span>
 								</div>
 							</a>
 
-							<button
+							<Button
 								type="button"
-								class="inline-flex h-9 w-9 items-center justify-center rounded-full border border-red-200 bg-red-50 text-red-700 transition hover:border-red-300 hover:bg-red-100"
+								variant="destructive"
+								size="icon"
+								class="rounded-full"
 								aria-label={`Delete ${block.name}`}
 								onclick={() => openDeleteBlockModal(block.id, block.name)}
 							>
@@ -338,7 +345,7 @@
 									<path d="M6 6l1 14h10l1-14" />
 									<path d="M10 10v6M14 10v6" />
 								</svg>
-							</button>
+							</Button>
 						</div>
 					{/each}
 				</div>

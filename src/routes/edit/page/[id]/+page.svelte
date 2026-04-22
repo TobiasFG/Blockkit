@@ -5,6 +5,13 @@
 	import { applyAction, enhance } from '$app/forms';
 	import { getToastState } from '$lib/Toasts/toastState.svelte';
 	import { pagesStore } from '$lib/client/pagesStore';
+	import * as Alert from '$lib/components/ui/alert/index.js';
+	import { Badge } from '$lib/components/ui/badge/index.js';
+	import { Button } from '$lib/components/ui/button/index.js';
+	import { Input } from '$lib/components/ui/input/index.js';
+	import { Label } from '$lib/components/ui/label/index.js';
+	import * as Tabs from '$lib/components/ui/tabs/index.js';
+	import { Textarea } from '$lib/components/ui/textarea/index.js';
 	import BlockListEditor from '$lib/components/cms/BlockListEditor.svelte';
 	import { registerReusableBlockInsertHandler } from '$lib/components/cms/reusableBlockInsertion';
 	import { buildPagePathPreview, isRootPage } from '$lib/pagePath';
@@ -112,8 +119,8 @@
 
 	const formatTimestamp = (value?: string | null) => (value ? new Date(value).toLocaleString() : '—');
 	const inputClass =
-		'w-full rounded-2xl border border-stone-300/80 bg-white px-4 py-3 text-sm text-stone-900 shadow-[0_1px_0_rgba(41,37,36,0.04)] outline-none transition placeholder:text-stone-400 focus:border-stone-500 focus:ring-4 focus:ring-stone-200/70 disabled:bg-stone-100 disabled:text-stone-500';
-	const captionClass = 'text-[10px] font-medium uppercase tracking-[0.24em] text-stone-500';
+		'h-11 rounded-2xl';
+	const captionClass = 'text-[10px] font-medium uppercase tracking-[0.24em] text-muted-foreground';
 	const displayPath = (path: string | null | undefined) => (path && path.trim() ? path : '/');
 
 	const getPublishStateLabel = (state: 'unpublished' | 'published' | 'draft-changes') => {
@@ -372,95 +379,60 @@
 			<input type="hidden" name="content" value={serializedContent} />
 
 			<div class="space-y-8">
-				<header class="border-b border-stone-300/70 pb-8">
+				<header class="border-b border-border/70 pb-8">
 					<div class="flex flex-wrap items-start justify-between gap-6">
 						<div class="max-w-3xl space-y-3">
 							<p class={captionClass}>Page editor</p>
 							<div class="space-y-2">
-								<h1 class="max-w-2xl text-[2.6rem] font-semibold tracking-[-0.045em] text-stone-950 sm:text-5xl">
+								<h1 class="max-w-2xl text-[2.6rem] font-semibold tracking-[-0.045em] text-foreground sm:text-5xl">
 									{title || page.title}
 								</h1>
-								<p class="font-mono text-sm text-stone-600">{displayPath(pathPreview)}</p>
+								<p class="font-mono text-sm text-muted-foreground">{displayPath(pathPreview)}</p>
 								{#if page.live_path && page.live_path !== pathPreview}
-									<p class="text-sm text-stone-500">Live path stays {displayPath(page.live_path)} until related drafts publish.</p>
+									<p class="text-sm text-muted-foreground">Live path stays {displayPath(page.live_path)} until related drafts publish.</p>
 								{/if}
 							</div>
 						</div>
 
-						<a
+						<Button
 							href="/"
-							class="inline-flex items-center rounded-full border border-stone-300 bg-white px-4 py-2 text-sm font-medium text-stone-700 transition hover:border-stone-400 hover:bg-stone-50 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-stone-200/70"
+							variant="outline"
+							class="rounded-full"
 						>
 							Back to pages
-						</a>
+						</Button>
 					</div>
 				</header>
 
 				<div class="grid gap-10 xl:grid-cols-[minmax(0,1fr)_22rem] xl:items-start">
 					<div class="space-y-8">
-						<div class="border-b border-stone-200 pb-4">
-							<div class="inline-flex w-full flex-wrap gap-2 rounded-[1.5rem] bg-stone-100/80 p-1.5">
-								<button
-									type="button"
-									class={`min-h-11 rounded-[1.1rem] px-4 py-2 text-sm font-medium transition focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-stone-200/70 ${
-										activeTab === 'identity'
-											? 'bg-white text-stone-950 shadow-[0_1px_0_rgba(41,37,36,0.06)]'
-											: 'text-stone-600 hover:bg-stone-50 hover:text-stone-900'
-									}`}
-									onclick={() => {
-										activeTab = 'identity';
-									}}
-								>
-									Identity
-								</button>
-								<button
-									type="button"
-									class={`min-h-11 rounded-[1.1rem] px-4 py-2 text-sm font-medium transition focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-stone-200/70 ${
-										activeTab === 'content'
-											? 'bg-white text-stone-950 shadow-[0_1px_0_rgba(41,37,36,0.06)]'
-											: 'text-stone-600 hover:bg-stone-50 hover:text-stone-900'
-									}`}
-									onclick={() => {
-										activeTab = 'content';
-									}}
-								>
-									Content
-								</button>
-								<button
-									type="button"
-									class={`min-h-11 rounded-[1.1rem] px-4 py-2 text-sm font-medium transition focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-stone-200/70 ${
-										activeTab === 'discovery'
-											? 'bg-white text-stone-950 shadow-[0_1px_0_rgba(41,37,36,0.06)]'
-											: 'text-stone-600 hover:bg-stone-50 hover:text-stone-900'
-									}`}
-									onclick={() => {
-										activeTab = 'discovery';
-									}}
-								>
-									Discovery &amp; Sharing
-								</button>
-							</div>
-						</div>
+						<Tabs.Root value={activeTab} onValueChange={(value) => (activeTab = value as typeof activeTab)}>
+							<Tabs.List class="w-full justify-start rounded-[1.5rem]">
+								<Tabs.Trigger value="identity" class="min-h-11 rounded-[1.1rem]">Identity</Tabs.Trigger>
+								<Tabs.Trigger value="content" class="min-h-11 rounded-[1.1rem]">Content</Tabs.Trigger>
+								<Tabs.Trigger value="discovery" class="min-h-11 rounded-[1.1rem]">Discovery &amp; Sharing</Tabs.Trigger>
+							</Tabs.List>
+						</Tabs.Root>
 
 						{#if activeTab === 'identity'}
 							<section class="space-y-5">
 								<div class="space-y-2">
 									<p class={captionClass}>Identity</p>
-									<h2 class="text-[1.65rem] font-semibold tracking-[-0.035em] text-stone-950">Page name and path</h2>
-									<p class="max-w-[62ch] text-base leading-7 text-stone-600">
+									<h2 class="text-[1.65rem] font-semibold tracking-[-0.035em] text-foreground">Page name and path</h2>
+									<p class="max-w-[62ch] text-base leading-7 text-muted-foreground">
 										Title, parent, URL name all save into draft identity. Publish makes them live together.
 									</p>
 								</div>
 
 								<div class="grid gap-5 lg:grid-cols-[minmax(0,1.35fr)_minmax(18rem,0.85fr)]">
 									<div class="space-y-2">
-										<label for="title" class="text-sm font-medium text-stone-800">Title</label>
-										<input id="title" type="text" name="title" required bind:value={title} class={inputClass} />
+										<Label for="title">Title</Label>
+										<Input id="title" type="text" name="title" required bind:value={title} class={inputClass} />
 									</div>
 
 									<div class="space-y-2">
-										<label for="urlName" class="text-sm font-medium text-stone-800">URL name</label>
-										<input
+										<Label for="urlName">URL name</Label>
+										<Input
 											id="urlName"
 											type="text"
 											name="urlName"
@@ -469,7 +441,7 @@
 											placeholder="about-us"
 											class={`${inputClass} font-mono text-[13px]`}
 										/>
-										<p class="text-sm leading-6 text-stone-500">
+										<p class="text-sm leading-6 text-muted-foreground">
 											{#if isRoot}
 												Root page always uses `/`.
 											{:else}
@@ -480,11 +452,11 @@
 								</div>
 
 								<div class="space-y-2">
-									<label for="parentPageId" class="text-sm font-medium text-stone-800">Parent page</label>
+									<Label for="parentPageId">Parent page</Label>
 									{#if isRoot}
-										<input value="Root page" disabled class={inputClass} />
+										<Input value="Root page" disabled class={inputClass} />
 									{:else}
-										<select id="parentPageId" name="parentPageId" bind:value={parentPageId} class={inputClass}>
+										<select id="parentPageId" name="parentPageId" bind:value={parentPageId} class="border-input bg-background focus-visible:border-ring focus-visible:ring-ring/50 flex h-11 w-full rounded-2xl border px-4 py-3 text-sm outline-none focus-visible:ring-3">
 											{#each selectableParents as parent (parent.id)}
 												<option value={parent.id}>{parent.title} ({displayPath(parent.path)})</option>
 											{/each}
@@ -492,11 +464,11 @@
 									{/if}
 								</div>
 
-								<div class="rounded-2xl border border-stone-200/80 bg-stone-50 px-4 py-3">
+								<div class="rounded-2xl border border-border/80 bg-muted/50 px-4 py-3">
 									<p class={captionClass}>Path preview</p>
-									<p class="mt-1 font-mono text-sm text-stone-800">{displayPath(pathPreview)}</p>
+									<p class="mt-1 font-mono text-sm text-foreground">{displayPath(pathPreview)}</p>
 									{#if descendantPathChangeWarning}
-										<p class="mt-2 text-sm text-stone-600">Moving or renaming this page changes child page URLs when published.</p>
+										<p class="mt-2 text-sm text-muted-foreground">Moving or renaming this page changes child page URLs when published.</p>
 									{/if}
 								</div>
 							</section>
@@ -506,10 +478,10 @@
 							<section class="space-y-5">
 								<div class="space-y-2">
 									<p class={captionClass}>Content</p>
-									<h2 class="text-[1.65rem] font-semibold tracking-[-0.035em] text-stone-950">Page content</h2>
+									<h2 class="text-[1.65rem] font-semibold tracking-[-0.035em] text-foreground">Page content</h2>
 								</div>
 
-								<div class="border-t border-stone-200 pt-5">
+								<div class="border-t border-border pt-5">
 									<BlockListEditor
 										blocks={content.blocks}
 										location={{ parentPath: null, fieldKey: null }}
@@ -524,7 +496,7 @@
 										onMoveBlock={reorderBlock}
 										onUpdateField={updateField}
 										{reusableBlocks}
-										onStartDrag={(path) => {
+										onStartDrag={(path: number[]) => {
 											draggingPath = path.join('.');
 										}}
 										onEndDrag={() => {
@@ -533,9 +505,9 @@
 									/>
 
 									{#if Object.keys(contentErrors).length > 0}
-										<div class="mt-5 rounded-2xl border border-red-300/70 bg-red-50 px-4 py-3 text-sm text-red-900">
-											Some content still needs attention before you can save.
-										</div>
+										<Alert.Root class="mt-5" variant="destructive">
+											<Alert.Description>Some content still needs attention before you can save.</Alert.Description>
+										</Alert.Root>
 									{/if}
 								</div>
 							</section>
@@ -545,40 +517,40 @@
 							<section class="space-y-5">
 								<div class="space-y-2">
 									<p class={captionClass}>Discovery &amp; sharing</p>
-									<h2 class="text-[1.65rem] font-semibold tracking-[-0.035em] text-stone-950">Search and sharing</h2>
-									<p class="max-w-[62ch] text-base leading-7 text-stone-600">
+									<h2 class="text-[1.65rem] font-semibold tracking-[-0.035em] text-foreground">Search and sharing</h2>
+									<p class="max-w-[62ch] text-base leading-7 text-muted-foreground">
 										Optional. Change this only if search results or shared links should show different text or image.
 									</p>
 								</div>
 
-								<div class="space-y-4 border-t border-stone-200 pt-5">
+								<div class="space-y-4 border-t border-border pt-5">
 									<div class="space-y-2">
-										<label for="seoTitle" class="text-sm font-medium text-stone-800">Title for search</label>
-										<input id="seoTitle" type="text" name="seoTitle" bind:value={seo.title} class={inputClass} />
-										<p class="text-sm leading-6 text-stone-500">Optional. Leave empty to use page title.</p>
+										<Label for="seoTitle">Title for search</Label>
+										<Input id="seoTitle" type="text" name="seoTitle" bind:value={seo.title} class={inputClass} />
+										<p class="text-sm leading-6 text-muted-foreground">Optional. Leave empty to use page title.</p>
 									</div>
 
 									<div class="space-y-2">
-										<label for="seoDescription" class="text-sm font-medium text-stone-800">Description for search</label>
-										<textarea id="seoDescription" name="seoDescription" rows="4" bind:value={seo.description} class={`${inputClass} min-h-28 resize-y`}></textarea>
+										<Label for="seoDescription">Description for search</Label>
+										<Textarea id="seoDescription" name="seoDescription" rows={4} bind:value={seo.description} class="min-h-28 rounded-2xl resize-y" />
 									</div>
 
 									<div class="space-y-2">
-										<label for="canonicalUrl" class="text-sm font-medium text-stone-800">Preferred link</label>
-										<input id="canonicalUrl" type="url" name="canonicalUrl" bind:value={seo.canonicalUrl} class={inputClass} />
+										<Label for="canonicalUrl">Preferred link</Label>
+										<Input id="canonicalUrl" type="url" name="canonicalUrl" bind:value={seo.canonicalUrl} class={inputClass} />
 									</div>
 
 									<div class="space-y-2">
-										<label for="ogImageUrl" class="text-sm font-medium text-stone-800">Image for sharing</label>
-										<input id="ogImageUrl" type="url" name="ogImageUrl" bind:value={seo.ogImageUrl} class={inputClass} />
+										<Label for="ogImageUrl">Image for sharing</Label>
+										<Input id="ogImageUrl" type="url" name="ogImageUrl" bind:value={seo.ogImageUrl} class={inputClass} />
 									</div>
 
 									<div class="grid gap-3 sm:grid-cols-2">
-										<label class="flex items-center gap-3 rounded-2xl border border-stone-200 bg-white px-4 py-3 text-sm text-stone-700">
+										<label class="flex items-center gap-3 rounded-2xl border border-border bg-card px-4 py-3 text-sm text-foreground">
 											<input type="checkbox" name="noIndex" bind:checked={seo.noIndex} class="h-4 w-4 rounded border-stone-300 text-stone-900 focus:ring-stone-300" />
 											<span>Hide from search engines</span>
 										</label>
-										<label class="flex items-center gap-3 rounded-2xl border border-stone-200 bg-white px-4 py-3 text-sm text-stone-700">
+										<label class="flex items-center gap-3 rounded-2xl border border-border bg-card px-4 py-3 text-sm text-foreground">
 											<input type="checkbox" name="noFollow" bind:checked={seo.noFollow} class="h-4 w-4 rounded border-stone-300 text-stone-900 focus:ring-stone-300" />
 											<span>Disable link following</span>
 										</label>
@@ -589,11 +561,11 @@
 					</div>
 
 					<aside class="space-y-4">
-						<section class="rounded-[1.75rem] border border-stone-200/80 bg-white/92 p-5 shadow-[0_22px_60px_-42px_rgba(41,37,36,0.2)]">
+						<section class="rounded-[1.75rem] border border-border/80 bg-card/92 p-5 shadow-[0_22px_60px_-42px_rgba(15,23,42,0.2)]">
 							<div class="space-y-2">
 								<p class={captionClass}>Draft state</p>
-								<h2 class="text-[1.25rem] font-semibold tracking-[-0.03em] text-stone-950">{getDraftStateLabel()}</h2>
-								<p class="text-sm leading-6 text-stone-600">
+								<h2 class="text-[1.25rem] font-semibold tracking-[-0.03em] text-foreground">{getDraftStateLabel()}</h2>
+								<p class="text-sm leading-6 text-muted-foreground">
 									{#if hasUnsavedChanges}
 										Current form changes live only in browser until you save draft.
 									{:else if hasDraftChanges}
@@ -606,59 +578,57 @@
 
 							<div class="mt-4 flex flex-col gap-2">
 								{#if showPrimaryAction}
-									<button
-										in:fly={actionMotion}
-										out:fly={actionMotion}
+									<Button
 										type="submit"
 										formaction={primaryActionFormAction}
 										data-intent={primaryActionState === 'publish' ? 'publish' : 'save'}
-										class={`inline-flex min-h-11 items-center justify-center rounded-full px-5 py-3 text-sm font-semibold transition focus-visible:outline-none focus-visible:ring-4 disabled:cursor-not-allowed disabled:opacity-70 ${primaryActionClass}`}
+										variant={primaryActionState === 'validation-error' ? 'destructive' : primaryActionState === 'publish' ? 'secondary' : 'default'}
+										class="h-11 rounded-full"
 										disabled={primaryActionDisabled}
 									>
 										{primaryActionLabel}
-									</button>
+									</Button>
 								{/if}
 								{#if showRevertAction}
-									<button
-										in:fly={actionMotion}
-										out:fly={actionMotion}
+									<Button
 										type="button"
-										class="inline-flex min-h-11 items-center justify-center rounded-full border border-stone-300 bg-white px-5 py-3 text-sm font-medium text-stone-700 transition hover:bg-stone-50 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-stone-200/70 disabled:cursor-not-allowed disabled:opacity-60"
+										variant="outline"
+										class="h-11 rounded-full"
 										onclick={resetDraft}
 									>
 										Revert changes to {loadedSnapshot?.revertTargetLabel ?? 'draft'}
-									</button>
+									</Button>
 								{/if}
 							</div>
 						</section>
 
-						<section class="rounded-[1.75rem] border border-stone-200/80 bg-white/92 p-5 shadow-[0_22px_60px_-42px_rgba(41,37,36,0.2)]">
+						<section class="rounded-[1.75rem] border border-border/80 bg-card/92 p-5 shadow-[0_22px_60px_-42px_rgba(15,23,42,0.2)]">
 							<div class="space-y-2">
 								<p class={captionClass}>Publish state</p>
 								<div class="flex items-center gap-2">
-									<span class={`rounded-full px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.16em] ${getPublishStateClass(publishState)}`}>
+									<Badge class={`rounded-full px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.16em] ${getPublishStateClass(publishState)}`}>
 										{getPublishStateLabel(publishState)}
-									</span>
+									</Badge>
 								</div>
-								<p class="text-sm leading-6 text-stone-600">Publish uses current saved draft identity, content, SEO.</p>
+								<p class="text-sm leading-6 text-muted-foreground">Publish uses current saved draft identity, content, SEO.</p>
 							</div>
 
-							<div class="mt-4 space-y-3 border-t border-stone-200 pt-4 text-sm text-stone-600">
+							<div class="mt-4 space-y-3 border-t border-border pt-4 text-sm text-muted-foreground">
 								<div class="flex items-center justify-between gap-3">
 									<span>Draft path</span>
-									<span class="font-mono text-xs text-stone-900">{displayPath(pathPreview)}</span>
+									<span class="font-mono text-xs text-foreground">{displayPath(pathPreview)}</span>
 								</div>
 								<div class="flex items-center justify-between gap-3">
 									<span>Live path</span>
-									<span class="font-mono text-xs text-stone-900">{displayPath(page.live_path)}</span>
+									<span class="font-mono text-xs text-foreground">{displayPath(page.live_path)}</span>
 								</div>
 								<div class="flex items-center justify-between gap-3">
 									<span>Last published</span>
-									<span class="text-right text-stone-900">{formatTimestamp(page.last_published_at)}</span>
+									<span class="text-right text-foreground">{formatTimestamp(page.last_published_at)}</span>
 								</div>
 								<div class="flex items-center justify-between gap-3">
 									<span>Updated</span>
-									<span class="text-right text-stone-900">{formatTimestamp(page.updated_at)}</span>
+									<span class="text-right text-foreground">{formatTimestamp(page.updated_at)}</span>
 								</div>
 							</div>
 						</section>

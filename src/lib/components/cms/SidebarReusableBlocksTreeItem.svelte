@@ -43,11 +43,11 @@
 	const getStateMeta = (state: 'unpublished' | 'published' | 'draft-changes') => {
 		switch (state) {
 			case 'draft-changes':
-				return { label: 'Saved draft', className: 'bg-sky-100 text-sky-800' };
+				return { label: 'Saved draft', className: 'bg-sky-500/15 text-sky-700 dark:text-sky-300' };
 			case 'published':
-				return { label: 'Published', className: 'bg-emerald-100 text-emerald-800' };
+				return { label: 'Published', className: 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-300' };
 			default:
-				return { label: 'Unpublished', className: 'bg-amber-100 text-amber-800' };
+				return { label: 'Unpublished', className: 'bg-amber-500/15 text-amber-700 dark:text-amber-300' };
 		}
 	};
 </script>
@@ -57,15 +57,15 @@
 		<div class="flex items-center gap-1">
 			<ContextMenu.Root>
 				<ContextMenu.Trigger
-					class="flex min-w-0 flex-1 items-center gap-2 rounded-md py-2 pr-3 text-sm text-slate-700"
+					class="flex min-w-0 flex-1 items-center gap-2 rounded-md py-2 pr-3 text-sm text-muted-foreground"
 					style={`padding-left: ${depth * 1.25 + 0.75}rem`}
 				>
 					<span class="truncate font-medium">{node.folder.name}</span>
-					<span class="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-slate-500">
+					<span class="rounded-full bg-muted px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
 						Folder
 					</span>
 				</ContextMenu.Trigger>
-				<ContextMenu.Content class="z-50 min-w-44 rounded-xl border border-slate-200 bg-white p-1.5 shadow-lg">
+				<ContextMenu.Content class="z-50 min-w-44 rounded-xl border border-border bg-popover p-1.5 shadow-lg">
 					<ContextMenu.Item
 						class="rounded-lg px-2 py-2 text-sm text-slate-700 outline-none transition focus:bg-slate-100"
 						onSelect={() => onCreateSubfolder(node.folder!.id, node.folder!.name)}
@@ -81,7 +81,7 @@
 				</ContextMenu.Content>
 			</ContextMenu.Root>
 			<DropdownMenu.Root>
-				<DropdownMenu.Trigger class="inline-flex h-8 items-center justify-center rounded-md border border-slate-200 bg-white px-2 text-[10px] font-semibold uppercase tracking-wide text-slate-600 transition hover:border-slate-300 hover:bg-slate-50 hover:text-slate-900">
+				<DropdownMenu.Trigger class="inline-flex h-8 items-center justify-center rounded-md border border-border bg-background px-2 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground transition hover:bg-muted hover:text-foreground">
 					Actions
 				</DropdownMenu.Trigger>
 				<DropdownMenu.Content class="z-50 min-w-44 rounded-xl border border-slate-200 bg-white p-1.5 shadow-lg">
@@ -103,7 +103,7 @@
 			{#if hasChildren}
 				<button
 					type="button"
-					class="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-md text-slate-500 transition hover:bg-slate-100 hover:text-slate-700 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-slate-200/70"
+				class="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-md text-muted-foreground transition hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-ring/30"
 					aria-label={isOpen ? `Collapse ${node.folder.name}` : `Expand ${node.folder.name}`}
 					aria-expanded={isOpen}
 					onclick={() => onToggle(node.folder!.id)}
@@ -140,8 +140,8 @@
 						class={[
 							'flex min-w-0 items-center justify-between gap-2 rounded-md py-2 pr-3 text-sm transition',
 							activeBlockId === block.id
-								? 'bg-slate-100 text-slate-900'
-								: 'text-slate-700 hover:bg-slate-100'
+								? 'bg-muted text-foreground'
+								: 'text-muted-foreground hover:bg-muted hover:text-foreground'
 						].join(' ')}
 						style={`padding-left: ${(depth + 1) * 1.25 + 0.75}rem`}
 					>
@@ -159,13 +159,13 @@
 										<span class={`rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide ${stateMeta.className}`}>
 											{stateMeta.label}
 										</span>
-										<span class="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-slate-500">
+										<span class="rounded-full bg-muted px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
 											{block.block_type}
 										</span>
 									</div>
 								</a>
 							</ContextMenu.Trigger>
-							<ContextMenu.Content class="z-50 min-w-44 rounded-xl border border-slate-200 bg-white p-1.5 shadow-lg">
+							<ContextMenu.Content class="z-50 min-w-44 rounded-xl border border-border bg-popover p-1.5 shadow-lg">
 								{#if canInsertIntoPage}
 									<ContextMenu.Item
 										class="rounded-lg px-2 py-2 text-sm text-slate-700 outline-none transition focus:bg-slate-100"
@@ -183,10 +183,10 @@
 							</ContextMenu.Content>
 						</ContextMenu.Root>
 						<DropdownMenu.Root>
-							<DropdownMenu.Trigger class="shrink-0 rounded-md border border-slate-200 bg-white px-2 py-1 text-[10px] font-semibold uppercase tracking-wide text-slate-600 transition hover:border-slate-300 hover:bg-slate-50 hover:text-slate-900">
+							<DropdownMenu.Trigger class="shrink-0 rounded-md border border-border bg-background px-2 py-1 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground transition hover:bg-muted hover:text-foreground">
 								Actions
 							</DropdownMenu.Trigger>
-							<DropdownMenu.Content class="z-50 min-w-44 rounded-xl border border-slate-200 bg-white p-1.5 shadow-lg">
+							<DropdownMenu.Content class="z-50 min-w-44 rounded-xl border border-border bg-popover p-1.5 shadow-lg">
 								{#if canInsertIntoPage}
 									<DropdownMenu.Item
 										class="rounded-lg px-2 py-2 text-sm text-slate-700 outline-none transition focus:bg-slate-100"

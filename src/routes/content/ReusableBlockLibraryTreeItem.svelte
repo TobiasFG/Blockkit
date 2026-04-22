@@ -27,11 +27,11 @@
 	const getStateMeta = (state: 'unpublished' | 'published' | 'draft-changes') => {
 		switch (state) {
 			case 'draft-changes':
-				return { label: 'Saved draft', className: 'bg-sky-100 text-sky-800' };
+				return { label: 'Saved draft', className: 'bg-sky-500/15 text-sky-700 dark:text-sky-300' };
 			case 'published':
-				return { label: 'Published', className: 'bg-emerald-100 text-emerald-800' };
+				return { label: 'Published', className: 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-300' };
 			default:
-				return { label: 'Unpublished', className: 'bg-amber-100 text-amber-800' };
+				return { label: 'Unpublished', className: 'bg-amber-500/15 text-amber-700 dark:text-amber-300' };
 		}
 	};
 </script>
@@ -39,17 +39,17 @@
 {#if node.folder}
 	<div class="space-y-3">
 		<div
-			class="flex items-center gap-3 rounded-2xl border border-slate-900/10 bg-slate-50 px-4 py-3 shadow-[0_10px_30px_-24px_rgba(15,23,42,0.55)]"
+			class="flex items-center gap-3 rounded-2xl border border-border bg-muted/40 px-4 py-3 shadow-[0_10px_30px_-24px_rgba(15,23,42,0.55)]"
 			style={`margin-left: ${depth * 1.1}rem`}
 		>
 			<div class="min-w-0 flex-1">
 				<div class="flex items-center gap-2">
-					<span class="truncate font-semibold text-slate-900">{node.folder.name}</span>
-					<span class="rounded-full bg-slate-900 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.2em] text-white">
+					<span class="truncate font-semibold text-foreground">{node.folder.name}</span>
+					<span class="rounded-full bg-foreground px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.2em] text-background">
 						Folder
 					</span>
 				</div>
-				<p class="mt-1 text-xs text-slate-500">
+				<p class="mt-1 text-xs text-muted-foreground">
 					{node.folders.length} subfolder{node.folders.length === 1 ? '' : 's'} and
 					{node.blocks.length} shared content item{node.blocks.length === 1 ? '' : 's'}
 				</p>
@@ -57,7 +57,7 @@
 			<div class="flex items-center gap-1">
 				<button
 					type="button"
-					class="inline-flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-500 transition hover:border-slate-300 hover:text-slate-900"
+					class="inline-flex h-9 w-9 items-center justify-center rounded-full border border-border bg-background text-muted-foreground transition hover:bg-muted hover:text-foreground"
 					aria-label={`Delete ${node.folder.name}`}
 					onclick={() => onDeleteFolder(node.folder!.id, node.folder!.name)}
 				>
@@ -77,7 +77,7 @@
 				{#if hasChildren}
 					<button
 						type="button"
-						class="inline-flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-500 transition hover:border-slate-300 hover:text-slate-900"
+						class="inline-flex h-9 w-9 items-center justify-center rounded-full border border-border bg-background text-muted-foreground transition hover:bg-muted hover:text-foreground"
 						aria-label={isOpen ? `Collapse ${node.folder.name}` : `Expand ${node.folder.name}`}
 						aria-expanded={isOpen}
 						onclick={() => onToggle(node.folder!.id)}
@@ -112,18 +112,18 @@
 				{#each node.blocks as block (block.id)}
 					{@const stateMeta = getStateMeta(getReusableBlockPublishState(block))}
 					<div
-						class="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white px-4 py-3 shadow-[0_12px_36px_-28px_rgba(15,23,42,0.45)]"
+						class="flex items-center gap-3 rounded-2xl border border-border bg-card px-4 py-3 shadow-[0_12px_36px_-28px_rgba(15,23,42,0.45)]"
 						style={`margin-left: ${(depth + 1) * 1.1}rem`}
 					>
 						<a href={`/content/${block.id}`} class="min-w-0 flex-1">
 							<div class="flex items-center gap-2">
-								<span class="truncate font-medium text-slate-900">{block.name}</span>
+								<span class="truncate font-medium text-foreground">{block.name}</span>
 								<span class={`rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.2em] ${stateMeta.className}`}>
 									{stateMeta.label}
 								</span>
 							</div>
-							<div class="mt-1 flex items-center gap-2 text-xs text-slate-500">
-								<span class="rounded-full bg-slate-100 px-2 py-0.5 font-semibold uppercase tracking-[0.2em] text-slate-600">
+							<div class="mt-1 flex items-center gap-2 text-xs text-muted-foreground">
+								<span class="rounded-full bg-muted px-2 py-0.5 font-semibold uppercase tracking-[0.2em] text-muted-foreground">
 									{block.block_type}
 								</span>
 								<span>Open to edit the draft and publish state.</span>
@@ -132,7 +132,7 @@
 
 						<button
 							type="button"
-							class="inline-flex h-9 w-9 items-center justify-center rounded-full border border-red-200 bg-red-50 text-red-700 transition hover:border-red-300 hover:bg-red-100"
+							class="inline-flex h-9 w-9 items-center justify-center rounded-full border border-destructive/30 bg-destructive/10 text-destructive transition hover:bg-destructive/20"
 							aria-label={`Delete ${block.name}`}
 							onclick={() => onDeleteBlock(block.id, block.name)}
 						>

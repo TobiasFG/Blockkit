@@ -1,5 +1,11 @@
 <script lang="ts">
     import Self from "$lib/components/cms/BlockListEditor.svelte";
+    import * as Alert from "$lib/components/ui/alert/index.js";
+    import { Badge } from "$lib/components/ui/badge/index.js";
+    import { Button } from "$lib/components/ui/button/index.js";
+    import { Input } from "$lib/components/ui/input/index.js";
+    import { Label } from "$lib/components/ui/label/index.js";
+    import { Textarea } from "$lib/components/ui/textarea/index.js";
     import {
         getBlockDefinition,
         listBlockDefinitions,
@@ -101,13 +107,13 @@
     let hoveredDropTarget = $state<string | null>(null);
 
     const fieldClass =
-        "w-full rounded-2xl border border-stone-300/80 bg-white px-4 py-3 text-sm text-stone-900 shadow-[0_1px_0_rgba(41,37,36,0.04)] outline-none transition focus:border-stone-500 focus:ring-4 focus:ring-stone-200/70";
+        "h-11 rounded-2xl";
 
     const tertiaryButtonClass =
-        "rounded-full border border-stone-300 bg-white px-3 py-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-stone-700 transition hover:border-stone-400 hover:bg-stone-50 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-stone-200/70";
+        "rounded-full";
 
     const captionClass =
-        "text-[10px] font-medium uppercase tracking-[0.22em] text-stone-500";
+        "text-[10px] font-medium uppercase tracking-[0.22em] text-muted-foreground";
 
     const parseStringValue = (
         value: string,
@@ -205,14 +211,12 @@
         <div class="flex flex-wrap items-start justify-between gap-3">
             <div class="space-y-1">
                 {#if title}
-                    <h3
-                        class="text-[1.2rem] font-semibold tracking-[-0.025em] text-stone-950"
-                    >
+                    <h3 class="text-[1.2rem] font-semibold tracking-[-0.025em] text-foreground">
                         {title}
                     </h3>
                 {/if}
                 {#if description}
-                    <p class="max-w-[62ch] text-base leading-7 text-stone-600">
+                    <p class="max-w-[62ch] text-base leading-7 text-muted-foreground">
                         {description}
                     </p>
                 {/if}
@@ -220,7 +224,7 @@
             <div class="flex items-center gap-2">
                 {#if showInlineBlockCreate}
                     <select
-                        class={`${fieldClass} min-w-[11rem] py-2.5 pr-10 text-sm`}
+                        class="border-input bg-background focus-visible:border-ring focus-visible:ring-ring/50 min-w-[11rem] rounded-2xl border px-4 py-2.5 pr-10 text-sm outline-none focus-visible:ring-3"
                         onchange={(event) => {
                             const select =
                                 event.currentTarget as HTMLSelectElement;
@@ -242,43 +246,45 @@
     {/if}
 
     {#if blocks.length === 0}
-        <button
+        <Button
             type="button"
+            variant="outline"
             class={[
                 "rounded-[1.5rem] border border-dashed px-5 py-6 text-left text-sm",
                 canDragBlocks
-                    ? "border-stone-400 bg-stone-100/70 text-stone-600"
-                    : "border-stone-300 bg-stone-100/60 text-stone-600",
+                    ? "border-border bg-muted/60 text-muted-foreground"
+                    : "border-border bg-muted/40 text-muted-foreground",
             ].join(" ")}
             aria-label="Drop block before the empty list"
             ondragover={(event) => canDragBlocks && event.preventDefault()}
             ondrop={(event) => canDragBlocks && handleDrop(event, 0)}
         >
-            <div class="font-semibold text-stone-900">No content yet.</div>
+            <div class="font-semibold text-foreground">No content yet.</div>
             {#if canDragBlocks}
-                <span class="mt-1 block text-stone-500"
+                <span class="mt-1 block text-muted-foreground"
                     >Drag content here to start page.</span
                 >
             {:else if !showInlineBlockCreate}
-                <span class="mt-1 block text-stone-500"
+                <span class="mt-1 block text-muted-foreground"
                     >Choose content from library to start page.</span
                 >
             {:else}
-                <span class="mt-1 block text-stone-500"
+                <span class="mt-1 block text-muted-foreground"
                     >Start with a block type, then build the page from there.</span
                 >
             {/if}
-        </button>
+        </Button>
     {:else}
         <div class="space-y-2 divide-y divide-stone-200">
             {#if canDragBlocks && draggingPath}
-                <button
+                <Button
                     type="button"
+                    variant="outline"
                     class={[
-                        "rounded-full border border-dashed px-4 py-2 text-center text-[11px] font-semibold uppercase tracking-[0.22em] transition focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-stone-200/70",
+                        "rounded-full border-dashed px-4 py-2 text-center text-[11px] font-semibold uppercase tracking-[0.22em]",
                         hoveredDropTarget === `${pathPrefix.join(".")}:0`
-                            ? "border-stone-900 bg-stone-900 text-stone-50"
-                            : "border-stone-300 bg-stone-100/70 text-stone-500 hover:border-stone-400 hover:bg-stone-200/70",
+                            ? "border-foreground bg-foreground text-background"
+                            : "border-border bg-muted/60 text-muted-foreground",
                     ].join(" ")}
                     aria-label="Drop block before the first block"
                     ondragover={(event) => {
@@ -292,7 +298,7 @@
                     ondrop={(event) => handleDrop(event, 0)}
                 >
                     Drop before the first block
-                </button>
+                </Button>
             {/if}
 
             {#each blocks as block, index (block.id)}
@@ -306,14 +312,15 @@
                     : null}
 
                 {#if canDragBlocks && draggingPath}
-                    <button
+                    <Button
                         type="button"
+                        variant="outline"
                         class={[
-                            "rounded-full border border-dashed px-4 py-2 text-center text-[11px] font-semibold uppercase tracking-[0.22em] transition focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-stone-200/70",
+                            "rounded-full border-dashed px-4 py-2 text-center text-[11px] font-semibold uppercase tracking-[0.22em]",
                             hoveredDropTarget ===
                             `${pathPrefix.join(".")}:${index + 1}`
-                                ? "border-stone-900 bg-stone-900 text-stone-50"
-                                : "border-stone-300 bg-stone-100/70 text-stone-500 hover:border-stone-400 hover:bg-stone-200/70",
+                                ? "border-foreground bg-foreground text-background"
+                                : "border-border bg-muted/60 text-muted-foreground",
                         ].join(" ")}
                         aria-label={`Drop block after ${index + 1}`}
                         ondragover={(event) => {
@@ -327,14 +334,14 @@
                         ondrop={(event) => handleDrop(event, index + 1)}
                     >
                         Drop after this block
-                    </button>
+                    </Button>
                 {/if}
 
                 <div
                     class={[
                         "px-1 py-5",
                         draggingPath === pathKey
-                            ? "rounded-[1.25rem] bg-amber-50/70 ring-2 ring-amber-200/80"
+                            ? "rounded-[1.25rem] bg-amber-500/10 ring-2 ring-amber-500/30"
                             : "",
                     ].join(" ")}
                     role="listitem"
@@ -352,16 +359,14 @@
                     >
                         <div class="space-y-1">
                             <div class="flex flex-wrap items-center gap-2">
-                                <h4
-                                    class="text-[1.02rem] font-semibold tracking-[-0.02em] text-stone-950"
-                                >
+                                <h4 class="text-[1.02rem] font-semibold tracking-[-0.02em] text-foreground">
                                     {#if isReusableBlockReference(block)}
                                         {#if reusableBlock}
                                             <a
                                                 href={getContentHref(
                                                     reusableBlock.id,
                                                 )}
-                                                class="underline decoration-stone-300 underline-offset-4"
+                                                class="underline decoration-border underline-offset-4"
                                             >
                                                 {reusableBlock.name}
                                             </a>
@@ -372,33 +377,25 @@
                                         {definition?.label ?? block.type}
                                     {/if}
                                 </h4>
-                                <span
-                                    class="rounded-full bg-stone-100 px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.12em] text-stone-500"
-                                >
+                                <Badge variant="outline" class="font-mono text-[10px] uppercase tracking-[0.12em]">
                                     {#if isReusableBlockReference(block)}
                                         content
                                     {:else}
                                         {block.type}
                                     {/if}
-                                </span>
+                                </Badge>
                                 {#if isReusableBlockReference(block) && reusableBlock}
-                                    <span
-                                        class="rounded-full bg-stone-100 px-2.5 py-1 text-[10px] font-medium uppercase tracking-[0.12em] text-stone-600"
-                                    >
+                                    <Badge variant="secondary" class="text-[10px] font-medium uppercase tracking-[0.12em]">
                                         {reusableBlock.block_type}
-                                    </span>
+                                    </Badge>
                                 {/if}
                                 {#if canDragBlocks && draggingPath === pathKey}
-                                    <span
-                                        class="rounded-full bg-amber-100 px-2.5 py-1 text-[10px] font-medium uppercase tracking-[0.12em] text-amber-800"
-                                    >
+                                    <Badge class="bg-amber-500/15 text-[10px] font-medium uppercase tracking-[0.12em] text-amber-700 dark:text-amber-300">
                                         Dragging
-                                    </span>
+                                    </Badge>
                                 {/if}
                             </div>
-                            <div
-                                class="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-stone-500"
-                            >
+                            <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-muted-foreground">
                                 <span>{index + 1} of {blocks.length}</span>
                                 <span class="font-mono" title={block.id}
                                     >ID {block.id.slice(0, 8)}</span
@@ -408,23 +405,24 @@
 
                         <div class="flex flex-wrap items-center gap-2">
                             <div class="relative">
-                                <button
+                                <Button
                                     type="button"
+                                    variant="outline"
                                     class={tertiaryButtonClass}
                                     aria-expanded={openActionMenuPath ===
                                         pathKey}
                                     onclick={() => openActionMenu(pathKey)}
                                 >
                                     Actions
-                                </button>
+                                </Button>
                                 {#if openActionMenuPath === pathKey}
                                     <div
-                                        class="absolute right-0 top-full z-20 mt-2 w-56 rounded-[1.25rem] border border-stone-300 bg-white p-2 shadow-[0_24px_60px_-34px_rgba(41,37,36,0.28)]"
+                                        class="absolute right-0 top-full z-20 mt-2 w-56 rounded-[1.25rem] border border-border bg-popover p-2 shadow-[0_24px_60px_-34px_rgba(15,23,42,0.28)]"
                                     >
                                         <div class="space-y-1">
                                             <button
                                                 type="button"
-                                                class="flex w-full items-center justify-between rounded-xl px-3 py-2 text-left text-sm text-stone-700 transition hover:bg-stone-100 disabled:text-stone-300"
+                                                class="flex w-full items-center justify-between rounded-xl px-3 py-2 text-left text-sm text-foreground transition hover:bg-muted disabled:text-muted-foreground"
                                                 onclick={() => {
                                                     onMoveBlock(
                                                         path,
@@ -438,7 +436,7 @@
                                             </button>
                                             <button
                                                 type="button"
-                                                class="flex w-full items-center justify-between rounded-xl px-3 py-2 text-left text-sm text-stone-700 transition hover:bg-stone-100 disabled:text-stone-300"
+                                                class="flex w-full items-center justify-between rounded-xl px-3 py-2 text-left text-sm text-foreground transition hover:bg-muted disabled:text-muted-foreground"
                                                 onclick={() => {
                                                     onMoveBlock(
                                                         path,
@@ -466,7 +464,7 @@
                                                 </button>
                                                 {#if openReusableMenuPath === pathKey}
                                                     <div
-                                                        class="space-y-1 border-t border-stone-200 pt-2"
+                                                        class="space-y-1 border-t border-border pt-2"
                                                     >
                                                         <p
                                                             class={`${captionClass} px-3 py-1`}
@@ -480,7 +478,7 @@
                                                             {#each reusableBlocks as reusableBlock}
                                                                 <button
                                                                     type="button"
-                                                                    class="flex w-full items-center justify-between gap-3 rounded-xl px-3 py-2 text-left text-sm text-stone-700 transition hover:bg-stone-100"
+                                                                    class="flex w-full items-center justify-between gap-3 rounded-xl px-3 py-2 text-left text-sm text-foreground transition hover:bg-muted"
                                                                     onclick={() =>
                                                                         insertReusableBlockReference(
                                                                             reusableBlock.id,
@@ -491,11 +489,9 @@
                                                                         class="min-w-0 flex-1 truncate font-medium"
                                                                         >{reusableBlock.name}</span
                                                                     >
-                                                                    <span
-                                                                        class="shrink-0 rounded-full bg-stone-100 px-2.5 py-1 text-[10px] uppercase tracking-[0.12em] text-stone-500"
-                                                                    >
+                                                                    <Badge variant="outline" class="shrink-0 text-[10px] uppercase tracking-[0.12em]">
                                                                         {reusableBlock.block_type}
-                                                                    </span>
+                                                                    </Badge>
                                                                 </button>
                                                             {/each}
                                                         </div>
@@ -504,7 +500,7 @@
                                             {/if}
                                             <button
                                                 type="button"
-                                                class="flex w-full items-center justify-between rounded-xl px-3 py-2 text-left text-sm text-red-700 transition hover:bg-red-50"
+                                                class="flex w-full items-center justify-between rounded-xl px-3 py-2 text-left text-sm text-destructive transition hover:bg-destructive/10"
                                                 onclick={() => {
                                                     onRemoveBlock(path);
                                                     closeMenus();
@@ -520,32 +516,26 @@
                     </div>
 
                     {#if getBlockError(path)}
-                        <div
-                            class="mt-4 rounded-2xl border border-red-300/70 bg-red-50 px-4 py-3 text-sm text-red-800"
-                        >
-                            {getBlockError(path)}
-                        </div>
+                        <Alert.Root class="mt-4" variant="destructive">
+                            <Alert.Description>{getBlockError(path)}</Alert.Description>
+                        </Alert.Root>
                     {/if}
 
                     {#if isReusableBlockReference(block)}
-                        <div
-                            class="mt-4 border-l border-stone-300 pl-4 text-sm text-stone-700"
-                        >
-                            <p class="text-sm font-medium text-stone-900">
+                        <div class="mt-4 border-l border-border pl-4 text-sm text-foreground">
+                            <p class="text-sm font-medium text-foreground">
                                 Content used on this page.
                                 {#if reusableBlock}
                                     <a
                                         href={getContentHref(reusableBlock.id)}
-                                        class="ml-1 font-semibold text-stone-950 underline"
+                                        class="ml-1 font-semibold text-foreground underline"
                                     >
                                         Edit content
                                     </a>
                                 {/if}
                             </p>
                             {#if reusableBlock}
-                                <p
-                                    class="mt-1 text-sm leading-6 text-stone-500"
-                                >
+                                <p class="mt-1 text-sm leading-6 text-muted-foreground">
                                     Using “{reusableBlock.name}”.
                                 </p>
                             {:else}
@@ -562,20 +552,15 @@
                                     block.fields[field.key],
                                 )}
                                 <div class="space-y-2">
-                                    <label
-                                        class="text-sm font-medium text-stone-800"
-                                        for={`${block.id}-${field.key}`}
-                                    >
-                                        {field.label}
-                                    </label>
+                                    <Label for={`${block.id}-${field.key}`}>{field.label}</Label>
                                     {#if field.type === "string" && isTextareaField(field)}
-                                        <textarea
+                                        <Textarea
                                             id={`${block.id}-${field.key}`}
-                                            rows="4"
+                                            rows={4}
                                             value={String(
                                                 block.fields[field.key] ?? "",
                                             )}
-                                            class={fieldClass}
+                                            class="min-h-28 rounded-2xl"
                                             oninput={(event) =>
                                                 onUpdateField(
                                                     path,
@@ -587,9 +572,9 @@
                                                         field,
                                                     ),
                                                 )}
-                                        ></textarea>
+                                        />
                                     {:else if field.type === "string" || field.type === "date" || field.type === "number"}
-                                        <input
+                                        <Input
                                             id={`${block.id}-${field.key}`}
                                             type={field.type === "number"
                                                 ? "number"
@@ -613,17 +598,14 @@
                                                 )}
                                         />
                                     {:else if field.type === "boolean"}
-                                        <label
-                                            for={`${block.id}-${field.key}`}
-                                            class="flex items-start gap-3 rounded-2xl bg-stone-50/70 px-4 py-3 text-sm text-stone-700"
-                                        >
+                                        <label for={`${block.id}-${field.key}`} class="flex items-start gap-3 rounded-2xl bg-muted/40 px-4 py-3 text-sm text-foreground">
                                             <input
                                                 id={`${block.id}-${field.key}`}
                                                 type="checkbox"
                                                 checked={Boolean(
                                                     block.fields[field.key],
                                                 )}
-                                                class="mt-0.5 h-4 w-4 rounded border-stone-400 text-stone-950 focus:ring-stone-300"
+                                                class="mt-0.5 h-4 w-4 rounded border-border text-primary focus:ring-ring"
                                                 onchange={(event) =>
                                                     onUpdateField(
                                                         path,
@@ -633,15 +615,10 @@
                                                         ).checked,
                                                     )}
                                             />
-                                            <span
-                                                class="block text-sm font-medium text-stone-950"
-                                                >{field.label}</span
-                                            >
+                                            <span class="block text-sm font-medium text-foreground">{field.label}</span>
                                         </label>
                                     {:else if field.type === "blocks"}
-                                        <div
-                                            class="border-l border-stone-200 pl-4"
-                                        >
+                                        <div class="border-l border-border pl-4">
                                             <Self
                                                 blocks={nestedBlocks}
                                                 location={{
@@ -676,24 +653,23 @@
                             {/each}
                         </div>
                     {:else}
-                        <div
-                            class="mt-4 rounded-2xl border border-red-300/70 bg-red-50 px-4 py-3 text-sm text-red-800"
-                        >
-                            Unknown block type.
-                        </div>
+                        <Alert.Root class="mt-4" variant="destructive">
+                            <Alert.Description>Unknown block type.</Alert.Description>
+                        </Alert.Root>
                     {/if}
                 </div>
             {/each}
 
             {#if canDragBlocks && draggingPath}
-                <button
+                <Button
                     type="button"
+                    variant="outline"
                     class={[
-                        "rounded-full border border-dashed px-4 py-2 text-center text-[11px] font-semibold uppercase tracking-[0.22em] transition focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-stone-200/70",
+                        "rounded-full border-dashed px-4 py-2 text-center text-[11px] font-semibold uppercase tracking-[0.22em]",
                         hoveredDropTarget ===
                         `${pathPrefix.join(".")}:${blocks.length}`
-                            ? "border-stone-900 bg-stone-900 text-stone-50"
-                            : "border-stone-300 bg-stone-100/70 text-stone-500 hover:border-stone-400 hover:bg-stone-200/70",
+                            ? "border-foreground bg-foreground text-background"
+                            : "border-border bg-muted/60 text-muted-foreground",
                     ].join(" ")}
                     aria-label="Drop block after the last block"
                     ondragover={(event) => {
@@ -707,7 +683,7 @@
                     ondrop={(event) => handleDrop(event, blocks.length)}
                 >
                     Drop after the last block
-                </button>
+                </Button>
             {/if}
         </div>
     {/if}

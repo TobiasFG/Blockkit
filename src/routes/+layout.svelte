@@ -1,6 +1,7 @@
 <script lang="ts">
     import "../app.css";
     import { browser } from "$app/environment";
+    import { ModeWatcher } from "mode-watcher";
     import CmsShell from "$lib/components/cms/CmsShell.svelte";
     import { pagesStore } from "$lib/client/pagesStore";
     import { blockFoldersStore, reusableBlocksStore } from "$lib/client/reusableBlocksStore";
@@ -16,6 +17,8 @@
         }
     });
 </script>
+
+<ModeWatcher />
 
 {#if data.isAuthRoute}
     {@render children()}
