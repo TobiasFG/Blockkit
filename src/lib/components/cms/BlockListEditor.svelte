@@ -2,7 +2,8 @@
     import Self from "$lib/components/cms/BlockListEditor.svelte";
     import * as Alert from "$lib/components/ui/alert/index.js";
     import { Badge } from "$lib/components/ui/badge/index.js";
-    import { Button } from "$lib/components/ui/button/index.js";
+    import { Button, buttonVariants } from "$lib/components/ui/button/index.js";
+    import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
     import { Input } from "$lib/components/ui/input/index.js";
     import { Label } from "$lib/components/ui/label/index.js";
     import { Textarea } from "$lib/components/ui/textarea/index.js";
@@ -102,8 +103,6 @@
     const showInlineBlockCreate = $derived(
         allowInlineBlockCreation || !isRootList,
     );
-    let openReusableMenuPath = $state<string | null>(null);
-    let openActionMenuPath = $state<string | null>(null);
     let hoveredDropTarget = $state<string | null>(null);
 
     const fieldClass =
@@ -145,8 +144,6 @@
         index: number,
     ) => {
         onInsertReusableBlockReference?.(reusableBlockId, index);
-
-        openReusableMenuPath = null;
     };
 
     const handleDrop = (event: DragEvent, targetIndex: number) => {
@@ -189,21 +186,6 @@
         onStartDrag(path);
     };
 
-    const openReusableMenu = (pathKey: string) => {
-        openReusableMenuPath =
-            openReusableMenuPath === pathKey ? null : pathKey;
-        openActionMenuPath = null;
-    };
-
-    const openActionMenu = (pathKey: string) => {
-        openActionMenuPath = openActionMenuPath === pathKey ? null : pathKey;
-        openReusableMenuPath = null;
-    };
-
-    const closeMenus = () => {
-        openReusableMenuPath = null;
-        openActionMenuPath = null;
-    };
 </script>
 
 <div class="space-y-4">
@@ -303,7 +285,6 @@
 
             {#each blocks as block, index (block.id)}
                 {@const path = [...pathPrefix, index]}
-                {@const pathKey = getPathKey(path)}
                 {@const definition = isReusableBlockReference(block)
                     ? null
                     : getBlockDefinition(block.type)}
@@ -340,7 +321,7 @@
                 <div
                     class={[
                         "px-1 py-5",
-                        draggingPath === pathKey
+                        draggingPath === getPathKey(path)
                             ? "rounded-[1.25rem] bg-amber-500/10 ring-2 ring-amber-500/30"
                             : "",
                     ].join(" ")}
@@ -389,7 +370,7 @@
                                         {reusableBlock.block_type}
                                     </Badge>
                                 {/if}
-                                {#if canDragBlocks && draggingPath === pathKey}
+                                {#if canDragBlocks && draggingPath === getPathKey(path)}
                                     <Badge class="bg-amber-500/15 text-[10px] font-medium uppercase tracking-[0.12em] text-amber-700 dark:text-amber-300">
                                         Dragging
                                     </Badge>
@@ -404,114 +385,65 @@
                         </div>
 
                         <div class="flex flex-wrap items-center gap-2">
-                            <div class="relative">
-                                <Button
-                                    type="button"
-                                    variant="outline"
-                                    class={tertiaryButtonClass}
-                                    aria-expanded={openActionMenuPath ===
-                                        pathKey}
-                                    onclick={() => openActionMenu(pathKey)}
+                            <DropdownMenu.Root>
+                                <DropdownMenu.Trigger
+                                    class={`${buttonVariants({ variant: "outline" })} ${tertiaryButtonClass}`}
                                 >
                                     Actions
-                                </Button>
-                                {#if openActionMenuPath === pathKey}
-                                    <div
-                                        class="absolute right-0 top-full z-20 mt-2 w-56 rounded-[1.25rem] border border-border bg-popover p-2 shadow-[0_24px_60px_-34px_rgba(15,23,42,0.28)]"
+                                </DropdownMenu.Trigger>
+                                <DropdownMenu.Content align="end" class="w-56 rounded-[1.25rem] p-2">
+                                    <DropdownMenu.Item
+                                        onSelect={() => onMoveBlock(path, index - 1)}
+                                        disabled={index === 0}
+                                        class="rounded-xl px-3 py-2"
                                     >
-                                        <div class="space-y-1">
-                                            <button
-                                                type="button"
-                                                class="flex w-full items-center justify-between rounded-xl px-3 py-2 text-left text-sm text-foreground transition hover:bg-muted disabled:text-muted-foreground"
-                                                onclick={() => {
-                                                    onMoveBlock(
-                                                        path,
-                                                        index - 1,
-                                                    );
-                                                    closeMenus();
-                                                }}
-                                                disabled={index === 0}
-                                            >
-                                                <span>Move up</span>
-                                            </button>
-                                            <button
-                                                type="button"
-                                                class="flex w-full items-center justify-between rounded-xl px-3 py-2 text-left text-sm text-foreground transition hover:bg-muted disabled:text-muted-foreground"
-                                                onclick={() => {
-                                                    onMoveBlock(
-                                                        path,
-                                                        index + 1,
-                                                    );
-                                                    closeMenus();
-                                                }}
-                                                disabled={index ===
-                                                    blocks.length - 1}
-                                            >
-                                                <span>Move down</span>
-                                            </button>
-                                            {#if canInsertReusableBlocks}
-                                                <button
-                                                    type="button"
-                                                    class="flex w-full items-center justify-between rounded-xl px-3 py-2 text-left text-sm text-stone-700 transition hover:bg-stone-100"
-                                                    onclick={() =>
-                                                        openReusableMenu(
-                                                            pathKey,
-                                                        )}
-                                                >
-                                                    <span
-                                                        >Insert reusable before</span
+                                        Move up
+                                    </DropdownMenu.Item>
+                                    <DropdownMenu.Item
+                                        onSelect={() => onMoveBlock(path, index + 1)}
+                                        disabled={index === blocks.length - 1}
+                                        class="rounded-xl px-3 py-2"
+                                    >
+                                        Move down
+                                    </DropdownMenu.Item>
+                                    {#if canInsertReusableBlocks}
+                                        <DropdownMenu.Sub>
+                                            <DropdownMenu.SubTrigger class="rounded-xl px-3 py-2">
+                                                Insert content before
+                                            </DropdownMenu.SubTrigger>
+                                            <DropdownMenu.SubContent class="max-h-64 w-64 overflow-y-auto rounded-[1.25rem] p-2">
+                                                <p class={`${captionClass} px-3 py-1`}>
+                                                    Insert before this row
+                                                </p>
+                                                {#each reusableBlocks as reusableBlock}
+                                                    <DropdownMenu.Item
+                                                        onSelect={() =>
+                                                            insertReusableBlockReference(
+                                                                reusableBlock.id,
+                                                                index,
+                                                            )}
+                                                        class="rounded-xl px-3 py-2"
                                                     >
-                                                </button>
-                                                {#if openReusableMenuPath === pathKey}
-                                                    <div
-                                                        class="space-y-1 border-t border-border pt-2"
-                                                    >
-                                                        <p
-                                                            class={`${captionClass} px-3 py-1`}
-                                                        >
-                                                            Insert before this
-                                                            row
-                                                        </p>
-                                                        <div
-                                                            class="max-h-56 space-y-1 overflow-y-auto"
-                                                        >
-                                                            {#each reusableBlocks as reusableBlock}
-                                                                <button
-                                                                    type="button"
-                                                                    class="flex w-full items-center justify-between gap-3 rounded-xl px-3 py-2 text-left text-sm text-foreground transition hover:bg-muted"
-                                                                    onclick={() =>
-                                                                        insertReusableBlockReference(
-                                                                            reusableBlock.id,
-                                                                            index,
-                                                                        )}
-                                                                >
-                                                                    <span
-                                                                        class="min-w-0 flex-1 truncate font-medium"
-                                                                        >{reusableBlock.name}</span
-                                                                    >
-                                                                    <Badge variant="outline" class="shrink-0 text-[10px] uppercase tracking-[0.12em]">
-                                                                        {reusableBlock.block_type}
-                                                                    </Badge>
-                                                                </button>
-                                                            {/each}
-                                                        </div>
-                                                    </div>
-                                                {/if}
-                                            {/if}
-                                            <button
-                                                type="button"
-                                                class="flex w-full items-center justify-between rounded-xl px-3 py-2 text-left text-sm text-destructive transition hover:bg-destructive/10"
-                                                onclick={() => {
-                                                    onRemoveBlock(path);
-                                                    closeMenus();
-                                                }}
-                                            >
-                                                <span>Remove block</span>
-                                            </button>
-                                        </div>
-                                    </div>
-                                {/if}
-                            </div>
+                                                        <span class="min-w-0 flex-1 truncate font-medium">
+                                                            {reusableBlock.name}
+                                                        </span>
+                                                        <Badge variant="outline" class="ml-3 shrink-0 text-[10px] uppercase tracking-[0.12em]">
+                                                            {reusableBlock.block_type}
+                                                        </Badge>
+                                                    </DropdownMenu.Item>
+                                                {/each}
+                                            </DropdownMenu.SubContent>
+                                        </DropdownMenu.Sub>
+                                    {/if}
+                                    <DropdownMenu.Item
+                                        variant="destructive"
+                                        onSelect={() => onRemoveBlock(path)}
+                                        class="rounded-xl px-3 py-2"
+                                    >
+                                        Remove block
+                                    </DropdownMenu.Item>
+                                </DropdownMenu.Content>
+                            </DropdownMenu.Root>
                         </div>
                     </div>
 

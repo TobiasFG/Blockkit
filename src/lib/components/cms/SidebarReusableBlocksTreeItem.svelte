@@ -1,5 +1,7 @@
 <script lang="ts">
-	import { ContextMenu, DropdownMenu } from 'bits-ui';
+	import { ContextMenu } from 'bits-ui';
+	import { buttonVariants } from '$lib/components/ui/button/index.js';
+	import * as DropdownMenu from '$lib/components/ui/dropdown-menu/index.js';
 	import CmsIconButton from './CmsIconButton.svelte';
 	import SidebarReusableBlocksTreeItem from './SidebarReusableBlocksTreeItem.svelte';
 	import { ChevronRight, Plus } from '$lib/icons';
@@ -81,18 +83,21 @@
 				</ContextMenu.Content>
 			</ContextMenu.Root>
 			<DropdownMenu.Root>
-				<DropdownMenu.Trigger class="inline-flex h-8 items-center justify-center rounded-md border border-border bg-background px-2 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground transition hover:bg-muted hover:text-foreground">
-					Actions
+				<DropdownMenu.Trigger
+					class={`${buttonVariants({ variant: 'outline', size: 'sm' })} text-[10px] font-semibold uppercase tracking-wide`}
+				>
+						Actions
 				</DropdownMenu.Trigger>
-				<DropdownMenu.Content class="z-50 min-w-44 rounded-xl border border-slate-200 bg-white p-1.5 shadow-lg">
+				<DropdownMenu.Content class="min-w-44 rounded-xl p-1.5">
 					<DropdownMenu.Item
-						class="rounded-lg px-2 py-2 text-sm text-slate-700 outline-none transition focus:bg-slate-100"
+						class="rounded-lg px-2 py-2 text-sm"
 						onSelect={() => onCreateSubfolder(node.folder!.id, node.folder!.name)}
 					>
 						Create subfolder
 					</DropdownMenu.Item>
 					<DropdownMenu.Item
-						class="rounded-lg px-2 py-2 text-sm text-red-700 outline-none transition focus:bg-red-50"
+						variant="destructive"
+						class="rounded-lg px-2 py-2 text-sm"
 						onSelect={() => onDeleteFolder(node.folder!.id, node.folder!.name)}
 					>
 						Delete folder
@@ -183,20 +188,23 @@
 							</ContextMenu.Content>
 						</ContextMenu.Root>
 						<DropdownMenu.Root>
-							<DropdownMenu.Trigger class="shrink-0 rounded-md border border-border bg-background px-2 py-1 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground transition hover:bg-muted hover:text-foreground">
-								Actions
+							<DropdownMenu.Trigger
+								class={`${buttonVariants({ variant: 'outline', size: 'sm' })} shrink-0 text-[10px] font-semibold uppercase tracking-wide`}
+							>
+									Actions
 							</DropdownMenu.Trigger>
-							<DropdownMenu.Content class="z-50 min-w-44 rounded-xl border border-border bg-popover p-1.5 shadow-lg">
+							<DropdownMenu.Content class="min-w-44 rounded-xl p-1.5">
 								{#if canInsertIntoPage}
 									<DropdownMenu.Item
-										class="rounded-lg px-2 py-2 text-sm text-slate-700 outline-none transition focus:bg-slate-100"
+										class="rounded-lg px-2 py-2 text-sm"
 										onSelect={() => onInsertBlockIntoPage(block.id)}
 									>
 										Insert into page
 									</DropdownMenu.Item>
 								{/if}
 								<DropdownMenu.Item
-									class="rounded-lg px-2 py-2 text-sm text-red-700 outline-none transition focus:bg-red-50"
+									variant="destructive"
+									class="rounded-lg px-2 py-2 text-sm"
 									onSelect={() => onDeleteBlock(block.id, block.name)}
 								>
 										Delete content

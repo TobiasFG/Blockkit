@@ -4,6 +4,7 @@
 	import { flip } from 'svelte/animate';
 
 	import { pagesStore } from '$lib/client/pagesStore';
+	import ActionModal from '$lib/components/cms/ActionModal.svelte';
 	import * as Alert from '$lib/components/ui/alert/index.js';
 	import { Badge } from '$lib/components/ui/badge/index.js';
 	import { Button } from '$lib/components/ui/button/index.js';
@@ -25,7 +26,6 @@
 	let pageFeedback = $state<FeedbackState>(null);
 	let deletingPage = $state<string | null>(null);
 	let pendingDeletePage = $state<Page | null>(null);
-	let showDeletePageModal = $state(false);
 	let createTitle = $state('');
 	let createUrlName = $state('');
 	let createParentPageId = $state('');
@@ -58,11 +58,9 @@
 
 	const openDeletePageModal = (page: Page) => {
 		pendingDeletePage = page;
-		showDeletePageModal = true;
 	};
 
 	const closeDeletePageModal = () => {
-		showDeletePageModal = false;
 		pendingDeletePage = null;
 	};
 
@@ -347,31 +345,20 @@
 </main>
 
 {#if pendingDeletePage}
-	<button
-		type="button"
-		aria-label="Close delete page dialog"
-		class={[
-			'fixed inset-0 z-40 bg-stone-950/40 transition-opacity',
-			showDeletePageModal ? 'opacity-100' : 'pointer-events-none opacity-0'
-		].join(' ')}
-		onclick={closeDeletePageModal}
-	></button>
-	<div
-		class={[
-			'fixed inset-x-4 top-24 z-50 mx-auto max-w-lg rounded-[1.75rem] border border-stone-200 bg-white p-6 shadow-[0_32px_90px_-48px_rgba(41,37,36,0.42)] transition-all',
-			showDeletePageModal ? 'translate-y-0 opacity-100' : 'pointer-events-none -translate-y-2 opacity-0'
-		].join(' ')}
+	{@const deletePage = pendingDeletePage}
+	<ActionModal
+		open={true}
+		title="Move page to trash"
+		description={`Move “${deletePage.title}” at ${displayPath(deletePage.path)} to trash. Featured content stays untouched.`}
+		onClose={closeDeletePageModal}
+		labelledBy="delete-page-dialog-title"
 	>
-		<p class={captionClass}>Delete page</p>
-		<h2 class="mt-2 text-[1.35rem] font-semibold tracking-[-0.03em] text-stone-950">Move page to trash</h2>
-		<p class="mt-2 text-sm leading-6 text-stone-600">
-			{pendingDeletePage ? `Move “${pendingDeletePage.title}” at ${displayPath(pendingDeletePage.path)} to trash. Featured content stays untouched.` : ''}
-		</p>
-
+		{#snippet children()}
+			<p class={captionClass}>Delete page</p>
 		<form
 			method="POST"
 			action="?/deletePage"
-			class="mt-6 flex items-center justify-end gap-2"
+			class="flex items-center justify-end gap-2"
 			use:enhance={({ formData }) => {
 				const pageId = String(formData.get('pageId') ?? '');
 				clearPageFeedback();
@@ -405,21 +392,24 @@
 				};
 			}}
 		>
-			<input type="hidden" name="pageId" value={pendingDeletePage.id} />
-			<button
+			<input type="hidden" name="pageId" value={deletePage.id} />
+			<Button
 				type="button"
-				class="inline-flex items-center rounded-full border border-stone-300 bg-white px-4 py-2 text-sm font-medium text-stone-700 transition hover:bg-stone-50 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-stone-200/70"
+				variant="outline"
+				class="rounded-full"
 				onclick={closeDeletePageModal}
 			>
 				Cancel
-			</button>
-			<button
+			</Button>
+			<Button
 				type="submit"
-				class="inline-flex items-center rounded-full border border-red-300/70 bg-red-50 px-4 py-2 text-sm font-medium text-red-800 transition hover:bg-red-100 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-red-200/70 disabled:cursor-not-allowed disabled:opacity-60"
-				disabled={deletingPage === pendingDeletePage.id}
+				variant="destructive"
+				class="rounded-full"
+				disabled={deletingPage === deletePage.id}
 			>
-				{deletingPage === pendingDeletePage.id ? 'Moving...' : 'Move to trash'}
-			</button>
+				{deletingPage === deletePage.id ? 'Moving...' : 'Move to trash'}
+			</Button>
 		</form>
-	</div>
+		{/snippet}
+	</ActionModal>
 {/if}

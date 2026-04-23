@@ -1,13 +1,14 @@
 <script lang="ts">
     import { browser } from "$app/environment";
     import { enhance } from "$app/forms";
-    import { ContextMenu, DropdownMenu } from "bits-ui";
+    import { ContextMenu } from "bits-ui";
     import { onMount } from "svelte";
     import { goto } from "$app/navigation";
     import { page } from "$app/stores";
     import type { SubmitFunction } from "@sveltejs/kit";
     import type { User } from "@supabase/supabase-js";
-    import { Button } from "$lib/components/ui/button/index.js";
+    import { Button, buttonVariants } from "$lib/components/ui/button/index.js";
+    import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
     import { Input } from "$lib/components/ui/input/index.js";
     import ThemeToggle from "$lib/components/ThemeToggle.svelte";
     import { pagesStore } from "$lib/client/pagesStore";
@@ -493,20 +494,23 @@
                                     </ContextMenu.Content>
                                 </ContextMenu.Root>
                                 <DropdownMenu.Root>
-                                    <DropdownMenu.Trigger class="shrink-0 rounded-md border border-slate-200 bg-white px-2 py-1 text-[10px] font-semibold uppercase tracking-wide text-slate-600 transition hover:border-slate-300 hover:bg-slate-50 hover:text-slate-900">
+                                    <DropdownMenu.Trigger
+                                        class={`${buttonVariants({ variant: "outline", size: "sm" })} shrink-0 rounded-md text-[10px] font-semibold uppercase tracking-wide`}
+                                    >
                                         Actions
                                     </DropdownMenu.Trigger>
-                                    <DropdownMenu.Content class="z-50 min-w-44 rounded-xl border border-slate-200 bg-white p-1.5 shadow-lg">
+                                    <DropdownMenu.Content class="min-w-44 rounded-xl p-1.5">
                                         {#if canInsertIntoCurrentPage}
                                             <DropdownMenu.Item
-                                                class="rounded-lg px-2 py-2 text-sm text-slate-700 outline-none transition focus:bg-slate-100"
+                                                class="rounded-lg px-2 py-2 text-sm"
                                                 onSelect={() => insertBlockIntoCurrentPage(block.id)}
                                             >
                                                 Insert into page
                                             </DropdownMenu.Item>
                                         {/if}
                                         <DropdownMenu.Item
-                                            class="rounded-lg px-2 py-2 text-sm text-red-700 outline-none transition focus:bg-red-50"
+                                            variant="destructive"
+                                            class="rounded-lg px-2 py-2 text-sm"
                                             onSelect={() => openDeleteBlockModal(block.id, block.name)}
                                         >
                                             Delete content
