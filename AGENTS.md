@@ -25,7 +25,7 @@
 - `LLMS/Suggestions.md` never source of truth for direct implementation. Promote chosen item into `LLMS/Changes.md` first.
 - If user asked for specific task, keep scope tight.
 - Early-development default: no backward-compat shims, migrations, or legacy preservation unless user asks.
-- Prefer clean replacement over layering fixes onto wrong structure.
+- Prefer clean replacement/rewrites over layering fixes onto bad code. If a rewrite results in cleaner code and leaner solution, it is almost always the better approach over bad patch work.
 
 ## Verification Expectations
 - Run smallest check set that proves change.

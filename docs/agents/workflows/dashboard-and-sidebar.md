@@ -28,6 +28,7 @@
 
 ## Constraints
 - Collapse state is local UI state and may reset on refresh.
+- Desktop collapsed rail shows only top-level modules; choosing page/content entry expands sidebar so deeper selection happens in full sidebar, not inside rail.
 - Folder delete blocked when folder has child folders or content.
 - Structural/destructive actions should use shared modal pattern, not browser prompts.
 

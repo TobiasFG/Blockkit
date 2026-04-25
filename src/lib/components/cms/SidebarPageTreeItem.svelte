@@ -1,5 +1,6 @@
 <script lang="ts">
-	import { ChevronRight } from '$lib/icons';
+	import { Button } from '$lib/components/ui/button/index.js';
+	import { ChevronRight, EllipsisVertical, FileText, FolderOpen } from '$lib/icons';
 	import { getPagePublishState } from '$lib/pageStatus';
 	import SidebarPageTreeItem from './SidebarPageTreeItem.svelte';
 	import type { SidebarTreeNode } from './sidebarTree';
@@ -9,6 +10,7 @@
 		depth: number;
 		activePageId: string | null;
 		closedNodes: Record<string, boolean>;
+		collapsed?: boolean;
 		onToggle: (pageId: string) => void;
 		onClose: () => void;
 		editHref: (pageId: string) => string;
@@ -20,6 +22,7 @@
 		depth,
 		activePageId,
 		closedNodes,
+		collapsed = false,
 		onToggle,
 		onClose,
 		editHref,
@@ -30,66 +33,108 @@
 	const isOpen = $derived(hasChildren ? !closedNodes[node.page.id] : false);
 	const isActive = $derived(activePageId === node.page.id);
 	const publishState = $derived(getPagePublishState(node.page));
-	const publishStateLabel = $derived(
-		publishState === 'draft-changes'
-			? 'Draft changes'
-			: publishState === 'published'
-				? 'Published'
-				: 'Unpublished'
-	);
 	const publishStateClass = $derived(
 		publishState === 'draft-changes'
-			? 'bg-sky-500/15 text-sky-700 dark:text-sky-300'
+			? 'bg-amber-500'
 			: publishState === 'published'
-				? 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-300'
-				: 'bg-amber-500/15 text-amber-700 dark:text-amber-300'
+				? 'bg-emerald-500'
+				: 'bg-slate-400'
 	);
 </script>
 
 <div class="space-y-1">
 	<div class="flex items-center gap-1">
+		{#if !collapsed}
+			<button
+				type="button"
+				class={[
+					'inline-flex h-8 w-7 shrink-0 items-center justify-center rounded-md text-muted-foreground transition focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-ring/30',
+					hasChildren ? 'hover:bg-muted hover:text-foreground' : 'cursor-default opacity-40'
+				].join(' ')}
+				aria-label={
+					hasChildren
+						? isOpen
+							? `Collapse ${node.page.title}`
+							: `Expand ${node.page.title}`
+						: `${node.page.title} has no child pages`
+				}
+				aria-expanded={hasChildren ? isOpen : undefined}
+				disabled={!hasChildren}
+				onclick={() => hasChildren && onToggle(node.page.id)}
+			>
+				{#if hasChildren}
+					<ChevronRight
+						class={['h-4 w-4 transition-transform', isOpen ? 'rotate-90' : ''].join(' ')}
+					/>
+				{:else}
+					<span class="h-1.5 w-1.5 rounded-full bg-border"></span>
+				{/if}
+			</button>
+		{/if}
+
 		<a
 			href={editHref(node.page.id)}
 			class={[
-				'flex min-w-0 flex-1 items-center justify-between gap-3 rounded-md py-2 pr-3 text-sm transition',
-				depth === 0 ? 'pl-3' : '',
-				isActive ? 'bg-muted text-foreground' : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+				'group flex min-w-0 flex-1 items-center gap-3 rounded-md py-1.5 pr-2 text-sm transition',
+				collapsed ? 'justify-center px-0' : '',
+				isActive
+					? 'bg-muted text-foreground'
+					: 'text-slate-700 hover:bg-muted hover:text-foreground dark:text-muted-foreground'
 			].join(' ')}
-			style={depth > 0 ? `padding-left: ${depth * 1.25 + 0.75}rem` : undefined}
+			style={!collapsed && depth > 0 ? `padding-left: ${depth * 1 + 0.25}rem` : undefined}
+			title={collapsed ? `${node.page.title} (${displayPath(node.page.path)})` : undefined}
 			onclick={onClose}
 		>
-			<div class="flex min-w-0 flex-1 items-center gap-2">
-				<span class="min-w-0 flex-1 truncate font-medium">{node.page.title}</span>
-				<span class={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide ${publishStateClass}`}>
-					{publishStateLabel}
-				</span>
-			</div>
-			<span class="shrink-0 font-mono text-xs text-muted-foreground">{displayPath(node.page.path)}</span>
-		</a>
-
-		{#if hasChildren}
-			<button
-				type="button"
-				class="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-md text-muted-foreground transition hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-ring/30"
-				aria-label={isOpen ? `Collapse ${node.page.title}` : `Expand ${node.page.title}`}
-				aria-expanded={isOpen}
-				onclick={() => onToggle(node.page.id)}
+			<span
+				class={[
+					'grid h-8 w-8 shrink-0 place-items-center rounded-md border border-border/70 bg-background text-muted-foreground transition group-hover:text-foreground',
+					isActive ? 'border-border bg-background text-foreground' : ''
+				].join(' ')}
 			>
-				<ChevronRight
-					class={['h-4 w-4 transition-transform', isOpen ? 'rotate-90' : ''].join(' ')}
-				/>
-			</button>
-		{/if}
+				{#if depth === 0 && hasChildren}
+					<FolderOpen class="h-4 w-4" />
+				{:else}
+					<FileText class="h-4 w-4" />
+				{/if}
+			</span>
+
+			{#if !collapsed}
+				<div class="min-w-[4rem] flex-1">
+					<div class="truncate font-medium leading-5">{node.page.title}</div>
+				</div>
+				{#if depth === 0 && publishState === 'published'}
+					<span class="shrink-0 rounded-full bg-emerald-50 px-2.5 py-1 text-[11px] font-medium text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300">
+						Published
+					</span>
+				{:else if hasChildren}
+					<span class="shrink-0 rounded-full bg-muted px-2.5 py-1 text-[11px] font-medium text-muted-foreground">
+						{node.children.length}
+					</span>
+				{:else}
+					<span class={`h-2.5 w-2.5 shrink-0 rounded-full ${publishStateClass}`}></span>
+				{/if}
+				<Button
+					type="button"
+					variant="ghost"
+					size="icon-sm"
+					class="h-8 w-8 shrink-0 rounded-md text-muted-foreground opacity-70 hover:opacity-100"
+					aria-label={`Actions for ${node.page.title}`}
+				>
+					<EllipsisVertical class="h-4 w-4" />
+				</Button>
+			{/if}
+		</a>
 	</div>
 
 	{#if hasChildren && isOpen}
-		<div class="space-y-1">
+		<div class={collapsed ? 'hidden' : 'ml-4 space-y-1 border-l border-border/60 pl-2'}>
 			{#each node.children as child (child.page.id)}
 				<SidebarPageTreeItem
 					node={child}
 					depth={depth + 1}
 					{activePageId}
 					{closedNodes}
+					{collapsed}
 					{onToggle}
 					{onClose}
 					{editHref}

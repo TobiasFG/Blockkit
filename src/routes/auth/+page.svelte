@@ -43,21 +43,30 @@
 		}
 	});
 
-	$effect(() => {
-		prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-	});
-
 	onMount(() => {
-		if (prefersReducedMotion) {
+		const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+		const updateReducedMotion = () => {
+			prefersReducedMotion = mediaQuery.matches;
+		};
+
+		updateReducedMotion();
+		mediaQuery.addEventListener('change', updateReducedMotion);
+
+		if (mediaQuery.matches) {
 			entered = true;
-			return;
+			return () => {
+				mediaQuery.removeEventListener('change', updateReducedMotion);
+			};
 		}
 
 		const frame = window.requestAnimationFrame(() => {
 			entered = true;
 		});
 
-		return () => window.cancelAnimationFrame(frame);
+		return () => {
+			window.cancelAnimationFrame(frame);
+			mediaQuery.removeEventListener('change', updateReducedMotion);
+		};
 	});
 
 	const enhanceSubmit: SubmitFunction = () => {

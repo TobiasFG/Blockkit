@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { applyAction } from '$app/forms';
+	import { page } from '$app/stores';
 	import type { BlockFolder, Page, ReferencingPage, ReusableBlock } from '$lib/types';
 	import { goto } from '$app/navigation';
 	import type { SubmitFunction } from '@sveltejs/kit';
@@ -10,6 +11,7 @@
 	import ToastProvider from '$lib/Toasts/ToastProvider.svelte';
 	import { Button } from '$lib/components/ui/button/index.js';
 	import ThemeToggle from '$lib/components/ThemeToggle.svelte';
+	import { PanelLeft, PanelRight } from '$lib/icons';
 
 	let { pages, blockFolders, reusableBlocks, reusableBlockPageReferences, user, children } = $props<{
 		pages: Page[];
@@ -19,31 +21,64 @@
 		user: User;
 		children: Snippet;
 	}>();
+	type SidebarDesktopFocus =
+		| { kind: 'dashboard' }
+		| { kind: 'pages' }
+		| { kind: 'content' }
+		| { kind: 'content-folder'; id: string }
+		| { kind: 'content-block'; id: string }
+		| { kind: 'trash' };
+
 	let mobileOpen = $state(false);
+	let desktopSidebarCollapsed = $state(false);
+	let desktopSidebarFocus = $state<SidebarDesktopFocus>({ kind: 'dashboard' });
 	let entered = $state(false);
 	let exiting = $state(false);
 	let prefersReducedMotion = $state(false);
 	let pendingNavigation = $state<string | null>(null);
+	let lastPathname = $state('');
 
 	const closeMobile = () => {
 		mobileOpen = false;
 	};
 
-	$effect(() => {
-		prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-	});
+	const inferSidebarFocus = (pathname: string): SidebarDesktopFocus => {
+		if (pathname.startsWith('/content')) return { kind: 'content' };
+		if (pathname.startsWith('/edit/')) return { kind: 'pages' };
+		if (pathname === '/trash') return { kind: 'trash' };
+		return { kind: 'dashboard' };
+	};
+
+	const handleDesktopRailSelect = (focus: SidebarDesktopFocus) => {
+		desktopSidebarFocus = focus;
+		desktopSidebarCollapsed = false;
+	};
 
 	onMount(() => {
-		if (prefersReducedMotion) {
+		const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+		const updateReducedMotion = () => {
+			prefersReducedMotion = mediaQuery.matches;
+		};
+
+		updateReducedMotion();
+		mediaQuery.addEventListener('change', updateReducedMotion);
+
+		if (mediaQuery.matches) {
 			entered = true;
-			return;
+		} else {
+			const frame = window.requestAnimationFrame(() => {
+				entered = true;
+			});
+
+			return () => {
+				window.cancelAnimationFrame(frame);
+				mediaQuery.removeEventListener('change', updateReducedMotion);
+			};
 		}
 
-		const frame = window.requestAnimationFrame(() => {
-			entered = true;
-		});
-
-		return () => window.cancelAnimationFrame(frame);
+		return () => {
+			mediaQuery.removeEventListener('change', updateReducedMotion);
+		};
 	});
 
 	const easeOutQuint = (t: number) => 1 - (1 - t) ** 5;
@@ -91,6 +126,13 @@
 		if (!pendingNavigation) return;
 		void goto(pendingNavigation, { invalidateAll: true });
 	};
+
+	$effect(() => {
+		const pathname = $page.url.pathname;
+		if (pathname === lastPathname) return;
+		lastPathname = pathname;
+		desktopSidebarFocus = inferSidebarFocus(pathname);
+	});
 </script>
 
 <ToastProvider>
@@ -119,8 +161,11 @@
 					reusableBlocks={reusableBlocks}
 					reusableBlockPageReferences={reusableBlockPageReferences}
 					user={user}
+					desktopCollapsed={desktopSidebarCollapsed}
+					desktopFocus={desktopSidebarFocus}
 					mobileOpen={mobileOpen}
 					onClose={closeMobile}
+					onDesktopRailSelect={handleDesktopRailSelect}
 					logoutEnhanceSubmit={logoutSubmit}
 				/>
 			</div>
@@ -131,11 +176,29 @@
 				out:contentOutro={{ reducedMotion: prefersReducedMotion }}
 				onoutroend={handleContentOutroEnd}
 				class={[
-					'lg:pl-72 transition-opacity ease-[cubic-bezier(0.22,1,0.36,1)]',
+					desktopSidebarCollapsed ? 'lg:pl-24' : 'lg:pl-[33rem]',
+					'transition-[padding,opacity] ease-[cubic-bezier(0.22,1,0.36,1)]',
 					prefersReducedMotion ? 'duration-100 delay-0' : 'duration-[360ms] delay-[80ms]',
 					entered ? 'opacity-100' : 'opacity-0'
 				].join(' ')}
 			>
+				<button
+					type="button"
+					class={[
+						'hidden lg:inline-flex fixed top-24 z-40 size-10 items-center justify-center rounded-lg border border-border bg-background/95 text-muted-foreground shadow-sm backdrop-blur transition hover:border-border/90 hover:text-foreground',
+						desktopSidebarCollapsed ? 'left-[6.5rem]' : 'left-[33.75rem]'
+					].join(' ')}
+					aria-label={desktopSidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+					title={desktopSidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+					onclick={() => (desktopSidebarCollapsed = !desktopSidebarCollapsed)}
+				>
+					{#if desktopSidebarCollapsed}
+						<PanelRight class="h-4 w-4" />
+					{:else}
+						<PanelLeft class="h-4 w-4" />
+					{/if}
+				</button>
+
 				<header class="sticky top-0 z-30 flex h-14 items-center gap-3 border-b border-border/70 bg-background/90 px-4 backdrop-blur lg:hidden">
 					<Button
 						type="button"
@@ -155,7 +218,7 @@
 					</div>
 				</header>
 
-				<div class="p-4 lg:p-8">
+				<div class="p-4 lg:p-8 lg:pl-10">
 					{@render children()}
 				</div>
 			</div>

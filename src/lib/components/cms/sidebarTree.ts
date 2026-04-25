@@ -33,11 +33,11 @@ export const buildSidebarTree = (pages: Page[]) => {
 
 	sortNodes(roots);
 
-	return roots[0] ?? null;
+	return roots;
 };
 
-export const collectAncestorPageIds = (root: SidebarTreeNode | null, targetPageId: string) => {
-	if (!root) return [];
+export const collectAncestorPageIds = (roots: SidebarTreeNode[], targetPageId: string) => {
+	if (roots.length === 0) return [];
 
 	const visit = (node: SidebarTreeNode, ancestors: string[]): string[] | null => {
 		if (node.page.id === targetPageId) return [...ancestors, node.page.id];
@@ -50,5 +50,10 @@ export const collectAncestorPageIds = (root: SidebarTreeNode | null, targetPageI
 		return null;
 	};
 
-	return visit(root, []) ?? [];
+	for (const root of roots) {
+		const result = visit(root, []);
+		if (result) return result;
+	}
+
+	return [];
 };
