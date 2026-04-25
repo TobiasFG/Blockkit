@@ -2,7 +2,7 @@
 	import { fly } from 'svelte/transition';
 	import { browser } from '$app/environment';
 	import { applyAction, enhance } from '$app/forms';
-	import { getToastState } from '$lib/Toasts/toastState.svelte';
+	import { getToastState } from '$lib/toasts/toastState.svelte';
 	import { type BlockDefinition, type BlockFieldDefinition } from '$lib/blocks/registry';
 	import { blockFoldersStore, reusableBlocksStore } from '$lib/client/reusableBlocksStore';
 	import { Badge } from '$lib/components/ui/badge/index.js';

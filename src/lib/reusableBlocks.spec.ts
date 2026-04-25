@@ -7,7 +7,7 @@ import {
 	normalizeBlockInstance
 } from '$lib/reusableBlocks';
 import { getBlockDefinition } from '$lib/blocks/registry';
-import { buildReusableBlocksTree, collectReusableBlockFolderAncestors } from '$lib/components/cms/reusableBlocksTree';
+import { buildReusableBlocksTree, collectReusableBlockFolderAncestors } from '$lib/sidebar';
 
 describe('reusable block helpers', () => {
 	it('creates default block instances from the registry', () => {

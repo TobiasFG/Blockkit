@@ -24,7 +24,7 @@
         type PageBlockNode,
     } from "$lib/pageContent";
     import type { ReusableBlock } from "$lib/types";
-    import { parseReusableBlockDragData } from "./reusableBlockInsertion";
+    import { parseReusableBlockDragData } from "$lib/sidebar/reusableBlockInsertion";
 
     type Props = {
         blocks: PageBlockNode[];
@@ -99,17 +99,17 @@
     const isRootList = $derived(
         location.parentPath === null && location.fieldKey === null,
     );
-    const canInsertReusableBlocks = $derived(isRootList && reusableBlocks.length > 0);
+    const canInsertReusableBlocks = $derived(
+        isRootList && reusableBlocks.length > 0,
+    );
     const showInlineBlockCreate = $derived(
         allowInlineBlockCreation || !isRootList,
     );
     let hoveredDropTarget = $state<string | null>(null);
 
-    const fieldClass =
-        "h-11 rounded-2xl";
+    const fieldClass = "h-11 rounded-2xl";
 
-    const tertiaryButtonClass =
-        "rounded-full";
+    const tertiaryButtonClass = "rounded-full";
 
     const captionClass =
         "text-[10px] font-medium uppercase tracking-[0.22em] text-muted-foreground";
@@ -185,7 +185,6 @@
         );
         onStartDrag(path);
     };
-
 </script>
 
 <div class="space-y-4">
@@ -193,12 +192,16 @@
         <div class="flex flex-wrap items-start justify-between gap-3">
             <div class="space-y-1">
                 {#if title}
-                    <h3 class="text-[1.2rem] font-semibold tracking-[-0.025em] text-foreground">
+                    <h3
+                        class="text-[1.2rem] font-semibold tracking-[-0.025em] text-foreground"
+                    >
                         {title}
                     </h3>
                 {/if}
                 {#if description}
-                    <p class="max-w-[62ch] text-base leading-7 text-muted-foreground">
+                    <p
+                        class="max-w-[62ch] text-base leading-7 text-muted-foreground"
+                    >
                         {description}
                     </p>
                 {/if}
@@ -340,7 +343,9 @@
                     >
                         <div class="space-y-1">
                             <div class="flex flex-wrap items-center gap-2">
-                                <h4 class="text-[1.02rem] font-semibold tracking-[-0.02em] text-foreground">
+                                <h4
+                                    class="text-[1.02rem] font-semibold tracking-[-0.02em] text-foreground"
+                                >
                                     {#if isReusableBlockReference(block)}
                                         {#if reusableBlock}
                                             <a
@@ -358,7 +363,10 @@
                                         {definition?.label ?? block.type}
                                     {/if}
                                 </h4>
-                                <Badge variant="outline" class="font-mono text-[10px] uppercase tracking-[0.12em]">
+                                <Badge
+                                    variant="outline"
+                                    class="font-mono text-[10px] uppercase tracking-[0.12em]"
+                                >
                                     {#if isReusableBlockReference(block)}
                                         content
                                     {:else}
@@ -366,17 +374,24 @@
                                     {/if}
                                 </Badge>
                                 {#if isReusableBlockReference(block) && reusableBlock}
-                                    <Badge variant="secondary" class="text-[10px] font-medium uppercase tracking-[0.12em]">
+                                    <Badge
+                                        variant="secondary"
+                                        class="text-[10px] font-medium uppercase tracking-[0.12em]"
+                                    >
                                         {reusableBlock.block_type}
                                     </Badge>
                                 {/if}
                                 {#if canDragBlocks && draggingPath === getPathKey(path)}
-                                    <Badge class="bg-amber-500/15 text-[10px] font-medium uppercase tracking-[0.12em] text-amber-700 dark:text-amber-300">
+                                    <Badge
+                                        class="bg-amber-500/15 text-[10px] font-medium uppercase tracking-[0.12em] text-amber-700 dark:text-amber-300"
+                                    >
                                         Dragging
                                     </Badge>
                                 {/if}
                             </div>
-                            <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-muted-foreground">
+                            <div
+                                class="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-muted-foreground"
+                            >
                                 <span>{index + 1} of {blocks.length}</span>
                                 <span class="font-mono" title={block.id}
                                     >ID {block.id.slice(0, 8)}</span
@@ -391,16 +406,21 @@
                                 >
                                     Actions
                                 </DropdownMenu.Trigger>
-                                <DropdownMenu.Content align="end" class="w-56 rounded-[1.25rem] p-2">
+                                <DropdownMenu.Content
+                                    align="end"
+                                    class="w-56 rounded-[1.25rem] p-2"
+                                >
                                     <DropdownMenu.Item
-                                        onSelect={() => onMoveBlock(path, index - 1)}
+                                        onSelect={() =>
+                                            onMoveBlock(path, index - 1)}
                                         disabled={index === 0}
                                         class="rounded-xl px-3 py-2"
                                     >
                                         Move up
                                     </DropdownMenu.Item>
                                     <DropdownMenu.Item
-                                        onSelect={() => onMoveBlock(path, index + 1)}
+                                        onSelect={() =>
+                                            onMoveBlock(path, index + 1)}
                                         disabled={index === blocks.length - 1}
                                         class="rounded-xl px-3 py-2"
                                     >
@@ -408,11 +428,17 @@
                                     </DropdownMenu.Item>
                                     {#if canInsertReusableBlocks}
                                         <DropdownMenu.Sub>
-                                            <DropdownMenu.SubTrigger class="rounded-xl px-3 py-2">
+                                            <DropdownMenu.SubTrigger
+                                                class="rounded-xl px-3 py-2"
+                                            >
                                                 Insert content before
                                             </DropdownMenu.SubTrigger>
-                                            <DropdownMenu.SubContent class="max-h-64 w-64 overflow-y-auto rounded-[1.25rem] p-2">
-                                                <p class={`${captionClass} px-3 py-1`}>
+                                            <DropdownMenu.SubContent
+                                                class="max-h-64 w-64 overflow-y-auto rounded-[1.25rem] p-2"
+                                            >
+                                                <p
+                                                    class={`${captionClass} px-3 py-1`}
+                                                >
                                                     Insert before this row
                                                 </p>
                                                 {#each reusableBlocks as reusableBlock}
@@ -424,10 +450,15 @@
                                                             )}
                                                         class="rounded-xl px-3 py-2"
                                                     >
-                                                        <span class="min-w-0 flex-1 truncate font-medium">
+                                                        <span
+                                                            class="min-w-0 flex-1 truncate font-medium"
+                                                        >
                                                             {reusableBlock.name}
                                                         </span>
-                                                        <Badge variant="outline" class="ml-3 shrink-0 text-[10px] uppercase tracking-[0.12em]">
+                                                        <Badge
+                                                            variant="outline"
+                                                            class="ml-3 shrink-0 text-[10px] uppercase tracking-[0.12em]"
+                                                        >
                                                             {reusableBlock.block_type}
                                                         </Badge>
                                                     </DropdownMenu.Item>
@@ -449,12 +480,16 @@
 
                     {#if getBlockError(path)}
                         <Alert.Root class="mt-4" variant="destructive">
-                            <Alert.Description>{getBlockError(path)}</Alert.Description>
+                            <Alert.Description
+                                >{getBlockError(path)}</Alert.Description
+                            >
                         </Alert.Root>
                     {/if}
 
                     {#if isReusableBlockReference(block)}
-                        <div class="mt-4 border-l border-border pl-4 text-sm text-foreground">
+                        <div
+                            class="mt-4 border-l border-border pl-4 text-sm text-foreground"
+                        >
                             <p class="text-sm font-medium text-foreground">
                                 Content used on this page.
                                 {#if reusableBlock}
@@ -467,7 +502,9 @@
                                 {/if}
                             </p>
                             {#if reusableBlock}
-                                <p class="mt-1 text-sm leading-6 text-muted-foreground">
+                                <p
+                                    class="mt-1 text-sm leading-6 text-muted-foreground"
+                                >
                                     Using “{reusableBlock.name}”.
                                 </p>
                             {:else}
@@ -484,7 +521,9 @@
                                     block.fields[field.key],
                                 )}
                                 <div class="space-y-2">
-                                    <Label for={`${block.id}-${field.key}`}>{field.label}</Label>
+                                    <Label for={`${block.id}-${field.key}`}
+                                        >{field.label}</Label
+                                    >
                                     {#if field.type === "string" && isTextareaField(field)}
                                         <Textarea
                                             id={`${block.id}-${field.key}`}
@@ -530,7 +569,10 @@
                                                 )}
                                         />
                                     {:else if field.type === "boolean"}
-                                        <label for={`${block.id}-${field.key}`} class="flex items-start gap-3 rounded-2xl bg-muted/40 px-4 py-3 text-sm text-foreground">
+                                        <label
+                                            for={`${block.id}-${field.key}`}
+                                            class="flex items-start gap-3 rounded-2xl bg-muted/40 px-4 py-3 text-sm text-foreground"
+                                        >
                                             <input
                                                 id={`${block.id}-${field.key}`}
                                                 type="checkbox"
@@ -547,10 +589,15 @@
                                                         ).checked,
                                                     )}
                                             />
-                                            <span class="block text-sm font-medium text-foreground">{field.label}</span>
+                                            <span
+                                                class="block text-sm font-medium text-foreground"
+                                                >{field.label}</span
+                                            >
                                         </label>
                                     {:else if field.type === "blocks"}
-                                        <div class="border-l border-border pl-4">
+                                        <div
+                                            class="border-l border-border pl-4"
+                                        >
                                             <Self
                                                 blocks={nestedBlocks}
                                                 location={{
@@ -586,7 +633,9 @@
                         </div>
                     {:else}
                         <Alert.Root class="mt-4" variant="destructive">
-                            <Alert.Description>Unknown block type.</Alert.Description>
+                            <Alert.Description
+                                >Unknown block type.</Alert.Description
+                            >
                         </Alert.Root>
                     {/if}
                 </div>

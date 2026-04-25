@@ -8,6 +8,7 @@
 
 ## Rules
 - Shared CMS behavior belongs here, not route-local copies.
+- Sidebar-owned UI/helpers belong under `src/lib/components/cms/sidebar/`; external call sites should import helper APIs from `$lib/components/cms/sidebar`.
 - Prefer repo UI primitives in `src/lib/components/ui/` before bespoke controls.
 - Keep icon imports routed through `src/lib/icons/index.ts`.
 - Use shared toast system for transient CMS feedback.
