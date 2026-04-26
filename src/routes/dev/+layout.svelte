@@ -159,7 +159,7 @@
 </script>
 
 <Sidebar.Provider>
-    <Sidebar.Root variant="inset">
+    <Sidebar.Root variant="inset" collapsible="icon">
         <Sidebar.Header>
             <Sidebar.Menu>
                 <Sidebar.MenuItem>
