@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { ToastState } from './toastState.svelte';
+import { ToastState } from './ToastState.svelte';
 
 describe('ToastState', () => {
 	beforeEach(() => {

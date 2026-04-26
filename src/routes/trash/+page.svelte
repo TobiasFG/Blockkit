@@ -1,7 +1,7 @@
 <script lang="ts">
     import { browser } from "$app/environment";
     import { applyAction, enhance } from "$app/forms";
-    import { getToastState } from "$lib/toasts/toastState.svelte";
+    import { getToastState } from "$lib/toasts/ToastState.svelte";
     import { pagesStore } from "$lib/client/pagesStore";
     import { reusableBlocksStore } from "$lib/client/reusableBlocksStore";
     import { Badge } from "$lib/components/ui/badge/index.js";

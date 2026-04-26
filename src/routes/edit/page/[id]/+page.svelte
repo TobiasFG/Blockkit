@@ -3,7 +3,7 @@
     import { fly } from "svelte/transition";
     import { browser } from "$app/environment";
     import { applyAction, enhance } from "$app/forms";
-    import { getToastState } from "$lib/toasts/toastState.svelte";
+    import { getToastState } from "$lib/toasts/ToastState.svelte";
     import { pagesStore } from "$lib/client/pagesStore";
     import * as Alert from "$lib/components/ui/alert/index.js";
     import { Badge } from "$lib/components/ui/badge/index.js";

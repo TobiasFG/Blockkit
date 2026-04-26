@@ -1,7 +1,7 @@
 import { fireEvent, render, screen } from '@testing-library/svelte';
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import ToastViewport from './ToastViewport.svelte';
-import { ToastState } from './toastState.svelte';
+import { ToastState } from './ToastState.svelte';
 
 describe('ToastViewport', () => {
 	beforeAll(() => {

@@ -1,11 +1,11 @@
 <script lang="ts">
-	import type { Snippet } from 'svelte';
-	import ToastViewport from './ToastViewport.svelte';
-	import { setToastState } from './toastState.svelte';
+    import type { Snippet } from "svelte";
+    import { setToastState } from "./ToastState.svelte";
+    import ToastViewport from "./ToastViewport.svelte";
 
-	let { children }: { children: Snippet } = $props();
+    let { children }: { children: Snippet } = $props();
 
-	const toastState = setToastState();
+    const toastState = setToastState();
 </script>
 
 {@render children()}
