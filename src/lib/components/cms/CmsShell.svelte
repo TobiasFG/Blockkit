@@ -12,7 +12,7 @@
     import type { User } from "@supabase/supabase-js";
     import { onMount } from "svelte";
     import type { Snippet } from "svelte";
-    import ToastProvider from "$lib/toasts/ToastProvider.svelte";
+    import ToastProvider from "$lib/Toasts/ToastProvider.svelte";
     import { Button } from "$lib/components/ui/button/index.js";
     import ThemeToggle from "$lib/components/ThemeToggle.svelte";
     import { PanelLeft, PanelRight } from "$lib/icons";

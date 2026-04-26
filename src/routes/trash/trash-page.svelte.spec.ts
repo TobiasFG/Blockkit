@@ -1,6 +1,6 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/svelte';
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
-import ToastTestHost from '$lib/toasts/ToastTestHost.svelte';
+import ToastTestHost from '$lib/Toasts/ToastTestHost.svelte';
 import TrashPage from './+page.svelte';
 
 let nextResult: {

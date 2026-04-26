@@ -2,7 +2,7 @@
     import { fly } from "svelte/transition";
     import { browser } from "$app/environment";
     import { applyAction, enhance } from "$app/forms";
-    import { getToastState } from "$lib/toasts/ToastState.svelte";
+    import { getToastState } from "$lib/Toasts/ToastState.svelte";
     import {
         type BlockDefinition,
         type BlockFieldDefinition,
