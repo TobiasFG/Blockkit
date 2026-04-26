@@ -6,6 +6,7 @@
     import type { User } from "@supabase/supabase-js";
     import SidebarUserFooter from "./SidebarUserFooter.svelte";
     import type { SidebarDesktopFocus } from "./Types";
+    import Logo from "$lib/General/Logo.svelte";
 
     let {
         user,
@@ -77,18 +78,14 @@
 
 <div class="flex h-full flex-col bg-background">
     <div
-        class="sticky top-0 z-10 border-b border-border bg-background/95 px-4 py-4 backdrop-blur"
+        class="sticky top-0 z-10 border-b border-border bg-background/95 py-4 backdrop-blur"
     >
         <div class="flex justify-center">
-            <div
-                class="grid h-12 w-12 place-items-center rounded-lg bg-[#173a63] text-xl font-semibold text-white shadow-sm"
-            >
-                S
-            </div>
+            <Logo></Logo>
         </div>
     </div>
 
-    <div class="min-h-0 flex-1 overflow-y-auto px-4 py-5">
+    <div class="min-h-0 flex-1 overflow-y-auto py-5">
         <div class="space-y-4">
             {#each collapsedRailItems as item (item.key)}
                 <button
@@ -114,9 +111,5 @@
         </div>
     </div>
 
-    <SidebarUserFooter
-        {user}
-        variant="collapsed"
-        {logoutEnhanceSubmit}
-    />
+    <SidebarUserFooter {user} variant="collapsed" {logoutEnhanceSubmit} />
 </div>
