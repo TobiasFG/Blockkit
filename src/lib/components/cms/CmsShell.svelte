@@ -13,9 +13,10 @@
     import { onMount } from "svelte";
     import type { Snippet } from "svelte";
     import ToastProvider from "$lib/Toasts/ToastProvider.svelte";
-    import { Button } from "$lib/components/ui/button/index.js";
+    import * as Breadcrumb from "$lib/components/ui/breadcrumb/index.js";
+    import { Separator } from "$lib/components/ui/separator/index.js";
+    import * as UiSidebar from "$lib/components/ui/sidebar/index.js";
     import ThemeToggle from "$lib/Theme/ThemeToggle.svelte";
-    import { PanelLeft, PanelRight } from "$lib/icons";
     import Sidebar from "$lib/Sidebar/Sidebar.svelte";
 
     let {
@@ -170,15 +171,11 @@
             ].join(" ")}
         ></div>
 
-        {#if !exiting}
-            <div
-                out:sidebarOutro={{ reducedMotion: prefersReducedMotion }}
-                class={[
-                    "transition-opacity ease-[cubic-bezier(0.22,1,0.36,1)]",
-                    prefersReducedMotion ? "duration-100" : "duration-[320ms]",
-                    entered ? "opacity-100" : "opacity-0",
-                ].join(" ")}
-            >
+        <UiSidebar.Provider
+            open={!desktopSidebarCollapsed}
+            onOpenChange={(open) => (desktopSidebarCollapsed = !open)}
+        >
+            {#if !exiting}
                 <Sidebar
                     {pages}
                     {blockFolders}
@@ -192,79 +189,78 @@
                     onDesktopRailSelect={handleDesktopRailSelect}
                     logoutEnhanceSubmit={logoutSubmit}
                 />
-            </div>
-        {/if}
+            {/if}
 
-        {#if !exiting}
-            <div
-                out:contentOutro={{ reducedMotion: prefersReducedMotion }}
-                onoutroend={handleContentOutroEnd}
-                class={[
-                    desktopSidebarCollapsed ? "lg:pl-24" : "lg:pl-[33rem]",
-                    "transition-[padding,opacity] ease-[cubic-bezier(0.22,1,0.36,1)]",
-                    prefersReducedMotion
-                        ? "duration-100 delay-0"
-                        : "duration-[360ms] delay-[80ms]",
-                    entered ? "opacity-100" : "opacity-0",
-                ].join(" ")}
-            >
-                <button
-                    type="button"
-                    class={[
-                        "hidden lg:inline-flex fixed top-24 z-40 size-10 items-center justify-center rounded-lg border border-border bg-background/95 text-muted-foreground shadow-sm backdrop-blur transition hover:border-border/90 hover:text-foreground",
-                        desktopSidebarCollapsed
-                            ? "left-[6.5rem]"
-                            : "left-[33.75rem]",
-                    ].join(" ")}
-                    aria-label={desktopSidebarCollapsed
-                        ? "Expand sidebar"
-                        : "Collapse sidebar"}
-                    title={desktopSidebarCollapsed
-                        ? "Expand sidebar"
-                        : "Collapse sidebar"}
-                    onclick={() =>
-                        (desktopSidebarCollapsed = !desktopSidebarCollapsed)}
-                >
-                    {#if desktopSidebarCollapsed}
-                        <PanelRight class="h-4 w-4" />
-                    {:else}
-                        <PanelLeft class="h-4 w-4" />
-                    {/if}
-                </button>
-
-                <header
-                    class="sticky top-0 z-30 flex h-14 items-center gap-3 border-b border-border/70 bg-background/90 px-4 backdrop-blur lg:hidden"
-                >
-                    <Button
-                        type="button"
-                        variant="ghost"
-                        size="icon-sm"
-                        aria-label="Open sidebar"
-                        aria-expanded={mobileOpen}
-                        onclick={() => (mobileOpen = true)}
+            {#if !exiting}
+                <UiSidebar.Inset>
+                    <div
+                        out:contentOutro={{
+                            reducedMotion: prefersReducedMotion,
+                        }}
+                        onoutroend={handleContentOutroEnd}
+                        class={[
+                            "min-h-screen transition-[opacity] ease-[cubic-bezier(0.22,1,0.36,1)]",
+                            prefersReducedMotion
+                                ? "duration-100 delay-0"
+                                : "duration-[360ms] delay-[80ms]",
+                            entered ? "opacity-100" : "opacity-0",
+                        ].join(" ")}
                     >
-                        <svg
-                            viewBox="0 0 24 24"
-                            class="h-5 w-5"
-                            fill="none"
-                            stroke="currentColor"
-                            stroke-width="2"
+                        <header
+                            class="sticky top-0 z-30 flex h-16 shrink-0 items-center gap-2 bg-background/90 px-4 backdrop-blur"
                         >
-                            <path d="M4 6h16M4 12h16M4 18h16" />
-                        </svg>
-                    </Button>
-                    <div class="text-sm font-semibold text-foreground">
-                        Blockkit CMS
-                    </div>
-                    <div class="ml-auto">
-                        <ThemeToggle />
-                    </div>
-                </header>
+                            <UiSidebar.Trigger
+                                class="-ms-1"
+                                aria-label={desktopSidebarCollapsed
+                                    ? "Expand sidebar"
+                                    : "Collapse sidebar"}
+                                aria-expanded={mobileOpen}
+                                title={desktopSidebarCollapsed
+                                    ? "Expand sidebar"
+                                    : "Collapse sidebar"}
+                            />
+                            <Separator
+                                orientation="vertical"
+                                class="data-[orientation=vertical]:h-4"
+                            />
+                            <ThemeToggle />
+                            <Separator
+                                orientation="vertical"
+                                class="me-2 data-[orientation=vertical]:h-4"
+                            />
+                            <Breadcrumb.Root>
+                                <Breadcrumb.List>
+                                    <Breadcrumb.Item class="hidden md:block">
+                                        <Breadcrumb.Link href="/">
+                                            Build Your Application
+                                        </Breadcrumb.Link>
+                                    </Breadcrumb.Item>
+                                    <Breadcrumb.Separator
+                                        class="hidden md:block"
+                                    />
+                                    <Breadcrumb.Item>
+                                        <Breadcrumb.Page>
+                                            {#if $page.url.pathname.startsWith("/content")}
+                                                Content
+                                            {:else if $page.url.pathname.startsWith("/edit/")}
+                                                Page editor
+                                            {:else if $page.url.pathname === "/trash"}
+                                                Trash
+                                            {:else}
+                                                Dashboard
+                                            {/if}
+                                        </Breadcrumb.Page>
+                                    </Breadcrumb.Item>
+                                </Breadcrumb.List>
+                            </Breadcrumb.Root>
+                        </header>
 
-                <div class="p-4 lg:p-8 lg:pl-10">
-                    {@render children()}
-                </div>
-            </div>
-        {/if}
+                        <div class="p-4 lg:p-8">
+                            {@render children()}
+                        </div>
+                    </div>
+                </UiSidebar.Inset>
+            {/if}
+        </UiSidebar.Provider>
     </div>
 </ToastProvider>

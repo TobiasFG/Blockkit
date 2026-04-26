@@ -1,9 +1,8 @@
 <script lang="ts">
-    import { ContextMenu } from "bits-ui";
-    import { buttonVariants } from "$lib/components/ui/button/index.js";
     import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
+    import { Badge } from "$lib/components/ui/badge/index.js";
+    import * as Sidebar from "$lib/components/ui/sidebar/index.js";
     import { EllipsisVertical, FileText, Quote } from "$lib/icons";
-    import { getReusableBlockPublishState } from "$lib/reusableBlockStatus";
     import type { ReusableBlock } from "$lib/types";
     import { setReusableBlockDragData } from "./ReusableBlockInsertion";
 
@@ -33,95 +32,48 @@
         const type = block.block_type.toLowerCase();
         return type.includes("quote") || type.includes("testimonial");
     });
-    const stateDotClass = $derived.by(() => {
-        const state = getReusableBlockPublishState(block);
-        if (state === "draft-changes") return "bg-amber-500";
-        if (state === "published") return "bg-emerald-500";
-        return "bg-slate-400";
-    });
-    const rowStyle = $derived(
-        depth === null ? undefined : `padding-left: ${depth * 1 + 0.25}rem`,
-    );
-    const rowClass = $derived(
+    const rowPadding = $derived(
         depth === null
-            ? "flex min-w-0 items-center justify-between gap-2 rounded-md px-2 py-1.5 text-sm transition"
-            : "flex min-w-0 items-center justify-between gap-2 rounded-md py-1.5 pr-2 text-sm transition",
+            ? "padding-right: 6.75rem;"
+            : `padding-left: calc(0.5rem + ${depth} * 0.875rem); padding-right: 6.75rem;`,
     );
 </script>
 
-<div
-    class={[
-        rowClass,
-        active
-            ? "bg-muted text-foreground"
-            : "text-slate-700 hover:bg-muted hover:text-foreground dark:text-muted-foreground",
-    ].join(" ")}
-    style={rowStyle}
->
-    <ContextMenu.Root>
-        <ContextMenu.Trigger class="flex min-w-0 flex-1">
+<Sidebar.MenuItem>
+    <Sidebar.MenuButton class="w-full" style={rowPadding} isActive={active}>
+        {#snippet child({ props })}
             <a
                 href={`/content/${block.id}`}
-                class="flex min-w-0 flex-1 items-center justify-between gap-3"
+                {...props}
                 draggable={canInsertIntoPage && canDragIntoPage}
                 onclick={onClose}
                 ondragstart={(event) => setReusableBlockDragData(event, block.id)}
             >
-                <div class="flex min-w-0 flex-1 items-center gap-3">
-                    <span
-                        class="grid h-8 w-8 shrink-0 place-items-center rounded-md border border-border/70 bg-background text-muted-foreground"
-                    >
-                        {#if isQuoteBlock}
-                            <Quote class="h-4 w-4" />
-                        {:else}
-                            <FileText class="h-4 w-4" />
-                        {/if}
-                    </span>
-                    <span class="min-w-[4rem] flex-1 truncate font-medium">
-                        {block.name}
-                    </span>
-                </div>
-                <div class="flex shrink-0 items-center gap-1.5">
-                    <span
-                        class="rounded-full bg-muted px-2.5 py-1 text-[11px] font-medium text-muted-foreground"
-                    >
-                        {block.block_type}
-                    </span>
-                    <span class={`h-2.5 w-2.5 rounded-full ${stateDotClass}`}
-                    ></span>
-                </div>
+                {#if isQuoteBlock}
+                    <Quote class="size-4 shrink-0" />
+                {:else}
+                    <FileText class="size-4 shrink-0" />
+                {/if}
+                <span>{block.name}</span>
             </a>
-        </ContextMenu.Trigger>
-        <ContextMenu.Content
-            class="z-50 min-w-44 rounded-xl border border-border bg-popover p-1.5 shadow-lg"
-        >
-            {#if canInsertIntoPage}
-                <ContextMenu.Item
-                    class="rounded-lg px-2 py-2 text-sm text-slate-700 outline-none transition focus:bg-slate-100"
-                    onSelect={() => onInsertBlockIntoPage(block.id)}
-                >
-                    Insert into page
-                </ContextMenu.Item>
-            {/if}
-            <ContextMenu.Item
-                class="rounded-lg px-2 py-2 text-sm text-red-700 outline-none transition focus:bg-red-50"
-                onSelect={() => onDeleteBlock(block.id, block.name)}
-            >
-                Delete content
-            </ContextMenu.Item>
-        </ContextMenu.Content>
-    </ContextMenu.Root>
+        {/snippet}
+    </Sidebar.MenuButton>
 
     <DropdownMenu.Root>
-        <DropdownMenu.Trigger
-            class={`${buttonVariants({ variant: "ghost", size: "icon-sm" })} h-8 w-8 shrink-0 rounded-md text-muted-foreground`}
-        >
-            <EllipsisVertical class="h-4 w-4" />
+        <DropdownMenu.Trigger>
+            {#snippet child({ props })}
+                <Sidebar.MenuAction
+                    {...props}
+                    class="right-10 opacity-100 hover:bg-muted hover:text-foreground data-[state=open]:bg-muted data-[state=open]:text-foreground dark:hover:bg-muted/50"
+                >
+                    <EllipsisVertical class="size-4" />
+                    <span class="sr-only">Content actions</span>
+                </Sidebar.MenuAction>
+            {/snippet}
         </DropdownMenu.Trigger>
-        <DropdownMenu.Content class="min-w-44 rounded-xl p-1.5">
+        <DropdownMenu.Content side="right" align="start" class="min-w-44">
             {#if canInsertIntoPage}
                 <DropdownMenu.Item
-                    class="rounded-lg px-2 py-2 text-sm"
                     onSelect={() => onInsertBlockIntoPage(block.id)}
                 >
                     Insert into page
@@ -129,11 +81,18 @@
             {/if}
             <DropdownMenu.Item
                 variant="destructive"
-                class="rounded-lg px-2 py-2 text-sm"
                 onSelect={() => onDeleteBlock(block.id, block.name)}
             >
                 Delete content
             </DropdownMenu.Item>
         </DropdownMenu.Content>
     </DropdownMenu.Root>
-</div>
+
+    <Badge
+        variant="secondary"
+        class="absolute right-1 top-1.5 h-5 min-w-5 rounded-full px-1 text-[10px] font-mono tabular-nums"
+        title={block.block_type}
+    >
+        {block.block_type.slice(0, 2)}
+    </Badge>
+</Sidebar.MenuItem>

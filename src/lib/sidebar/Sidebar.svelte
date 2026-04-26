@@ -8,6 +8,7 @@
     import { fade } from "svelte/transition";
     import { Button } from "$lib/components/ui/button/index.js";
     import { Input } from "$lib/components/ui/input/index.js";
+    import * as UiSidebar from "$lib/components/ui/sidebar/index.js";
     import { pagesStore } from "$lib/client/pagesStore";
     import {
         blockFoldersStore,
@@ -225,6 +226,13 @@
         if (inserted) onClose();
     };
 
+    const uiSidebar = UiSidebar.useSidebar();
+
+    const closeSidebar = () => {
+        onClose();
+        uiSidebar.setOpenMobile(false);
+    };
+
     const expandedContentProps = $derived({
         user,
         pageTree,
@@ -240,7 +248,7 @@
         actionPending,
         actionNotice,
         logoutEnhanceSubmit,
-        onClose,
+        onClose: closeSidebar,
         onToggle: toggleNode,
         onCreateFolder: openCreateFolderModal,
         onDeleteFolder: openDeleteFolderModal,
@@ -491,78 +499,30 @@
     {/if}
 </ActionModal>
 
-<aside
-    class={[
-        "hidden bg-transparent p-3 transition-[width] duration-200 lg:fixed lg:inset-y-0 lg:left-0 lg:flex lg:flex-col",
-        desktopCollapsed ? "lg:w-24" : "lg:w-[33rem]",
-    ].join(" ")}
->
-    <div
-        class="flex min-h-0 flex-1 overflow-hidden rounded-lg border border-border bg-background shadow-sm"
-    >
-        {#key desktopCollapsed}
-            <div
-                class="min-h-0 flex-1"
-                in:fade={{ duration: 150 }}
-                out:fade={{ duration: 110 }}
-            >
-                {#if desktopCollapsed}
-                    <SidebarCollapsedContent
-                        {user}
-                        {hasContent}
-                        {logoutEnhanceSubmit}
-                        {railItemIsActive}
-                        {onDesktopRailSelect}
-                    />
-                {:else}
-                    <SidebarExpandedContent
-                        {...expandedContentProps}
-                        bindPagesSectionElement={(element) =>
-                            (pagesSectionElement = element)}
-                        bindContentSectionElement={(element) =>
-                            (contentSectionElement = element)}
-                    />
-                {/if}
-            </div>
-        {/key}
-    </div>
-</aside>
-
-{#if mobileOpen}
-    <div
-        class="fixed inset-0 z-40 bg-black/40 lg:hidden"
-        aria-hidden="true"
-        onclick={onClose}
-    ></div>
-    <div
-        class="fixed inset-y-0 left-0 z-50 w-80 border-r border-border bg-background shadow-lg lg:hidden"
-        role="dialog"
-        aria-modal="true"
-        aria-label="Sidebar"
-    >
+<UiSidebar.Root variant="inset" collapsible="icon">
+    {#key desktopCollapsed}
         <div
-            class="flex h-14 items-center justify-end border-b border-border px-2"
+            class="flex min-h-0 flex-1 flex-col overflow-hidden"
+            in:fade={{ duration: 150 }}
+            out:fade={{ duration: 110 }}
         >
-            <Button
-                type="button"
-                variant="ghost"
-                size="icon-sm"
-                aria-label="Close sidebar"
-                onclick={onClose}
-            >
-                <svg
-                    viewBox="0 0 24 24"
-                    class="h-5 w-5"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                >
-                    <path d="M18 6 6 18M6 6l12 12" />
-                </svg>
-            </Button>
+            {#if desktopCollapsed}
+                <SidebarCollapsedContent
+                    {user}
+                    {hasContent}
+                    {logoutEnhanceSubmit}
+                    {railItemIsActive}
+                    {onDesktopRailSelect}
+                />
+            {:else}
+                <SidebarExpandedContent
+                    {...expandedContentProps}
+                    bindPagesSectionElement={(element) =>
+                        (pagesSectionElement = element)}
+                    bindContentSectionElement={(element) =>
+                        (contentSectionElement = element)}
+                />
+            {/if}
         </div>
-        <SidebarExpandedContent
-            {...expandedContentProps}
-        />
-    </div>
-{/if}
+    {/key}
+</UiSidebar.Root>

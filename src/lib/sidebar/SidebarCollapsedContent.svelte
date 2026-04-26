@@ -1,17 +1,22 @@
 <script lang="ts">
     import { goto } from "$app/navigation";
     import type { SubmitFunction } from "@sveltejs/kit";
-    import type { Component } from "svelte";
-    import { FileText, Folder, Home, Trash2 } from "$lib/icons";
     import type { User } from "@supabase/supabase-js";
-    import SidebarUserFooter from "./SidebarUserFooter.svelte";
+    import * as Avatar from "$lib/components/ui/avatar/index.js";
+    import * as Sidebar from "$lib/components/ui/sidebar/index.js";
+    import CommandIcon from "@lucide/svelte/icons/command";
+    import {
+        FileText,
+        Folder,
+        Home,
+        Search,
+        Trash2,
+    } from "$lib/icons";
     import type { SidebarDesktopFocus } from "./Types";
-    import Logo from "$lib/General/Logo.svelte";
 
     let {
         user,
         hasContent,
-        logoutEnhanceSubmit,
         railItemIsActive,
         onDesktopRailSelect,
     }: {
@@ -22,42 +27,48 @@
         onDesktopRailSelect: (focus: SidebarDesktopFocus) => void;
     } = $props();
 
-    const collapsedRailItems = $derived<
-        {
-            key: string;
-            label: string;
-            icon: Component;
-            dotClass: string | null;
-            focus: SidebarDesktopFocus;
-        }[]
-    >([
+    const displayName = $derived(
+        user.user_metadata?.full_name ||
+            user.user_metadata?.name ||
+            user.email?.split("@")[0] ||
+            "Editor",
+    );
+    const initials = $derived(displayName.slice(0, 2).toUpperCase());
+    const collapsedItems = $derived([
         {
             key: "dashboard",
             label: "Dashboard",
             icon: Home,
+            focus: { kind: "dashboard" } satisfies SidebarDesktopFocus,
             dotClass: null,
-            focus: { kind: "dashboard" },
         },
         {
             key: "pages",
             label: "Pages",
             icon: FileText,
+            focus: { kind: "pages" } satisfies SidebarDesktopFocus,
             dotClass: "bg-blue-500",
-            focus: { kind: "pages" },
         },
         {
-            key: "content-root",
+            key: "content",
             label: "Content",
             icon: Folder,
+            focus: { kind: "content" } satisfies SidebarDesktopFocus,
             dotClass: hasContent ? "bg-emerald-500" : null,
-            focus: { kind: "content" },
+        },
+        {
+            key: "search",
+            label: "Search",
+            icon: Search,
+            focus: { kind: "pages" } satisfies SidebarDesktopFocus,
+            dotClass: null,
         },
         {
             key: "trash",
             label: "Trash",
             icon: Trash2,
+            focus: { kind: "trash" } satisfies SidebarDesktopFocus,
             dotClass: null,
-            focus: { kind: "trash" },
         },
     ]);
 
@@ -76,40 +87,48 @@
     };
 </script>
 
-<div class="flex h-full flex-col bg-background">
-    <div
-        class="sticky top-0 z-10 border-b border-border bg-background/95 py-4 backdrop-blur"
-    >
-        <div class="flex justify-center">
-            <Logo></Logo>
-        </div>
-    </div>
+<Sidebar.Header>
+    <Sidebar.Menu>
+        <Sidebar.MenuItem>
+            <Sidebar.MenuButton size="lg" tooltipContent="Blockkit CMS">
+                <CommandIcon class="size-4" />
+            </Sidebar.MenuButton>
+        </Sidebar.MenuItem>
+    </Sidebar.Menu>
+</Sidebar.Header>
 
-    <div class="min-h-0 flex-1 overflow-y-auto py-5">
-        <div class="space-y-4">
-            {#each collapsedRailItems as item (item.key)}
-                <button
-                    type="button"
-                    class={[
-                        "relative flex h-11 w-full items-center justify-center rounded-md text-muted-foreground transition",
-                        railItemIsActive(item.focus)
-                            ? "bg-muted text-foreground"
-                            : "hover:bg-muted/70 hover:text-foreground",
-                    ].join(" ")}
-                    title={item.label}
-                    aria-label={item.label}
-                    onclick={() => handleRailClick(item.focus)}
-                >
-                    <item.icon class="h-5 w-5" />
-                    {#if item.dotClass}
-                        <span
-                            class={`absolute right-3 top-1/2 h-2 w-2 -translate-y-1/2 rounded-full ${item.dotClass}`}
-                        ></span>
-                    {/if}
-                </button>
+<Sidebar.Content>
+    <Sidebar.Group>
+        <Sidebar.Menu>
+            {#each collapsedItems as item (item.key)}
+                <Sidebar.MenuItem>
+                    <Sidebar.MenuButton
+                        tooltipContent={item.label}
+                        isActive={railItemIsActive(item.focus)}
+                        onclick={() => handleRailClick(item.focus)}
+                    >
+                        <item.icon class="size-4" />
+                        {#if item.dotClass}
+                            <span
+                                class={`absolute right-2 top-1/2 size-2 -translate-y-1/2 rounded-full ${item.dotClass}`}
+                            ></span>
+                        {/if}
+                    </Sidebar.MenuButton>
+                </Sidebar.MenuItem>
             {/each}
-        </div>
-    </div>
+        </Sidebar.Menu>
+    </Sidebar.Group>
+</Sidebar.Content>
 
-    <SidebarUserFooter {user} variant="collapsed" {logoutEnhanceSubmit} />
-</div>
+<Sidebar.Footer>
+    <Sidebar.Menu>
+        <Sidebar.MenuItem>
+            <Sidebar.MenuButton size="lg" tooltipContent={displayName}>
+                <Avatar.Root class="size-8 rounded-lg">
+                    <Avatar.Image src="" alt="" />
+                    <Avatar.Fallback class="rounded-lg">{initials}</Avatar.Fallback>
+                </Avatar.Root>
+            </Sidebar.MenuButton>
+        </Sidebar.MenuItem>
+    </Sidebar.Menu>
+</Sidebar.Footer>
