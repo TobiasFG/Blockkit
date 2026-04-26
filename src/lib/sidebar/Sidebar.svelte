@@ -87,6 +87,12 @@
         | null
     >(null);
 
+    const actionSuccessMessages: Record<string, string> = {
+        createBlockFolder: "Folder created.",
+        deleteBlockFolder: "Folder deleted.",
+        deleteReusableBlock: "Content moved to trash.",
+    };
+
     const editHref = (pageId: string) => buildEditPagePath(pageId);
     const isActive = (href: string) => $page.url.pathname === href;
     const currentPages = $derived(browser ? ($pagesStore ?? pages) : pages);
@@ -115,7 +121,6 @@
     const hasContent = $derived(
         currentBlockFolders.length > 0 || currentReusableBlocks.length > 0,
     );
-
     const toggleNode = (id: string) => {
         closedNodes = { ...closedNodes, [id]: !closedNodes[id] };
     };
@@ -163,13 +168,10 @@
             actionNotice = {
                 tone: "success",
                 text:
-                    payload.intent === "createBlockFolder"
-                        ? "Folder created."
-                        : payload.intent === "deleteBlockFolder"
-                          ? "Folder deleted."
-                          : payload.intent === "deleteReusableBlock"
-                            ? "Content moved to trash."
-                            : "Sidebar action completed.",
+                    typeof payload.intent === "string"
+                        ? (actionSuccessMessages[payload.intent] ??
+                          "Sidebar action completed.")
+                        : "Sidebar action completed.",
             };
 
             if (
@@ -222,6 +224,29 @@
               };
         if (inserted) onClose();
     };
+
+    const expandedContentProps = $derived({
+        user,
+        pageTree,
+        reusableBlocksTree,
+        currentPages,
+        currentBlockFolders,
+        currentReusableBlocks,
+        activePageId,
+        activeReusableBlockId,
+        closedNodes,
+        canInsertIntoCurrentPage,
+        canDragReusableBlocks,
+        actionPending,
+        actionNotice,
+        logoutEnhanceSubmit,
+        onClose,
+        onToggle: toggleNode,
+        onCreateFolder: openCreateFolderModal,
+        onDeleteFolder: openDeleteFolderModal,
+        onDeleteBlock: openDeleteBlockModal,
+        onInsertBlock: insertBlockIntoCurrentPage,
+    });
 
     const railItemIsActive = (focus: SidebarDesktopFocus) => {
         if (focus.kind === "dashboard") return isActive("/");
@@ -491,26 +516,7 @@
                     />
                 {:else}
                     <SidebarExpandedContent
-                        {user}
-                        {pageTree}
-                        {reusableBlocksTree}
-                        {currentPages}
-                        {currentBlockFolders}
-                        {currentReusableBlocks}
-                        {activePageId}
-                        {activeReusableBlockId}
-                        {closedNodes}
-                        {canInsertIntoCurrentPage}
-                        {canDragReusableBlocks}
-                        {actionPending}
-                        {actionNotice}
-                        {logoutEnhanceSubmit}
-                        {onClose}
-                        onToggle={toggleNode}
-                        onCreateFolder={openCreateFolderModal}
-                        onDeleteFolder={openDeleteFolderModal}
-                        onDeleteBlock={openDeleteBlockModal}
-                        onInsertBlock={insertBlockIntoCurrentPage}
+                        {...expandedContentProps}
                         bindPagesSectionElement={(element) =>
                             (pagesSectionElement = element)}
                         bindContentSectionElement={(element) =>
@@ -556,26 +562,7 @@
             </Button>
         </div>
         <SidebarExpandedContent
-            {user}
-            {pageTree}
-            {reusableBlocksTree}
-            {currentPages}
-            {currentBlockFolders}
-            {currentReusableBlocks}
-            {activePageId}
-            {activeReusableBlockId}
-            {closedNodes}
-            {canInsertIntoCurrentPage}
-            {canDragReusableBlocks}
-            {actionPending}
-            {actionNotice}
-            {logoutEnhanceSubmit}
-            {onClose}
-            onToggle={toggleNode}
-            onCreateFolder={openCreateFolderModal}
-            onDeleteFolder={openDeleteFolderModal}
-            onDeleteBlock={openDeleteBlockModal}
-            onInsertBlock={insertBlockIntoCurrentPage}
+            {...expandedContentProps}
         />
     </div>
 {/if}

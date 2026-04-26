@@ -1,26 +1,21 @@
 <script lang="ts">
     import { enhance } from "$app/forms";
-    import { goto } from "$app/navigation";
     import type { SubmitFunction } from "@sveltejs/kit";
     import type { User } from "@supabase/supabase-js";
-    import type { SidebarDesktopFocus } from "./Types";
     import * as Avatar from "$lib/components/ui/avatar/index.js";
     import * as ButtonGroup from "$lib/components/ui/button-group/index.js";
     import { Button } from "$lib/components/ui/button/index.js";
-    import { ChevronDown, EllipsisVertical, LogOut, Plus } from "$lib/icons";
-    import { Settings2 } from "@lucide/svelte";
+    import { LogOut, Settings } from "$lib/icons";
     import P from "$lib/Typography/P.svelte";
 
     let {
         user,
         variant = "expanded",
         logoutEnhanceSubmit,
-        onDesktopRailSelect,
     }: {
         user: User;
         variant?: "expanded" | "collapsed";
         logoutEnhanceSubmit?: SubmitFunction;
-        onDesktopRailSelect?: (focus: SidebarDesktopFocus) => void;
     } = $props();
 
     const displayName = $derived(
@@ -40,7 +35,7 @@
                 <Avatar.Fallback>{initials}</Avatar.Fallback>
             </Avatar.Root>
             <Button variant="ghost" size="icon" aria-label="Submit">
-                <Settings2 />
+                <Settings />
             </Button>
             <form
                 method="POST"
@@ -66,7 +61,7 @@
             </div>
             <ButtonGroup.Root>
                 <Button variant="ghost" size="icon" aria-label="Submit">
-                    <Settings2 />
+                    <Settings />
                 </Button>
                 <form
                     method="POST"

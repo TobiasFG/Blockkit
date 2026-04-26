@@ -118,6 +118,5 @@
         {user}
         variant="collapsed"
         {logoutEnhanceSubmit}
-        {onDesktopRailSelect}
     />
 </div>

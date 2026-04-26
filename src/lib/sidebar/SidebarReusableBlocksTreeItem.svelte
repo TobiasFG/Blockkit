@@ -2,15 +2,8 @@
     import { ContextMenu } from "bits-ui";
     import { buttonVariants } from "$lib/components/ui/button/index.js";
     import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
-    import {
-        ChevronRight,
-        EllipsisVertical,
-        FileText,
-        Folder,
-        Quote,
-    } from "$lib/icons";
-    import { getReusableBlockPublishState } from "$lib/reusableBlockStatus";
-    import { setReusableBlockDragData } from "./ReusableBlockInsertion";
+    import { ChevronRight, EllipsisVertical, Folder } from "$lib/icons";
+    import SidebarReusableBlockRow from "./SidebarReusableBlockRow.svelte";
     import SidebarReusableBlocksTreeItem from "./SidebarReusableBlocksTreeItem.svelte";
     import type { ReusableBlocksTreeNode } from "./ReusableBlocksTree";
 
@@ -51,18 +44,6 @@
     );
     const nodeId = $derived(node.folder?.id ?? "");
     const isOpen = $derived(node.folder ? !closedNodes[nodeId] : true);
-    const getStateMeta = (
-        state: "unpublished" | "published" | "draft-changes",
-    ) => {
-        switch (state) {
-            case "draft-changes":
-                return { dotClass: "bg-amber-500" };
-            case "published":
-                return { dotClass: "bg-emerald-500" };
-            default:
-                return { dotClass: "bg-slate-400" };
-        }
-    };
 </script>
 
 {#if node.folder}
@@ -204,117 +185,16 @@
                 {/each}
 
                 {#each node.blocks as block (block.id)}
-                    {@const stateMeta = getStateMeta(
-                        getReusableBlockPublishState(block),
-                    )}
-                    <div
-                        class={[
-                            "flex min-w-0 items-center justify-between gap-2 rounded-md py-1.5 pr-2 text-sm transition",
-                            activeBlockId === block.id
-                                ? "bg-muted text-foreground"
-                                : "text-slate-700 hover:bg-muted hover:text-foreground dark:text-muted-foreground",
-                        ].join(" ")}
-                        style={`padding-left: ${(depth + 1) * 1 + 0.25}rem`}
-                    >
-                        <ContextMenu.Root>
-                            <ContextMenu.Trigger class="flex min-w-0 flex-1">
-                                <a
-                                    href={`/content/${block.id}`}
-                                    class="flex min-w-0 flex-1 items-center justify-between gap-3"
-                                    draggable={canInsertIntoPage &&
-                                        canDragIntoPage}
-                                    onclick={onClose}
-                                    ondragstart={(event) =>
-                                        setReusableBlockDragData(
-                                            event,
-                                            block.id,
-                                        )}
-                                >
-                                    <div
-                                        class="flex min-w-0 flex-1 items-center gap-3"
-                                    >
-                                        <span
-                                            class="grid h-8 w-8 shrink-0 place-items-center rounded-md border border-border/70 bg-background text-muted-foreground"
-                                        >
-                                            {#if block.block_type
-                                                .toLowerCase()
-                                                .includes("quote") || block.block_type
-                                                    .toLowerCase()
-                                                    .includes("testimonial")}
-                                                <Quote class="h-4 w-4" />
-                                            {:else}
-                                                <FileText class="h-4 w-4" />
-                                            {/if}
-                                        </span>
-                                        <span
-                                            class="min-w-[4rem] flex-1 truncate font-medium"
-                                            >{block.name}</span
-                                        >
-                                    </div>
-                                    <div
-                                        class="flex shrink-0 items-center gap-1.5"
-                                    >
-                                        <span
-                                            class="rounded-full bg-muted px-2.5 py-1 text-[11px] font-medium text-muted-foreground"
-                                        >
-                                            {block.block_type}
-                                        </span>
-                                        <span
-                                            class={`h-2.5 w-2.5 rounded-full ${stateMeta.dotClass}`}
-                                        ></span>
-                                    </div>
-                                </a>
-                            </ContextMenu.Trigger>
-                            <ContextMenu.Content
-                                class="z-50 min-w-44 rounded-xl border border-border bg-popover p-1.5 shadow-lg"
-                            >
-                                {#if canInsertIntoPage}
-                                    <ContextMenu.Item
-                                        class="rounded-lg px-2 py-2 text-sm text-slate-700 outline-none transition focus:bg-slate-100"
-                                        onSelect={() =>
-                                            onInsertBlockIntoPage(block.id)}
-                                    >
-                                        Insert into page
-                                    </ContextMenu.Item>
-                                {/if}
-                                <ContextMenu.Item
-                                    class="rounded-lg px-2 py-2 text-sm text-red-700 outline-none transition focus:bg-red-50"
-                                    onSelect={() =>
-                                        onDeleteBlock(block.id, block.name)}
-                                >
-                                    Delete content
-                                </ContextMenu.Item>
-                            </ContextMenu.Content>
-                        </ContextMenu.Root>
-                        <DropdownMenu.Root>
-                            <DropdownMenu.Trigger
-                                class={`${buttonVariants({ variant: "ghost", size: "icon-sm" })} h-8 w-8 shrink-0 rounded-md text-muted-foreground`}
-                            >
-                                <EllipsisVertical class="h-4 w-4" />
-                            </DropdownMenu.Trigger>
-                            <DropdownMenu.Content
-                                class="min-w-44 rounded-xl p-1.5"
-                            >
-                                {#if canInsertIntoPage}
-                                    <DropdownMenu.Item
-                                        class="rounded-lg px-2 py-2 text-sm"
-                                        onSelect={() =>
-                                            onInsertBlockIntoPage(block.id)}
-                                    >
-                                        Insert into page
-                                    </DropdownMenu.Item>
-                                {/if}
-                                <DropdownMenu.Item
-                                    variant="destructive"
-                                    class="rounded-lg px-2 py-2 text-sm"
-                                    onSelect={() =>
-                                        onDeleteBlock(block.id, block.name)}
-                                >
-                                    Delete content
-                                </DropdownMenu.Item>
-                            </DropdownMenu.Content>
-                        </DropdownMenu.Root>
-                    </div>
+                    <SidebarReusableBlockRow
+                        {block}
+                        active={activeBlockId === block.id}
+                        depth={depth + 1}
+                        canInsertIntoPage={canInsertIntoPage}
+                        canDragIntoPage={canDragIntoPage}
+                        {onClose}
+                        {onDeleteBlock}
+                        {onInsertBlockIntoPage}
+                    />
                 {/each}
             </div>
         {/if}
