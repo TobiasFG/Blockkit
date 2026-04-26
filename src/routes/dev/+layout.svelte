@@ -1,161 +1,50 @@
 <script lang="ts">
     import type { Snippet } from "svelte";
-    import * as Breadcrumb from "$lib/components/ui/breadcrumb/index.js";
-    import * as Sidebar from "$lib/components/ui/sidebar/index.js";
-    import * as Collapsible from "$lib/components/ui/collapsible/index.js";
-    import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
-    import * as Avatar from "$lib/components/ui/avatar/index.js";
-    import { Separator } from "$lib/components/ui/separator/index.js";
+    import * as Avatar from "$lib/components/ui/avatar/index.ts";
+    import * as Breadcrumb from "$lib/components/ui/breadcrumb/index.ts";
+    import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.ts";
+    import * as Sidebar from "$lib/components/ui/sidebar/index.ts";
+    import * as Collapsible from "$lib/components/ui/collapsible/index.ts";
+    import { Separator } from "$lib/components/ui/separator/index.ts";
 
     import CommandIcon from "@lucide/svelte/icons/command";
     import {
         BadgeCheckIcon,
         BellIcon,
-        BookOpenIcon,
-        BotIcon,
-        ChartPieIcon,
         ChevronRightIcon,
         ChevronsUpDownIcon,
         CreditCardIcon,
         EllipsisIcon,
-        FolderIcon,
-        FrameIcon,
-        LifeBuoyIcon,
         LogOutIcon,
-        MapIcon,
-        SendIcon,
-        Settings2Icon,
-        ShareIcon,
         SparklesIcon,
-        SquareTerminalIcon,
-        Trash2Icon,
     } from "@lucide/svelte";
+    import ThemeToggle from "$lib/Theme/ThemeToggle.svelte";
 
     let { children }: { children: Snippet } = $props();
 
-    const data = {
-        user: {
-            name: "shadcn",
-            email: "m@example.com",
-            avatar: "/avatars/shadcn.jpg",
+    const pages = [
+        {
+            title: "Home",
+            url: "#",
+            isActive: true,
+            items: [
+                { title: "Edit page", url: "#" },
+                { title: "Duplicate", url: "#" },
+                { title: "Archive", url: "#" },
+            ],
+            children: [
+                {
+                    title: "About",
+                    url: "#",
+                    items: [
+                        { title: "Edit page", url: "#" },
+                        { title: "Duplicate", url: "#" },
+                        { title: "Archive", url: "#" },
+                    ],
+                },
+            ],
         },
-        navMain: [
-            {
-                title: "Playground",
-                url: "#",
-                icon: SquareTerminalIcon,
-                isActive: true,
-                items: [
-                    {
-                        title: "History",
-                        url: "#",
-                    },
-                    {
-                        title: "Starred",
-                        url: "#",
-                    },
-                    {
-                        title: "Settings",
-                        url: "#",
-                    },
-                ],
-            },
-            {
-                title: "Models",
-                url: "#",
-                icon: BotIcon,
-                items: [
-                    {
-                        title: "Genesis",
-                        url: "#",
-                    },
-                    {
-                        title: "Explorer",
-                        url: "#",
-                    },
-                    {
-                        title: "Quantum",
-                        url: "#",
-                    },
-                ],
-            },
-            {
-                title: "Documentation",
-                url: "#",
-                icon: BookOpenIcon,
-                items: [
-                    {
-                        title: "Introduction",
-                        url: "#",
-                    },
-                    {
-                        title: "Get Started",
-                        url: "#",
-                    },
-                    {
-                        title: "Tutorials",
-                        url: "#",
-                    },
-                    {
-                        title: "Changelog",
-                        url: "#",
-                    },
-                ],
-            },
-            {
-                title: "Settings",
-                url: "#",
-                icon: Settings2Icon,
-                items: [
-                    {
-                        title: "General",
-                        url: "#",
-                    },
-                    {
-                        title: "Team",
-                        url: "#",
-                    },
-                    {
-                        title: "Billing",
-                        url: "#",
-                    },
-                    {
-                        title: "Limits",
-                        url: "#",
-                    },
-                ],
-            },
-        ],
-        navSecondary: [
-            {
-                title: "Support",
-                url: "#",
-                icon: LifeBuoyIcon,
-            },
-            {
-                title: "Feedback",
-                url: "#",
-                icon: SendIcon,
-            },
-        ],
-        projects: [
-            {
-                name: "Design Engineering",
-                url: "#",
-                icon: FrameIcon,
-            },
-            {
-                name: "Sales & Marketing",
-                url: "#",
-                icon: ChartPieIcon,
-            },
-            {
-                name: "Travel",
-                url: "#",
-                icon: MapIcon,
-            },
-        ],
-    };
+    ];
 </script>
 
 <Sidebar.Provider>
@@ -187,141 +76,96 @@
                 </Sidebar.MenuItem>
             </Sidebar.Menu>
         </Sidebar.Header>
+
         <Sidebar.Content>
             <Sidebar.Group>
-                <Sidebar.GroupLabel>Platform</Sidebar.GroupLabel>
+                <Sidebar.GroupLabel>Pages</Sidebar.GroupLabel>
                 <Sidebar.Menu>
-                    {#each data.navMain as mainItem (mainItem.title)}
-                        <Collapsible.Root open={mainItem.isActive}>
+                    {#each pages as page (page.title)}
+                        <Collapsible.Root
+                            open={page.isActive}
+                            class="group/collapsible"
+                        >
                             {#snippet child({ props })}
                                 <Sidebar.MenuItem {...props}>
-                                    <Sidebar.MenuButton
-                                        tooltipContent={mainItem.title}
-                                    >
+                                    <Collapsible.Trigger>
                                         {#snippet child({ props })}
-                                            <a href={mainItem.url} {...props}>
-                                                <mainItem.icon />
-                                                <span>{mainItem.title}</span>
-                                            </a>
+                                            <Sidebar.MenuButton
+                                                {...props}
+                                                tooltipContent={page.title}
+                                            >
+                                                <span>{page.title}</span>
+                                                <ChevronRightIcon
+                                                    class="ms-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90"
+                                                />
+                                            </Sidebar.MenuButton>
                                         {/snippet}
-                                    </Sidebar.MenuButton>
-                                    {#if mainItem.items?.length}
-                                        <Collapsible.Trigger>
+                                    </Collapsible.Trigger>
+
+                                    <DropdownMenu.Root>
+                                        <DropdownMenu.Trigger>
                                             {#snippet child({ props })}
                                                 <Sidebar.MenuAction
+                                                    showOnHover
                                                     {...props}
-                                                    class="data-[state=open]:rotate-90"
+                                                    class="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
                                                 >
-                                                    <ChevronRightIcon />
+                                                    <EllipsisIcon />
                                                     <span class="sr-only"
-                                                        >Toggle</span
+                                                        >Page actions</span
                                                     >
                                                 </Sidebar.MenuAction>
                                             {/snippet}
-                                        </Collapsible.Trigger>
-                                        <Collapsible.Content>
-                                            <Sidebar.MenuSub>
-                                                {#each mainItem.items as subItem (subItem.title)}
-                                                    <Sidebar.MenuSubItem>
-                                                        <Sidebar.MenuSubButton
-                                                            href={subItem.url}
+                                        </DropdownMenu.Trigger>
+                                        <DropdownMenu.Content
+                                            side="right"
+                                            align="start"
+                                            class="min-w-56 rounded-lg"
+                                        >
+                                            {#each page.items as item (item.title)}
+                                                <DropdownMenu.Item>
+                                                    {#snippet child({ props })}
+                                                        <a
+                                                            href={item.url}
+                                                            {...props}
+                                                            >{item.title}</a
                                                         >
-                                                            <span
-                                                                >{subItem.title}</span
+                                                    {/snippet}
+                                                </DropdownMenu.Item>
+                                            {/each}
+                                        </DropdownMenu.Content>
+                                    </DropdownMenu.Root>
+
+                                    <Collapsible.Content>
+                                        <Sidebar.MenuSub>
+                                            {#each page.children as childPage (childPage.title)}
+                                                <Sidebar.MenuSubItem>
+                                                    <Sidebar.MenuSubButton>
+                                                        {#snippet child({
+                                                            props,
+                                                        })}
+                                                            <a
+                                                                href={childPage.url}
+                                                                {...props}
                                                             >
-                                                        </Sidebar.MenuSubButton>
-                                                    </Sidebar.MenuSubItem>
-                                                {/each}
-                                            </Sidebar.MenuSub>
-                                        </Collapsible.Content>
-                                    {/if}
+                                                                <span
+                                                                    >{childPage.title}</span
+                                                                >
+                                                            </a>
+                                                        {/snippet}
+                                                    </Sidebar.MenuSubButton>
+                                                </Sidebar.MenuSubItem>
+                                            {/each}
+                                        </Sidebar.MenuSub>
+                                    </Collapsible.Content>
                                 </Sidebar.MenuItem>
                             {/snippet}
                         </Collapsible.Root>
                     {/each}
                 </Sidebar.Menu>
             </Sidebar.Group>
-            <Sidebar.Group class="group-data-[collapsible=icon]:hidden">
-                <Sidebar.GroupLabel>Projects</Sidebar.GroupLabel>
-                <Sidebar.Menu>
-                    {#each data.projects as item (item.name)}
-                        <Sidebar.MenuItem>
-                            <Sidebar.MenuButton>
-                                {#snippet child({ props })}
-                                    <a href={item.url} {...props}>
-                                        <item.icon />
-                                        <span>{item.name}</span>
-                                    </a>
-                                {/snippet}
-                            </Sidebar.MenuButton>
-                            <DropdownMenu.Root>
-                                <DropdownMenu.Trigger>
-                                    {#snippet child({ props })}
-                                        <Sidebar.MenuAction
-                                            showOnHover
-                                            {...props}
-                                        >
-                                            <EllipsisIcon />
-                                            <span class="sr-only">More</span>
-                                        </Sidebar.MenuAction>
-                                    {/snippet}
-                                </DropdownMenu.Trigger>
-                                <DropdownMenu.Content
-                                    class="w-48"
-                                    side="right"
-                                    align="start"
-                                >
-                                    <DropdownMenu.Item>
-                                        <FolderIcon
-                                            class="text-muted-foreground"
-                                        />
-                                        <span>View Project</span>
-                                    </DropdownMenu.Item>
-                                    <DropdownMenu.Item>
-                                        <ShareIcon
-                                            class="text-muted-foreground"
-                                        />
-                                        <span>Share Project</span>
-                                    </DropdownMenu.Item>
-                                    <DropdownMenu.Separator />
-                                    <DropdownMenu.Item>
-                                        <Trash2Icon
-                                            class="text-muted-foreground"
-                                        />
-                                        <span>Delete Project</span>
-                                    </DropdownMenu.Item>
-                                </DropdownMenu.Content>
-                            </DropdownMenu.Root>
-                        </Sidebar.MenuItem>
-                    {/each}
-                    <Sidebar.MenuItem>
-                        <Sidebar.MenuButton>
-                            <EllipsisIcon />
-                            <span>More</span>
-                        </Sidebar.MenuButton>
-                    </Sidebar.MenuItem>
-                </Sidebar.Menu>
-            </Sidebar.Group>
-
-            <Sidebar.Group>
-                <Sidebar.GroupContent>
-                    <Sidebar.Menu>
-                        {#each data.navSecondary as item (item.title)}
-                            <Sidebar.MenuItem>
-                                <Sidebar.MenuButton size="sm">
-                                    {#snippet child({ props })}
-                                        <a href={item.url} {...props}>
-                                            <item.icon />
-                                            <span>{item.title}</span>
-                                        </a>
-                                    {/snippet}
-                                </Sidebar.MenuButton>
-                            </Sidebar.MenuItem>
-                        {/each}
-                    </Sidebar.Menu>
-                </Sidebar.GroupContent>
-            </Sidebar.Group>
         </Sidebar.Content>
+
         <Sidebar.Footer>
             <Sidebar.Menu>
                 <Sidebar.MenuItem>
@@ -416,10 +260,16 @@
             </Sidebar.Menu>
         </Sidebar.Footer>
     </Sidebar.Root>
+
     <Sidebar.Inset>
         <header class="flex h-16 shrink-0 items-center gap-2">
             <div class="flex items-center gap-2 px-4">
                 <Sidebar.Trigger class="-ms-1" />
+                <Separator
+                    orientation="vertical"
+                    class="data-[orientation=vertical]:h-4"
+                />
+                <ThemeToggle></ThemeToggle>
                 <Separator
                     orientation="vertical"
                     class="me-2 data-[orientation=vertical]:h-4"
@@ -439,16 +289,8 @@
                 </Breadcrumb.Root>
             </div>
         </header>
-        <div class="flex flex-1 flex-col gap-4 p-4 pt-0">
-            <div class="grid auto-rows-min gap-4 md:grid-cols-3">
-                <div class="bg-muted/50 aspect-video rounded-xl"></div>
-                <div class="bg-muted/50 aspect-video rounded-xl"></div>
-                <div class="bg-muted/50 aspect-video rounded-xl"></div>
-            </div>
-            <div
-                class="bg-muted/50 min-h-screen flex-1 rounded-xl md:min-h-min"
-            ></div>
-        </div>
+        <main>
+            {@render children()}
+        </main>
     </Sidebar.Inset>
 </Sidebar.Provider>
-{@render children()}
