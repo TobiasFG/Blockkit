@@ -4,17 +4,17 @@
     import * as Breadcrumb from "$lib/components/ui/breadcrumb/index.ts";
     import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.ts";
     import * as Sidebar from "$lib/components/ui/sidebar/index.ts";
-    import * as Collapsible from "$lib/components/ui/collapsible/index.ts";
     import { Separator } from "$lib/components/ui/separator/index.ts";
+    import DevSidebarPageItem, {
+        type DevSidebarPage,
+    } from "./DevSidebarPageItem.svelte";
 
     import CommandIcon from "@lucide/svelte/icons/command";
     import {
         BadgeCheckIcon,
         BellIcon,
-        ChevronRightIcon,
         ChevronsUpDownIcon,
         CreditCardIcon,
-        EllipsisIcon,
         LogOutIcon,
         SparklesIcon,
     } from "@lucide/svelte";
@@ -22,7 +22,7 @@
 
     let { children }: { children: Snippet } = $props();
 
-    const pages = [
+    const pages: DevSidebarPage[] = [
         {
             title: "Home",
             url: "#",
@@ -40,6 +40,28 @@
                         { title: "Edit page", url: "#" },
                         { title: "Duplicate", url: "#" },
                         { title: "Archive", url: "#" },
+                    ],
+                    children: [
+                        {
+                            title: "Team",
+                            url: "#",
+                            items: [
+                                { title: "Edit page", url: "#" },
+                                { title: "Duplicate", url: "#" },
+                                { title: "Archive", url: "#" },
+                            ],
+                            children: [
+                                {
+                                    title: "Leadership",
+                                    url: "#",
+                                    items: [
+                                        { title: "Edit page", url: "#" },
+                                        { title: "Duplicate", url: "#" },
+                                        { title: "Archive", url: "#" },
+                                    ],
+                                },
+                            ],
+                        },
                     ],
                 },
             ],
@@ -82,85 +104,7 @@
                 <Sidebar.GroupLabel>Pages</Sidebar.GroupLabel>
                 <Sidebar.Menu>
                     {#each pages as page (page.title)}
-                        <Collapsible.Root
-                            open={page.isActive}
-                            class="group/collapsible"
-                        >
-                            {#snippet child({ props })}
-                                <Sidebar.MenuItem {...props}>
-                                    <Collapsible.Trigger>
-                                        {#snippet child({ props })}
-                                            <Sidebar.MenuButton
-                                                {...props}
-                                                tooltipContent={page.title}
-                                            >
-                                                <span>{page.title}</span>
-                                                <ChevronRightIcon
-                                                    class="ms-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90"
-                                                />
-                                            </Sidebar.MenuButton>
-                                        {/snippet}
-                                    </Collapsible.Trigger>
-
-                                    <DropdownMenu.Root>
-                                        <DropdownMenu.Trigger>
-                                            {#snippet child({ props })}
-                                                <Sidebar.MenuAction
-                                                    showOnHover
-                                                    {...props}
-                                                    class="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
-                                                >
-                                                    <EllipsisIcon />
-                                                    <span class="sr-only"
-                                                        >Page actions</span
-                                                    >
-                                                </Sidebar.MenuAction>
-                                            {/snippet}
-                                        </DropdownMenu.Trigger>
-                                        <DropdownMenu.Content
-                                            side="right"
-                                            align="start"
-                                            class="min-w-56 rounded-lg"
-                                        >
-                                            {#each page.items as item (item.title)}
-                                                <DropdownMenu.Item>
-                                                    {#snippet child({ props })}
-                                                        <a
-                                                            href={item.url}
-                                                            {...props}
-                                                            >{item.title}</a
-                                                        >
-                                                    {/snippet}
-                                                </DropdownMenu.Item>
-                                            {/each}
-                                        </DropdownMenu.Content>
-                                    </DropdownMenu.Root>
-
-                                    <Collapsible.Content>
-                                        <Sidebar.MenuSub>
-                                            {#each page.children as childPage (childPage.title)}
-                                                <Sidebar.MenuSubItem>
-                                                    <Sidebar.MenuSubButton>
-                                                        {#snippet child({
-                                                            props,
-                                                        })}
-                                                            <a
-                                                                href={childPage.url}
-                                                                {...props}
-                                                            >
-                                                                <span
-                                                                    >{childPage.title}</span
-                                                                >
-                                                            </a>
-                                                        {/snippet}
-                                                    </Sidebar.MenuSubButton>
-                                                </Sidebar.MenuSubItem>
-                                            {/each}
-                                        </Sidebar.MenuSub>
-                                    </Collapsible.Content>
-                                </Sidebar.MenuItem>
-                            {/snippet}
-                        </Collapsible.Root>
+                        <DevSidebarPageItem {page} />
                     {/each}
                 </Sidebar.Menu>
             </Sidebar.Group>
