@@ -7,9 +7,6 @@
     import * as Avatar from "$lib/components/ui/avatar/index.js";
     import { Separator } from "$lib/components/ui/separator/index.js";
 
-    import { useSidebar } from "$lib/components/ui/sidebar/index.js";
-    const sidebar = useSidebar();
-
     import CommandIcon from "@lucide/svelte/icons/command";
     import {
         BadgeCheckIcon,
@@ -271,8 +268,8 @@
                                 </DropdownMenu.Trigger>
                                 <DropdownMenu.Content
                                     class="w-48"
-                                    side={sidebar.isMobile ? "bottom" : "right"}
-                                    align={sidebar.isMobile ? "end" : "start"}
+                                    side="right"
+                                    align="start"
                                 >
                                     <DropdownMenu.Item>
                                         <FolderIcon
@@ -360,7 +357,7 @@
                         </DropdownMenu.Trigger>
                         <DropdownMenu.Content
                             class="w-(--bits-dropdown-menu-anchor-width) min-w-56 rounded-lg"
-                            side={sidebar.isMobile ? "bottom" : "right"}
+                            side="right"
                             align="end"
                             sideOffset={4}
                         >
