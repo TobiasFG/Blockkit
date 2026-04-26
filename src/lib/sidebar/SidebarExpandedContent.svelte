@@ -1,7 +1,7 @@
 <script lang="ts">
     import { page } from "$app/stores";
     import { ContextMenu } from "bits-ui";
-    import ThemeToggle from "$lib/components/ThemeToggle.svelte";
+    import ThemeToggle from "$lib/Theme/ThemeToggle.svelte";
     import { Button, buttonVariants } from "$lib/components/ui/button/index.js";
     import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
     import { Separator } from "$lib/components/ui/separator/index.js";

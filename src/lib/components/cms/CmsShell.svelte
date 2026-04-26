@@ -14,7 +14,7 @@
     import type { Snippet } from "svelte";
     import ToastProvider from "$lib/Toasts/ToastProvider.svelte";
     import { Button } from "$lib/components/ui/button/index.js";
-    import ThemeToggle from "$lib/components/ThemeToggle.svelte";
+    import ThemeToggle from "$lib/Theme/ThemeToggle.svelte";
     import { PanelLeft, PanelRight } from "$lib/icons";
     import Sidebar from "$lib/Sidebar/Sidebar.svelte";
 
