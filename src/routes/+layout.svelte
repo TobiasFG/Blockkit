@@ -10,7 +10,7 @@
     let { data, children }: LayoutProps = $props();
 
     $effect(() => {
-        if (browser && !data.isAuthRoute) {
+        if (browser && !data.isAuthRoute && !data.isDevRoute) {
             pagesStore.set(data.pages ?? []);
             blockFoldersStore.set(data.blockFolders ?? []);
             reusableBlocksStore.set(data.reusableBlocks ?? []);
@@ -20,7 +20,7 @@
 
 <ModeWatcher />
 
-{#if data.isAuthRoute}
+{#if data.isAuthRoute || data.isDevRoute}
     {@render children()}
 {:else}
     <CmsShell
