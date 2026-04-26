@@ -2,6 +2,6 @@ export {
 	buildReusableBlocksTree,
 	collectReusableBlockFolderAncestors,
 	type ReusableBlocksTreeNode
-} from './reusableBlocksTree';
-export { parseReusableBlockDragData, registerReusableBlockInsertHandler } from './reusableBlockInsertion';
-export { buildSidebarTree, collectAncestorPageIds, type SidebarTreeNode } from './sidebarTree';
+} from './ReusableBlocksTree';
+export { parseReusableBlockDragData, registerReusableBlockInsertHandler } from './ReusableBlockInsertion';
+export { buildSidebarTree, collectAncestorPageIds, type SidebarTreeNode } from './SidebarTree';

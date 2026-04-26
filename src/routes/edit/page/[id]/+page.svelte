@@ -33,7 +33,7 @@
     import { EMPTY_PAGE_SEO_META, type PageSeoMeta } from "$lib/pageSeoMeta";
     import type { Page, ReusableBlock } from "$lib/types";
     import type { PageProps } from "./$types";
-    import { registerReusableBlockInsertHandler } from "$lib/sidebar";
+    import { registerReusableBlockInsertHandler } from "$lib/Sidebar/Index";
 
     type LoadedSnapshot = {
         title: string;

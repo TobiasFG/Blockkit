@@ -16,7 +16,7 @@
     import { Button } from "$lib/components/ui/button/index.js";
     import ThemeToggle from "$lib/components/ThemeToggle.svelte";
     import { PanelLeft, PanelRight } from "$lib/icons";
-    import Sidebar from "$lib/sidebar/Sidebar.svelte";
+    import Sidebar from "$lib/Sidebar/Sidebar.svelte";
 
     let {
         pages,

@@ -19,7 +19,7 @@
     } from "$lib/types";
     import type { PageProps } from "./$types";
     import ReusableBlockLibraryTreeItem from "./ReusableBlockLibraryTreeItem.svelte";
-    import { buildReusableBlocksTree } from "$lib/sidebar";
+    import { buildReusableBlocksTree } from "$lib/Sidebar/Index";
 
     let { data }: PageProps = $props();
 

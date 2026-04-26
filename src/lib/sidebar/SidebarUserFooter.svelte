@@ -3,13 +3,13 @@
     import { goto } from "$app/navigation";
     import type { SubmitFunction } from "@sveltejs/kit";
     import type { User } from "@supabase/supabase-js";
-    import type { SidebarDesktopFocus } from "./types";
+    import type { SidebarDesktopFocus } from "./Types";
     import * as Avatar from "$lib/components/ui/avatar/index.js";
     import * as ButtonGroup from "$lib/components/ui/button-group/index.js";
     import { Button } from "$lib/components/ui/button/index.js";
     import { ChevronDown, EllipsisVertical, LogOut, Plus } from "$lib/icons";
     import { Settings2 } from "@lucide/svelte";
-    import P from "$lib/typography/P.svelte";
+    import P from "$lib/Typography/P.svelte";
 
     let {
         user,

@@ -8,7 +8,7 @@
     } from "$lib/icons";
     import { getPagePublishState } from "$lib/pageStatus";
     import SidebarPageTreeItem from "./SidebarPageTreeItem.svelte";
-    import type { SidebarTreeNode } from "./sidebarTree";
+    import type { SidebarTreeNode } from "./SidebarTree";
 
     type Props = {
         node: SidebarTreeNode;

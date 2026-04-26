@@ -23,13 +23,13 @@
     import ActionModal from "../components/cms/ActionModal.svelte";
     import SidebarCollapsedContent from "./SidebarCollapsedContent.svelte";
     import SidebarExpandedContent from "./SidebarExpandedContent.svelte";
-    import { requestReusableBlockInsert } from "./reusableBlockInsertion";
+    import { requestReusableBlockInsert } from "./ReusableBlockInsertion";
     import {
         buildReusableBlocksTree,
         collectReusableBlockFolderAncestors,
-    } from "./reusableBlocksTree";
-    import { buildSidebarTree, collectAncestorPageIds } from "./sidebarTree";
-    import type { SidebarDesktopFocus } from "./types";
+    } from "./ReusableBlocksTree";
+    import { buildSidebarTree, collectAncestorPageIds } from "./SidebarTree";
+    import type { SidebarDesktopFocus } from "./Types";
 
     let {
         pages,

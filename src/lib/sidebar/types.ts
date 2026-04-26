@@ -1,8 +1,8 @@
 import type { SubmitFunction } from '@sveltejs/kit';
 import type { User } from '@supabase/supabase-js';
 import type { BlockFolder, Page, ReferencingPage, ReusableBlock } from '$lib/types';
-import type { ReusableBlocksTreeNode } from './reusableBlocksTree';
-import type { SidebarTreeNode } from './sidebarTree';
+import type { ReusableBlocksTreeNode } from './ReusableBlocksTree';
+import type { SidebarTreeNode } from './SidebarTree';
 
 export type SidebarDesktopFocus =
 	| { kind: 'dashboard' }

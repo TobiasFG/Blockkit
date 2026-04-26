@@ -24,7 +24,7 @@
         type PageBlockNode,
     } from "$lib/pageContent";
     import type { ReusableBlock } from "$lib/types";
-    import { parseReusableBlockDragData } from "$lib/sidebar/reusableBlockInsertion";
+    import { parseReusableBlockDragData } from "$lib/Sidebar/ReusableBlockInsertion";
 
     type Props = {
         blocks: PageBlockNode[];

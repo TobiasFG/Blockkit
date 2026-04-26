@@ -1,6 +1,6 @@
 <script lang="ts">
     import Self from "./ReusableBlockLibraryTreeItem.svelte";
-    import type { ReusableBlocksTreeNode } from "$lib/sidebar";
+    import type { ReusableBlocksTreeNode } from "$lib/Sidebar/Index";
     import { getReusableBlockPublishState } from "$lib/reusableBlockStatus";
 
     type Props = {
