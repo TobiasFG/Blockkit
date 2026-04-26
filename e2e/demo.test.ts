@@ -6,7 +6,7 @@ test('auth flow gates cms, signs up, enters dashboard, signs out', async ({ page
 
 	await page.goto('/');
 	await expect(page).toHaveURL(/\/auth$/);
-	await expect(page.getByRole('heading', { name: 'Editorial CMS' })).toBeVisible();
+	await expect(page.getByRole('heading', { name: 'Blockkit' })).toBeVisible();
 
 	await page.getByRole('button', { name: 'Sign up' }).first().click();
 	await page.getByLabel('Email').fill(email);
@@ -19,5 +19,5 @@ test('auth flow gates cms, signs up, enters dashboard, signs out', async ({ page
 
 	await page.getByRole('button', { name: 'Log out' }).click();
 	await expect(page).toHaveURL(/\/auth$/);
-	await expect(page.getByRole('heading', { name: 'Editorial CMS' })).toBeVisible();
+	await expect(page.getByRole('heading', { name: 'Blockkit' })).toBeVisible();
 });

@@ -12,10 +12,16 @@
 	import { Label } from '$lib/components/ui/label/index.js';
 	import { buildEditPagePath, buildPagePathPreview, isRootPage } from '$lib/pagePath';
 	import { getPagePublishState, pageHasDraftChanges } from '$lib/pageStatus';
+	import { BlockQuote, H, Highlight, List, P } from '$lib/typography';
 	import type { Page } from '$lib/types';
 	import type { PageProps } from './$types';
 
 	type FeedbackState = { tone: 'success' | 'error'; text: string } | null;
+	type TypographySize = 'small' | 'medium' | 'large';
+	type ListPreview = {
+		label: string;
+		style: 'ordered' | 'unordered' | 'none';
+	};
 
 	let { data }: PageProps = $props();
 	const pages = $derived(browser ? ($pagesStore ?? (data.pages ?? [])) : (data.pages ?? []));
@@ -39,6 +45,12 @@
 	const captionClass = 'text-[10px] font-medium uppercase tracking-[0.24em] text-muted-foreground';
 	const panelClass =
 		'rounded-[1.75rem] border border-border/80 bg-card/92 p-5 shadow-[0_22px_60px_-42px_rgba(15,23,42,0.24)]';
+	const typographySizes: TypographySize[] = ['small', 'medium', 'large'];
+	const listPreviews: ListPreview[] = [
+		{ label: 'Unordered', style: 'unordered' },
+		{ label: 'Ordered', style: 'ordered' },
+		{ label: 'None', style: 'none' }
+	];
 
 	function sortDashboardPages(items: Page[]) {
 		return [...items].sort((a, b) => {
@@ -340,6 +352,84 @@
 					Open Content
 				</Button>
 			</aside>
+		</section>
+
+		<section class="space-y-8 border-t border-border pt-8">
+			<div class="space-y-2">
+				<p class={captionClass}>Typography preview</p>
+				<h2 class="text-[1.7rem] font-semibold tracking-[-0.035em] text-foreground">Reusable component variations</h2>
+				<p class="max-w-[62ch] text-base leading-7 text-muted-foreground">
+					Temporary review surface for typography primitives.
+				</p>
+			</div>
+
+			<div class="grid gap-6 xl:grid-cols-2">
+				<section class={panelClass}>
+					<p class={captionClass}>Headings</p>
+					<div class="mt-4 space-y-4">
+						{#each typographySizes as size}
+							<div>
+								<H {size}>Heading {size}</H>
+								<H {size} muted>Muted heading {size}</H>
+							</div>
+						{/each}
+					</div>
+				</section>
+
+				<section class={panelClass}>
+					<p class={captionClass}>Paragraphs</p>
+					<div class="mt-4 space-y-4">
+						{#each typographySizes as size}
+							<div>
+								<P {size}>Paragraph {size}. Reusable typography keeps copy styling consistent.</P>
+								<P {size} muted>Muted paragraph {size}. Secondary copy uses muted foreground.</P>
+							</div>
+						{/each}
+					</div>
+				</section>
+
+				<section class={panelClass}>
+					<p class={captionClass}>Blockquote</p>
+					<div class="mt-4 space-y-4">
+						{#each typographySizes as size}
+							<BlockQuote {size}>Blockquote {size} with primary border.</BlockQuote>
+							<BlockQuote {size} muted>Muted blockquote {size} with primary border.</BlockQuote>
+						{/each}
+					</div>
+				</section>
+
+				<section class={panelClass}>
+					<p class={captionClass}>Highlight</p>
+					<div class="mt-4 flex flex-wrap items-center gap-3">
+						{#each typographySizes as size}
+							<Highlight {size}>Highlight {size}</Highlight>
+							<Highlight {size} muted>Muted highlight {size}</Highlight>
+						{/each}
+					</div>
+				</section>
+
+				<section class={`${panelClass} xl:col-span-2`}>
+					<p class={captionClass}>Lists</p>
+					<div class="mt-4 grid gap-6 lg:grid-cols-3">
+						{#each listPreviews as preview}
+							<div class="rounded-2xl border border-border p-4">
+								<p class={captionClass}>{preview.label}</p>
+								{#each typographySizes as size}
+									<List size={size} style={preview.style}>
+										<li>{preview.label} list {size}</li>
+										<li>Second item</li>
+										<li>Third item</li>
+									</List>
+									<List size={size} muted style={preview.style}>
+										<li>Muted {preview.label.toLowerCase()} list {size}</li>
+										<li>Second muted item</li>
+									</List>
+								{/each}
+							</div>
+						{/each}
+					</div>
+				</section>
+			</div>
 		</section>
 	</div>
 </main>

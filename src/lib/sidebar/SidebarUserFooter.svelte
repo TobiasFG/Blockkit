@@ -9,6 +9,7 @@
     import { Button } from "$lib/components/ui/button/index.js";
     import { ChevronDown, EllipsisVertical, LogOut, Plus } from "$lib/icons";
     import { Settings2 } from "@lucide/svelte";
+    import P from "$lib/typography/P.svelte";
 
     let {
         user,
@@ -33,11 +34,11 @@
 
 <div class="border-t py-2 px-4 flex">
     {#if variant === "collapsed"}
-        <Avatar.Root>
-            <Avatar.Image src="" alt="@shadcn" />
-            <Avatar.Fallback>{initials}</Avatar.Fallback>
-        </Avatar.Root>
-        <ButtonGroup.Root>
+        <div class="flex flex-col justify-center items-center gap-1">
+            <Avatar.Root>
+                <Avatar.Image src="" alt="@shadcn" />
+                <Avatar.Fallback>{initials}</Avatar.Fallback>
+            </Avatar.Root>
             <Button variant="ghost" size="icon" aria-label="Submit">
                 <Settings2 />
             </Button>
@@ -50,30 +51,34 @@
                     <LogOut />
                 </Button>
             </form>
-        </ButtonGroup.Root>
-    {:else}
-        <Avatar.Root>
-            <Avatar.Image src="" alt="@shadcn" />
-            <Avatar.Fallback>{initials}</Avatar.Fallback>
-        </Avatar.Root>
-        <div class="flex flex-col">
-            <p>{displayName}</p>
-            <p>{user.email}</p>
         </div>
-        <ButtonGroup.Root>
-            <Button variant="ghost" size="icon" aria-label="Submit">
-                <Settings2 />
-            </Button>
-            <form
-                method="POST"
-                action="/auth?/signOut"
-                use:enhance={logoutEnhanceSubmit}
-            >
-                <Button type="submit" variant="ghost">
-                    <LogOut />
-                    Logout
+    {:else}
+        <div class="flex justify-between w-full">
+            <div class="flex gap-2">
+                <Avatar.Root>
+                    <Avatar.Image src="" alt="@shadcn" />
+                    <Avatar.Fallback>{initials}</Avatar.Fallback>
+                </Avatar.Root>
+                <div class="flex flex-col justify-center">
+                    <P size="small">{displayName}</P>
+                    <P size="small">{user.email}</P>
+                </div>
+            </div>
+            <ButtonGroup.Root>
+                <Button variant="ghost" size="icon" aria-label="Submit">
+                    <Settings2 />
                 </Button>
-            </form>
-        </ButtonGroup.Root>
+                <form
+                    method="POST"
+                    action="/auth?/signOut"
+                    use:enhance={logoutEnhanceSubmit}
+                >
+                    <Button type="submit" variant="ghost">
+                        <LogOut />
+                        Logout
+                    </Button>
+                </form>
+            </ButtonGroup.Root>
+        </div>
     {/if}
 </div>
