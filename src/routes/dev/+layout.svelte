@@ -5,9 +5,6 @@
     import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.ts";
     import * as Sidebar from "$lib/components/ui/sidebar/index.ts";
     import { Separator } from "$lib/components/ui/separator/index.ts";
-    import DevSidebarPageItem, {
-        type DevSidebarPage,
-    } from "./DevSidebarPageItem.svelte";
 
     import CommandIcon from "@lucide/svelte/icons/command";
     import {
@@ -19,6 +16,9 @@
         SparklesIcon,
     } from "@lucide/svelte";
     import ThemeToggle from "$lib/Theme/ThemeToggle.svelte";
+    import DevSidebarPageItem, {
+        type DevSidebarPage,
+    } from "./DevSidebarPageItem.svelte";
 
     let { children }: { children: Snippet } = $props();
 
@@ -33,6 +33,37 @@
                 { title: "Archive", url: "#" },
             ],
             children: [
+                {
+                    title: "About",
+                    url: "#",
+                    items: [
+                        { title: "Edit page", url: "#" },
+                        { title: "Duplicate", url: "#" },
+                        { title: "Archive", url: "#" },
+                    ],
+                    children: [
+                        {
+                            title: "Team",
+                            url: "#",
+                            items: [
+                                { title: "Edit page", url: "#" },
+                                { title: "Duplicate", url: "#" },
+                                { title: "Archive", url: "#" },
+                            ],
+                            children: [
+                                {
+                                    title: "Leadership",
+                                    url: "#",
+                                    items: [
+                                        { title: "Edit page", url: "#" },
+                                        { title: "Duplicate", url: "#" },
+                                        { title: "Archive", url: "#" },
+                                    ],
+                                },
+                            ],
+                        },
+                    ],
+                },
                 {
                     title: "About",
                     url: "#",

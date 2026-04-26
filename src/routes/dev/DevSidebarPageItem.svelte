@@ -16,7 +16,12 @@
     import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.ts";
     import { Badge } from "$lib/components/ui/badge/index.ts";
     import * as Sidebar from "$lib/components/ui/sidebar/index.ts";
-    import { ChevronRightIcon, EllipsisIcon } from "@lucide/svelte";
+    import {
+        ChevronRightIcon,
+        EllipsisIcon,
+        FileTextIcon,
+        FolderIcon,
+    } from "@lucide/svelte";
     import Self from "./DevSidebarPageItem.svelte";
 
     let {
@@ -36,24 +41,13 @@
     );
     const childPages = $derived(page.children ?? []);
     const rowPadding = $derived(
-        `padding-left: calc(0.5rem + ${depth} * 1.25rem); padding-right: 6.75rem;`,
-    );
-    const railOffset = $derived(
-        `left: calc(0.875rem + ${depth - 1} * 1.25rem);`,
+        `padding-left: calc(0.5rem + ${depth} * 0.875rem); padding-right: 6.75rem;`,
     );
 </script>
 
 <Collapsible.Root open={page.isActive} class="group/collapsible">
     {#snippet child({ props })}
         <Sidebar.MenuItem {...props}>
-            {#if depth > 0}
-                <span
-                    aria-hidden="true"
-                    class="absolute top-0 bottom-0 w-px bg-sidebar-border"
-                    style={railOffset}
-                ></span>
-            {/if}
-
             <Sidebar.MenuButton
                 class="w-full"
                 style={rowPadding}
@@ -61,6 +55,11 @@
             >
                 {#snippet child({ props })}
                     <a href={page.url} {...props}>
+                        {#if childPages.length}
+                            <FolderIcon class="size-4 shrink-0" />
+                        {:else}
+                            <FileTextIcon class="size-4 shrink-0" />
+                        {/if}
                         <span>{page.title}</span>
                     </a>
                 {/snippet}
