@@ -86,7 +86,9 @@
                         >
                             <CommandIcon class="size-4" />
                         </span>
-                        <span class="grid flex-1 text-start text-sm leading-tight">
+                        <span
+                            class="grid flex-1 text-start text-sm leading-tight"
+                        >
                             <span class="truncate font-medium">Acme Inc</span>
                             <span class="truncate text-xs">Enterprise</span>
                         </span>
@@ -95,16 +97,6 @@
             </Sidebar.MenuButton>
         </Sidebar.MenuItem>
     </Sidebar.Menu>
-
-    <div class="flex items-center gap-1 px-2">
-        <Button variant="ghost" size="icon-sm" aria-label="Search">
-            <Search class="size-4" />
-        </Button>
-        <Button variant="ghost" size="icon-sm" aria-label="Notifications">
-            <Bell class="size-4" />
-        </Button>
-        <ThemeToggle />
-    </div>
 </Sidebar.Header>
 
 <Sidebar.Content>
@@ -286,7 +278,9 @@
                                     {initials}
                                 </Avatar.Fallback>
                             </Avatar.Root>
-                            <span class="grid flex-1 text-start text-sm leading-tight">
+                            <span
+                                class="grid flex-1 text-start text-sm leading-tight"
+                            >
                                 <span class="truncate font-medium">
                                     {displayName}
                                 </span>
@@ -305,14 +299,18 @@
                     sideOffset={4}
                 >
                     <DropdownMenu.Label class="p-0 font-normal">
-                        <div class="flex items-center gap-2 px-1 py-1.5 text-start text-sm">
+                        <div
+                            class="flex items-center gap-2 px-1 py-1.5 text-start text-sm"
+                        >
                             <Avatar.Root class="size-8 rounded-lg">
                                 <Avatar.Image src="" alt="" />
                                 <Avatar.Fallback class="rounded-lg">
                                     {initials}
                                 </Avatar.Fallback>
                             </Avatar.Root>
-                            <span class="grid flex-1 text-start text-sm leading-tight">
+                            <span
+                                class="grid flex-1 text-start text-sm leading-tight"
+                            >
                                 <span class="truncate font-medium">
                                     {displayName}
                                 </span>
