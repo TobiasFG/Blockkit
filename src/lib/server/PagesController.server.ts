@@ -255,6 +255,14 @@ export const createPage = async ({
 };
 
 export const softDeletePageById = async (id: string): Promise<void> => {
+	const page = await getPageById(id);
+	if (!page) {
+		throw new Error('Page not found');
+	}
+	if (page.parent_page_id === null) {
+		throw new Error('Root page cannot be moved to trash');
+	}
+
 	await prisma.page.updateMany({
 		where: { id, deleted_at: null },
 		data: { deleted_at: new Date() }

@@ -35,6 +35,7 @@ export type SidebarExpandedContentProps = {
 	onClose: () => void;
 	onToggle: (id: string) => void;
 	onCreateFolder: (parentId: string | null, parentName: string) => void;
+	onDeletePage: (id: string, title: string, hasChildren: boolean) => void;
 	onDeleteFolder: (id: string, name: string) => void;
 	onDeleteBlock: (id: string, name: string) => void;
 	onInsertBlock: (id: string) => void;

@@ -44,6 +44,7 @@
         onClose,
         onToggle,
         onCreateFolder,
+        onDeletePage,
         onDeleteFolder,
         onDeleteBlock,
         onInsertBlock,
@@ -154,6 +155,7 @@
                         collapsed={false}
                         {onToggle}
                         {onClose}
+                        {onDeletePage}
                         {editHref}
                         {displayPath}
                     />

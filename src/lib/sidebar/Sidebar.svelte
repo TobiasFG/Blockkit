@@ -80,6 +80,12 @@
           }
         | { kind: "deleteFolder"; id: string; name: string }
         | {
+              kind: "deletePage";
+              id: string;
+              title: string;
+              hasChildren: boolean;
+          }
+        | {
               kind: "deleteBlock";
               id: string;
               name: string;
@@ -92,6 +98,7 @@
         createBlockFolder: "Folder created.",
         deleteBlockFolder: "Folder deleted.",
         deleteReusableBlock: "Content moved to trash.",
+        deletePage: "Page moved to trash.",
     };
 
     const editHref = (pageId: string) => buildEditPagePath(pageId);
@@ -131,10 +138,12 @@
     };
 
     const applySidebarState = (result: {
+        pages?: Page[];
         blockFolders?: BlockFolder[];
         reusableBlocks?: ReusableBlock[];
         reusableBlockPageReferences?: Record<string, ReferencingPage[]>;
     }) => {
+        if (result.pages) pagesStore.set(result.pages);
         if (result.blockFolders) blockFoldersStore.set(result.blockFolders);
         if (result.reusableBlocks)
             reusableBlocksStore.set(result.reusableBlocks);
@@ -157,6 +166,7 @@
 
             const result = (await response.json()) as {
                 error?: string;
+                pages?: Page[];
                 blockFolders?: BlockFolder[];
                 reusableBlocks?: ReusableBlock[];
                 reusableBlockPageReferences?: Record<string, ReferencingPage[]>;
@@ -182,6 +192,14 @@
             ) {
                 await goto("/");
             }
+
+            if (
+                payload.intent === "deletePage" &&
+                typeof payload.id === "string" &&
+                $page.url.pathname === `/edit/page/${payload.id}`
+            ) {
+                await goto("/trash");
+            }
         } catch (error) {
             actionNotice = {
                 tone: "error",
@@ -204,6 +222,14 @@
 
     const openDeleteFolderModal = (id: string, name: string) => {
         modalState = { kind: "deleteFolder", id, name };
+    };
+
+    const openDeletePageModal = (
+        id: string,
+        title: string,
+        hasChildren: boolean,
+    ) => {
+        modalState = { kind: "deletePage", id, title, hasChildren };
     };
 
     const openDeleteBlockModal = (id: string, name: string) => {
@@ -251,6 +277,7 @@
         onClose: closeSidebar,
         onToggle: toggleNode,
         onCreateFolder: openCreateFolderModal,
+        onDeletePage: openDeletePageModal,
         onDeleteFolder: openDeleteFolderModal,
         onDeleteBlock: openDeleteBlockModal,
         onInsertBlock: insertBlockIntoCurrentPage,
@@ -372,6 +399,8 @@
         ? "Create subfolder"
         : modalState?.kind === "deleteFolder"
           ? "Delete folder"
+          : modalState?.kind === "deletePage"
+            ? "Move page to trash"
           : modalState?.kind === "deleteBlock"
             ? "Delete content"
             : ""}
@@ -379,6 +408,10 @@
         ? `Add a folder${modalState.parentId ? ` inside ${modalState.parentName}` : ""}.`
         : modalState?.kind === "deleteFolder"
           ? `Delete "${modalState.name}" only if it has no child folders and no content items.`
+          : modalState?.kind === "deletePage"
+            ? modalState.hasChildren
+                ? `"${modalState.title}" has child pages. Move or delete child pages before moving this page to trash.`
+                : `Move "${modalState.title}" to trash. It will disappear from normal page lists until restored.`
           : modalState?.kind === "deleteBlock"
             ? modalState.references.length > 0
                 ? `Move "${modalState.name}" to trash and remove it from published and draft pages that use it.`
@@ -449,6 +482,37 @@
             >
                 Delete folder
             </Button>
+        </div>
+    {:else if modalState?.kind === "deletePage"}
+        <div class="space-y-4">
+            {#if modalState.hasChildren}
+                <div
+                    class="rounded-2xl border border-border bg-muted/40 px-4 py-3 text-sm text-muted-foreground"
+                >
+                    Pages with child pages cannot be moved to trash.
+                </div>
+            {/if}
+
+            <div class="flex items-center justify-end gap-2">
+                <Button type="button" variant="outline" onclick={closeModal}
+                    >Cancel</Button
+                >
+                <Button
+                    type="button"
+                    variant="destructive"
+                    disabled={actionPending || modalState.hasChildren}
+                    onclick={() => {
+                        if (modalState?.kind !== "deletePage") return;
+                        void runSidebarAction({
+                            intent: "deletePage",
+                            id: modalState.id,
+                        });
+                        closeModal();
+                    }}
+                >
+                    Move to trash
+                </Button>
+            </div>
         </div>
     {:else if modalState?.kind === "deleteBlock"}
         <div class="space-y-4">

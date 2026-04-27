@@ -19,6 +19,7 @@
         collapsed?: boolean;
         onToggle: (pageId: string) => void;
         onClose: () => void;
+        onDeletePage: (id: string, title: string, hasChildren: boolean) => void;
         editHref: (pageId: string) => string;
         displayPath: (path: string) => string;
     };
@@ -31,6 +32,7 @@
         collapsed = false,
         onToggle,
         onClose,
+        onDeletePage,
         editHref,
         displayPath,
     }: Props = $props();
@@ -135,6 +137,19 @@
                             >
                         {/snippet}
                     </DropdownMenu.Item>
+                    {#if node.page.parent_page_id !== null}
+                        <DropdownMenu.Separator />
+                        <DropdownMenu.Item
+                            onclick={() =>
+                                onDeletePage(
+                                    node.page.id,
+                                    node.page.title,
+                                    hasChildren,
+                                )}
+                        >
+                            Move to trash
+                        </DropdownMenu.Item>
+                    {/if}
                 </DropdownMenu.Content>
             </DropdownMenu.Root>
 
@@ -164,6 +179,7 @@
                     {collapsed}
                     {onToggle}
                     {onClose}
+                    {onDeletePage}
                     {editHref}
                     {displayPath}
                 />

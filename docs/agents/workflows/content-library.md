@@ -14,6 +14,7 @@
 
 ## Editor Contract
 - `/content/[id]` follows same draft/publish action semantics as page editor unless task explicitly changes parity.
+- Opening trashed content id redirects to `/trash`.
 - Idle no-op actions stay hidden.
 - Use shared CMS toasts for transient feedback.
 - Nested `blocks` fields use shared block editor patterns.
@@ -24,6 +25,7 @@
 - Folder delete allowed only when no child folders and no content items.
 - Content delete means move to trash.
 - Delete confirmation should show affected pages when content is in use.
+- Moving content to trash removes published and draft page references immediately.
 
 ## Page Integration
 - Pages reference stable content ids at top level.

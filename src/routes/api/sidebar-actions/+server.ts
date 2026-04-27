@@ -1,6 +1,12 @@
 import { json } from '@sveltejs/kit';
 import { requireAuthenticatedUser } from '$lib/server/auth';
-import { getReusableBlockPageReferences, removeReusableBlockReferencesFromPages } from '$lib/server/PagesController.server';
+import {
+	ensurePageCanBeDeleted,
+	getPages,
+	getReusableBlockPageReferences,
+	removeReusableBlockReferencesFromPages,
+	softDeletePageById
+} from '$lib/server/PagesController.server';
 import {
 	createBlockFolder,
 	deleteBlockFolder,
@@ -22,9 +28,14 @@ type SidebarActionPayload =
 	| {
 			intent: 'deleteReusableBlock';
 			id: string;
+	  }
+	| {
+			intent: 'deletePage';
+			id: string;
 	  };
 
 const getSidebarState = async () => ({
+	pages: await getPages(),
 	blockFolders: await getBlockFolders(),
 	reusableBlocks: await getReusableBlocks(),
 	reusableBlockPageReferences: await getReusableBlockPageReferences()
@@ -73,6 +84,18 @@ export const POST = async ({ request, locals }) => {
 
 					await removeReusableBlockReferencesFromPages(id);
 					await softDeleteReusableBlock(id);
+					return json(await getSidebarState());
+				}
+
+				case 'deletePage': {
+					const id = String(payload.id ?? '').trim();
+
+					if (!id) {
+						return json({ error: 'Page id is required' }, { status: 400 });
+					}
+
+					await ensurePageCanBeDeleted(id);
+					await softDeletePageById(id);
 					return json(await getSidebarState());
 				}
 			}

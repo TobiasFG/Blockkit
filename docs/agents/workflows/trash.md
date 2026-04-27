@@ -10,6 +10,7 @@
 - Pages with child pages cannot be trashed in current slice.
 - Trashed page/content should disappear from normal editor/library lists.
 - Editing routes for trashed page/content should redirect to `/trash`.
+- Sidebar page/content delete actions should refresh active lists after moving rows to trash.
 
 ## Restore Rules
 - Restore page requires active parent page selection.

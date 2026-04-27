@@ -7,6 +7,7 @@
 ## Route
 - Stable editor route: `/edit/page/[id]`.
 - Do not route editor by mutable slug/path.
+- Opening trashed page id redirects to `/trash`.
 
 ## Layout Invariants
 - Main column owns editing work.
@@ -26,11 +27,13 @@
   - always `/`
   - no parent edit
   - no URL-name edit
+  - cannot be moved to trash
 - Non-root page:
   - parent required
 - `url_name` optional. Empty -> derive from title.
 - Normalized segment may contain lowercase letters, numbers, dashes, underscores, periods, tildes.
 - Identity changes on page with children should warn about descendant URL changes on publish.
+- Pages with children cannot be moved to trash in current slice.
 
 ## Content Rules
 - Create/edit reusable content in `/content`, not inline inside page editor.
