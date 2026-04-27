@@ -4,79 +4,79 @@
 // Get a free hosted Postgres database in seconds: `npx create-db`
 
 generator client {
-  provider = "prisma-client"
-  output   = "../generated/prisma"
+    provider = "prisma-client"
+    output   = "../generated/prisma"
 }
 
 datasource db {
-  provider = "postgresql"
+    provider = "postgresql"
 }
 
 model Page {
-  id                   String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  created_at           DateTime  @default(now()) @db.Timestamptz(6)
-  updated_at           DateTime  @default(now()) @db.Timestamptz(6)
-  draft_version_id     String?   @db.Uuid
-  published_version_id String?   @db.Uuid
-  deleted_at           DateTime? @db.Timestamptz(6)
+    id                   String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+    created_at           DateTime  @default(now()) @db.Timestamptz(6)
+    updated_at           DateTime  @default(now()) @db.Timestamptz(6)
+    draft_version_id     String?   @db.Uuid
+    published_version_id String?   @db.Uuid
+    deleted_at           DateTime? @db.Timestamptz(6)
 
-  @@map("pages")
+    @@map("pages")
 }
 
 model PageVersion {
-  id             String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  page_id        String    @db.Uuid
-  status         String
-  title          String
-  parent_page_id String?   @db.Uuid
-  url_name       String?
-  path_segment   String?
-  content        Json
-  meta           Json?
-  parent_id      String?   @db.Uuid
-  revision       Int?
-  created_at     DateTime  @default(now()) @db.Timestamptz(6)
-  updated_at     DateTime  @default(now()) @db.Timestamptz(6)
-  published_at   DateTime? @db.Timestamptz(6)
+    id             String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+    page_id        String    @db.Uuid
+    status         String
+    title          String
+    parent_page_id String?   @db.Uuid
+    url_name       String?
+    path_segment   String?
+    content        Json
+    meta           Json?
+    parent_id      String?   @db.Uuid
+    revision       Int?
+    created_at     DateTime  @default(now()) @db.Timestamptz(6)
+    updated_at     DateTime  @default(now()) @db.Timestamptz(6)
+    published_at   DateTime? @db.Timestamptz(6)
 
-  @@map("page_versions")
+    @@map("page_versions")
 }
 
 model BlockFolder {
-  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  name       String
-  parent_id  String?  @db.Uuid
-  sort_order Int      @default(0)
-  created_at DateTime @default(now()) @db.Timestamptz(6)
-  updated_at DateTime @default(now()) @db.Timestamptz(6)
+    id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+    name       String
+    parent_id  String?  @db.Uuid
+    sort_order Int      @default(0)
+    created_at DateTime @default(now()) @db.Timestamptz(6)
+    updated_at DateTime @default(now()) @db.Timestamptz(6)
 
-  @@map("block_folders")
+    @@map("block_folders")
 }
 
 model ReusableBlock {
-  id                   String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  name                 String
-  folder_id            String?   @db.Uuid
-  block_type           String
-  content              Json
-  draft_version_id     String?   @db.Uuid
-  published_version_id String?   @db.Uuid
-  created_at           DateTime  @default(now()) @db.Timestamptz(6)
-  updated_at           DateTime  @default(now()) @db.Timestamptz(6)
-  deleted_at           DateTime? @db.Timestamptz(6)
+    id                   String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+    name                 String
+    folder_id            String?   @db.Uuid
+    block_type           String
+    content              Json
+    draft_version_id     String?   @db.Uuid
+    published_version_id String?   @db.Uuid
+    created_at           DateTime  @default(now()) @db.Timestamptz(6)
+    updated_at           DateTime  @default(now()) @db.Timestamptz(6)
+    deleted_at           DateTime? @db.Timestamptz(6)
 
-  @@map("reusable_blocks")
+    @@map("reusable_blocks")
 }
 
 model ReusableBlockVersion {
-  id                String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  reusable_block_id String    @db.Uuid
-  status            String
-  content           Json
-  parent_id         String?   @db.Uuid
-  revision          Int
-  created_at        DateTime  @default(now()) @db.Timestamptz(6)
-  published_at      DateTime? @db.Timestamptz(6)
+    id                String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+    reusable_block_id String    @db.Uuid
+    status            String
+    content           Json
+    parent_id         String?   @db.Uuid
+    revision          Int
+    created_at        DateTime  @default(now()) @db.Timestamptz(6)
+    published_at      DateTime? @db.Timestamptz(6)
 
-  @@map("reusable_block_versions")
+    @@map("reusable_block_versions")
 }
