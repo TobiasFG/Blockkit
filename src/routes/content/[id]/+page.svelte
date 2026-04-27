@@ -11,7 +11,10 @@
         blockFoldersStore,
         reusableBlocksStore,
     } from "$lib/client/reusableBlocksStore";
-    import { Badge } from "$lib/components/ui/badge/index.js";
+    import {
+        Badge,
+        type BadgeVariant,
+    } from "$lib/components/ui/badge/index.js";
     import { Button } from "$lib/components/ui/button/index.js";
     import { Input } from "$lib/components/ui/input/index.js";
     import { Label } from "$lib/components/ui/label/index.js";
@@ -80,23 +83,23 @@
     ) => {
         switch (state) {
             case "draft-changes":
-                return "Saved draft";
+                return "Draft changes";
             case "published":
                 return "Published";
             default:
                 return "Unpublished";
         }
     };
-    const getPublishStateClass = (
+    const getPublishStateVariant = (
         state: "unpublished" | "published" | "draft-changes",
-    ) => {
+    ): BadgeVariant => {
         switch (state) {
             case "draft-changes":
-                return "bg-sky-100 text-sky-800";
+                return "secondary";
             case "published":
-                return "bg-emerald-100 text-emerald-800";
+                return "default";
             default:
-                return "bg-amber-100 text-amber-800";
+                return "outline";
         }
     };
     const getDraftStateLabel = () => {
@@ -159,13 +162,18 @@
                 return "Save draft";
         }
     });
-    const primaryActionClass = $derived(
-        primaryActionState === "publish"
-            ? "border border-emerald-300/70 bg-emerald-50 text-emerald-900 hover:bg-emerald-100 focus-visible:ring-emerald-200/70"
-            : primaryActionState === "validation-error"
-              ? "bg-red-900 text-red-50 hover:bg-red-900 focus-visible:ring-red-200/70"
-              : "bg-stone-950 text-stone-50 hover:bg-stone-800 focus-visible:ring-stone-300/70",
-    );
+    const primaryActionHint = $derived.by(() => {
+        if (primaryActionState === "validation-error") {
+            return "Fix highlighted content fields before saving or publishing.";
+        }
+        if (hasUnsavedChanges) {
+            return "Save draft before publishing current content changes.";
+        }
+        if (reusableBlockHasDraftChanges(block)) {
+            return "Publish uses current saved draft content and naming.";
+        }
+        return "Draft and live content are aligned.";
+    });
     const showPrimaryAction = $derived(primaryActionState !== "all-saved");
     const showRevertAction = $derived(hasUnsavedChanges);
     const actionMotion = $derived({
@@ -647,26 +655,36 @@
         <aside class="space-y-4">
             <div class="space-y-4 xl:sticky xl:top-6">
                 <section
-                    class="rounded-[1.75rem] border border-border/80 bg-card/92 p-5 shadow-[0_22px_60px_-42px_rgba(15,23,42,0.2)]"
+                    class="rounded-2xl border border-border/80 bg-card p-5 shadow-[0_22px_60px_-42px_rgba(15,23,42,0.2)]"
                 >
-                    <div class="space-y-2">
-                        <p class={captionClass}>Draft state</p>
-                        <h2
-                            class="text-[1.25rem] font-semibold tracking-[-0.03em] text-foreground"
-                        >
-                            {getDraftStateLabel()}
-                        </h2>
-                        <p class="text-sm leading-6 text-muted-foreground">
-                            {#if hasUnsavedChanges}
-                                Current form changes live only in browser until
-                                you save draft.
-                            {:else if reusableBlockHasDraftChanges(block)}
-                                Draft differs from published content.
-                            {:else}
-                                Draft matches published content.
-                            {/if}
-                        </p>
+                    <div class="flex items-start justify-between gap-3">
+                        <div class="min-w-0 space-y-2">
+                            <p class={captionClass}>Content status</p>
+                            <h2
+                                class="text-[1.25rem] font-semibold tracking-[-0.03em] text-foreground"
+                            >
+                                {getDraftStateLabel()}
+                            </h2>
+                        </div>
+                        <div class="flex shrink-0 flex-col items-end gap-1">
+                            <Badge
+                                variant={getPublishStateVariant(publishState)}
+                                class="mt-0.5 uppercase tracking-[0.14em]"
+                            >
+                                {getPublishStateLabel(publishState)}
+                            </Badge>
+                            <Badge
+                                variant="secondary"
+                                class="text-[10px] font-semibold uppercase tracking-[0.16em]"
+                            >
+                                {block.block_type}
+                            </Badge>
+                        </div>
                     </div>
+
+                    <p class="mt-3 text-sm leading-6 text-muted-foreground">
+                        {primaryActionHint}
+                    </p>
 
                     <div class="mt-4 flex flex-col gap-2">
                         {#if showPrimaryAction}
@@ -699,33 +717,9 @@
                             </Button>
                         {/if}
                     </div>
-                </section>
-
-                <section
-                    class="rounded-[1.75rem] border border-border/80 bg-card/92 p-5 shadow-[0_22px_60px_-42px_rgba(15,23,42,0.2)]"
-                >
-                    <div class="space-y-2">
-                        <p class={captionClass}>Publish state</p>
-                        <div class="flex items-center gap-2">
-                            <Badge
-                                class={`rounded-full px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.16em] ${getPublishStateClass(publishState)}`}
-                            >
-                                {getPublishStateLabel(publishState)}
-                            </Badge>
-                            <Badge
-                                variant="secondary"
-                                class="text-[10px] font-semibold uppercase tracking-[0.16em]"
-                            >
-                                {block.block_type}
-                            </Badge>
-                        </div>
-                        <p class="text-sm leading-6 text-muted-foreground">
-                            Publish uses current saved draft content and naming.
-                        </p>
-                    </div>
 
                     <div
-                        class="mt-4 space-y-3 border-t border-border pt-4 text-sm text-foreground"
+                        class="mt-5 space-y-3 border-t border-border pt-4 text-sm text-foreground"
                     >
                         <div class="flex items-center justify-between gap-3">
                             <span class="text-muted-foreground">Folder</span>

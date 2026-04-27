@@ -1,8 +1,8 @@
 <script lang="ts">
     import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
-    import { Badge } from "$lib/components/ui/badge/index.js";
     import * as Sidebar from "$lib/components/ui/sidebar/index.js";
     import { EllipsisVertical, FileText, Quote } from "$lib/icons";
+    import { getReusableBlockPublishState } from "$lib/reusableBlockStatus";
     import type { ReusableBlock } from "$lib/types";
     import { setReusableBlockDragData } from "./ReusableBlockInsertion";
 
@@ -34,8 +34,23 @@
     });
     const rowPadding = $derived(
         depth === null
-            ? "padding-right: 6.75rem;"
-            : `padding-left: calc(0.5rem + ${depth} * 0.875rem); padding-right: 6.75rem;`,
+            ? "padding-right: 4.25rem;"
+            : `padding-left: calc(0.5rem + ${depth} * 0.875rem); padding-right: 4.25rem;`,
+    );
+    const publishState = $derived(getReusableBlockPublishState(block));
+    const statusLabel = $derived(
+        publishState === "draft-changes"
+            ? "Draft changes"
+            : publishState === "published"
+              ? "Published"
+              : "Unpublished",
+    );
+    const statusDotClass = $derived(
+        publishState === "draft-changes"
+            ? "bg-amber-500"
+            : publishState === "published"
+              ? "bg-emerald-500"
+              : "bg-slate-400",
     );
 </script>
 
@@ -88,11 +103,8 @@
         </DropdownMenu.Content>
     </DropdownMenu.Root>
 
-    <Badge
-        variant="secondary"
-        class="absolute right-1 top-1.5 h-5 min-w-5 rounded-full px-1 text-[10px] font-mono tabular-nums"
-        title={block.block_type}
-    >
-        {block.block_type.slice(0, 2)}
-    </Badge>
+    <span
+        class={`absolute right-2.5 top-3 size-2.5 rounded-full ${statusDotClass}`}
+        title={`${statusLabel} (${block.block_type})`}
+    ></span>
 </Sidebar.MenuItem>
