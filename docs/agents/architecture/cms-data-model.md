@@ -35,7 +35,13 @@
 ## Content Library
 - Content items are reusable block instances backed by code-defined block registry.
 - Stable content record keeps stable id.
+- Draft/published identity lives in `reusable_block_versions`.
 - Draft and published versions are separate rows.
+- Draft/publish-together fields:
+  - `name`
+  - `folder_id`
+  - `block_type`
+  - `content`
 - Newly created content starts unpublished.
 - Publish creates new published version, then fresh clean draft clone.
 - Page references resolve to published content only.

@@ -55,10 +55,6 @@ model BlockFolder {
 
 model ReusableBlock {
     id                   String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-    name                 String
-    folder_id            String?   @db.Uuid
-    block_type           String
-    content              Json
     draft_version_id     String?   @db.Uuid
     published_version_id String?   @db.Uuid
     created_at           DateTime  @default(now()) @db.Timestamptz(6)
@@ -72,6 +68,9 @@ model ReusableBlockVersion {
     id                String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
     reusable_block_id String    @db.Uuid
     status            String
+    name              String
+    folder_id         String?   @db.Uuid
+    block_type        String
     content           Json
     parent_id         String?   @db.Uuid
     revision          Int

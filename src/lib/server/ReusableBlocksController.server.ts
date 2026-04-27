@@ -11,6 +11,9 @@ type ReusableBlockVersionRow = {
 	id: string;
 	reusable_block_id: string;
 	status: string;
+	name: string;
+	folder_id: string | null;
+	block_type: string;
 	content: unknown;
 	parent_id: string | null;
 	revision: number;
@@ -48,30 +51,48 @@ const parseReusableBlockContent = (blockId: string, blockType: string, rawConten
 	return content;
 };
 
+const reusableBlockVersionsMatch = (
+	draftVersion: ReusableBlockVersionRow | null,
+	publishedVersion: ReusableBlockVersionRow | null
+) => {
+	if (!draftVersion) return false;
+	if (!publishedVersion) return true;
+
+	return (
+		draftVersion.name === publishedVersion.name &&
+		(draftVersion.folder_id ?? null) === (publishedVersion.folder_id ?? null) &&
+		draftVersion.block_type === publishedVersion.block_type &&
+		JSON.stringify(draftVersion.content ?? null) === JSON.stringify(publishedVersion.content ?? null)
+	);
+};
+
 const parseReusableBlock = (
 	data: Record<string, unknown>,
 	versionsById: Map<string, ReusableBlockVersionRow>
 ): ReusableBlock => {
 	const id = String(data.id);
-	const blockType = String(data.block_type);
 	const draftVersionId = (data.draft_version_id as string | null) ?? null;
 	const publishedVersionId = (data.published_version_id as string | null) ?? null;
 	const draftVersion = draftVersionId ? versionsById.get(draftVersionId) ?? null : null;
 	const publishedVersion = publishedVersionId ? versionsById.get(publishedVersionId) ?? null : null;
-	const rawContent = draftVersion?.content ?? publishedVersion?.content ?? data.content;
+	const version = draftVersion ?? publishedVersion;
+	if (!version) {
+		throw new Error(`Reusable block ${id} is missing a draft or published version`);
+	}
+	const blockType = version.block_type;
+	const rawContent = draftVersion?.content ?? publishedVersion?.content;
 	const content = parseReusableBlockContent(id, blockType, rawContent);
 
 	return {
 		id,
-		name: String(data.name),
-		folder_id: (data.folder_id as string | null) ?? null,
+		name: version.name,
+		folder_id: version.folder_id,
 		block_type: blockType,
 		content,
 		draft_version_id: draftVersionId,
 		published_version_id: publishedVersionId,
 		has_unpublished_changes:
-			draftVersionId !== null &&
-			(publishedVersionId === null || draftVersionId !== publishedVersionId),
+			draftVersion !== null && (publishedVersion === null || !reusableBlockVersionsMatch(draftVersion, publishedVersion)),
 		is_published: publishedVersionId !== null,
 		last_published_at: toIso(publishedVersion?.published_at) as string | null,
 		created_at: String(toIso(data.created_at as Date | string | null) ?? ''),
@@ -201,7 +222,17 @@ export const deleteBlockFolder = async (id: string): Promise<void> => {
 	}
 
 	const childBlocks = await prisma.reusableBlock.findMany({
-		where: { folder_id: id },
+		where: {
+			deleted_at: null,
+			draft_version_id: {
+				in: (
+					await prisma.reusableBlockVersion.findMany({
+						where: { folder_id: id },
+						select: { id: true }
+					})
+				).map((version) => version.id)
+			}
+		},
 		select: { id: true }
 	});
 
@@ -219,12 +250,7 @@ export const createReusableBlock = async (
 ): Promise<ReusableBlock> => {
 	const content = createDefaultBlockInstance(type, crypto.randomUUID());
 	const blockRow = await prisma.reusableBlock.create({
-		data: {
-			name,
-			block_type: type,
-			folder_id: folderId,
-			content: toJsonInput(content)
-		},
+		data: {},
 		select: { id: true }
 	});
 
@@ -232,6 +258,9 @@ export const createReusableBlock = async (
 		data: {
 			reusable_block_id: blockRow.id,
 			status: 'draft',
+			name,
+			folder_id: folderId,
+			block_type: type,
 			content: toJsonInput(content),
 			revision: 1
 		},
@@ -279,47 +308,46 @@ export const updateReusableBlock = async (
 	id: string,
 	updates: Partial<Pick<ReusableBlock, 'name' | 'folder_id'>> & { content?: ReusableBlock['content'] }
 ): Promise<ReusableBlock> => {
-	const { content, ...recordUpdates } = updates;
-	const payload = Object.fromEntries(Object.entries(recordUpdates).filter(([, value]) => value !== undefined));
-
-	if (Object.keys(payload).length > 0) {
-		await prisma.reusableBlock.update({ where: { id }, data: payload });
+	const blockRow = await getReusableBlockRowById(id);
+	if (!blockRow) {
+		throw new Error(`Reusable block ${id} not found before draft save`);
+	}
+	if (!blockRow.draft_version_id) {
+		throw new Error(`Reusable block ${id} is missing a draft version`);
 	}
 
-	if (content) {
-		const blockRow = await getReusableBlockRowById(id);
-		if (!blockRow) {
-			throw new Error(`Reusable block ${id} not found before draft save`);
-		}
-
-		if (blockRow.draft_version_id) {
-			await prisma.reusableBlockVersion.updateMany({
-				where: { id: blockRow.draft_version_id, status: 'draft' },
-				data: { status: 'archived' }
-			});
-		}
-
-		const nextRevision = await getNextReusableBlockRevision(id);
-		const draftRow = await prisma.reusableBlockVersion.create({
-			data: {
-				reusable_block_id: id,
-				status: 'draft',
-				content: toJsonInput(content),
-				parent_id: blockRow.draft_version_id,
-				revision: nextRevision
-			},
-			select: { id: true }
-		});
-
-		await prisma.reusableBlock.update({
-			where: { id },
-			data: {
-				content: toJsonInput(content),
-				draft_version_id: draftRow.id,
-				updated_at: new Date()
-			}
-		});
+	const draftVersion = await getReusableBlockVersionById(blockRow.draft_version_id);
+	if (!draftVersion) {
+		throw new Error(`Draft version ${blockRow.draft_version_id} not found for reusable block ${id}`);
 	}
+
+	await prisma.reusableBlockVersion.updateMany({
+		where: { id: blockRow.draft_version_id, status: 'draft' },
+		data: { status: 'archived' }
+	});
+
+	const nextRevision = await getNextReusableBlockRevision(id);
+	const draftRow = await prisma.reusableBlockVersion.create({
+		data: {
+			reusable_block_id: id,
+			status: 'draft',
+			name: updates.name ?? draftVersion.name,
+			folder_id: updates.folder_id === undefined ? draftVersion.folder_id : updates.folder_id,
+			block_type: draftVersion.block_type,
+			content: toJsonInput(updates.content ?? draftVersion.content),
+			parent_id: blockRow.draft_version_id,
+			revision: nextRevision
+		},
+		select: { id: true }
+	});
+
+	await prisma.reusableBlock.update({
+		where: { id },
+		data: {
+			draft_version_id: draftRow.id,
+			updated_at: new Date()
+		}
+	});
 
 	const block = await getReusableBlockById(id);
 	if (!block) {
@@ -360,6 +388,9 @@ export const publishReusableBlock = async (id: string): Promise<ReusableBlock> =
 		data: {
 			reusable_block_id: id,
 			status: 'published',
+			name: draftVersion.name,
+			folder_id: draftVersion.folder_id,
+			block_type: draftVersion.block_type,
 			content: toJsonInput(draftVersion.content),
 			parent_id: draftVersion.id,
 			revision: publishedRevision,
@@ -372,6 +403,9 @@ export const publishReusableBlock = async (id: string): Promise<ReusableBlock> =
 		data: {
 			reusable_block_id: id,
 			status: 'draft',
+			name: draftVersion.name,
+			folder_id: draftVersion.folder_id,
+			block_type: draftVersion.block_type,
 			content: toJsonInput(draftVersion.content),
 			parent_id: publishedRow.id,
 			revision: publishedRevision + 1
@@ -382,7 +416,6 @@ export const publishReusableBlock = async (id: string): Promise<ReusableBlock> =
 	await prisma.reusableBlock.update({
 		where: { id },
 		data: {
-			content: toJsonInput(draftVersion.content),
 			published_version_id: publishedRow.id,
 			draft_version_id: cleanDraftRow.id,
 			updated_at: new Date()

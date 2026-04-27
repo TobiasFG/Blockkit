@@ -120,10 +120,6 @@ export type BlockFolderScalarFieldEnum = (typeof BlockFolderScalarFieldEnum)[key
 
 export const ReusableBlockScalarFieldEnum = {
   id: 'id',
-  name: 'name',
-  folder_id: 'folder_id',
-  block_type: 'block_type',
-  content: 'content',
   draft_version_id: 'draft_version_id',
   published_version_id: 'published_version_id',
   created_at: 'created_at',
@@ -138,6 +134,9 @@ export const ReusableBlockVersionScalarFieldEnum = {
   id: 'id',
   reusable_block_id: 'reusable_block_id',
   status: 'status',
+  name: 'name',
+  folder_id: 'folder_id',
+  block_type: 'block_type',
   content: 'content',
   parent_id: 'parent_id',
   revision: 'revision',

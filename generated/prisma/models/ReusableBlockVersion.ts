@@ -38,6 +38,9 @@ export type ReusableBlockVersionMinAggregateOutputType = {
   id: string | null
   reusable_block_id: string | null
   status: string | null
+  name: string | null
+  folder_id: string | null
+  block_type: string | null
   parent_id: string | null
   revision: number | null
   created_at: Date | null
@@ -48,6 +51,9 @@ export type ReusableBlockVersionMaxAggregateOutputType = {
   id: string | null
   reusable_block_id: string | null
   status: string | null
+  name: string | null
+  folder_id: string | null
+  block_type: string | null
   parent_id: string | null
   revision: number | null
   created_at: Date | null
@@ -58,6 +64,9 @@ export type ReusableBlockVersionCountAggregateOutputType = {
   id: number
   reusable_block_id: number
   status: number
+  name: number
+  folder_id: number
+  block_type: number
   content: number
   parent_id: number
   revision: number
@@ -79,6 +88,9 @@ export type ReusableBlockVersionMinAggregateInputType = {
   id?: true
   reusable_block_id?: true
   status?: true
+  name?: true
+  folder_id?: true
+  block_type?: true
   parent_id?: true
   revision?: true
   created_at?: true
@@ -89,6 +101,9 @@ export type ReusableBlockVersionMaxAggregateInputType = {
   id?: true
   reusable_block_id?: true
   status?: true
+  name?: true
+  folder_id?: true
+  block_type?: true
   parent_id?: true
   revision?: true
   created_at?: true
@@ -99,6 +114,9 @@ export type ReusableBlockVersionCountAggregateInputType = {
   id?: true
   reusable_block_id?: true
   status?: true
+  name?: true
+  folder_id?: true
+  block_type?: true
   content?: true
   parent_id?: true
   revision?: true
@@ -197,6 +215,9 @@ export type ReusableBlockVersionGroupByOutputType = {
   id: string
   reusable_block_id: string
   status: string
+  name: string
+  folder_id: string | null
+  block_type: string
   content: runtime.JsonValue
   parent_id: string | null
   revision: number
@@ -231,6 +252,9 @@ export type ReusableBlockVersionWhereInput = {
   id?: Prisma.UuidFilter<"ReusableBlockVersion"> | string
   reusable_block_id?: Prisma.UuidFilter<"ReusableBlockVersion"> | string
   status?: Prisma.StringFilter<"ReusableBlockVersion"> | string
+  name?: Prisma.StringFilter<"ReusableBlockVersion"> | string
+  folder_id?: Prisma.UuidNullableFilter<"ReusableBlockVersion"> | string | null
+  block_type?: Prisma.StringFilter<"ReusableBlockVersion"> | string
   content?: Prisma.JsonFilter<"ReusableBlockVersion">
   parent_id?: Prisma.UuidNullableFilter<"ReusableBlockVersion"> | string | null
   revision?: Prisma.IntFilter<"ReusableBlockVersion"> | number
@@ -242,6 +266,9 @@ export type ReusableBlockVersionOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   reusable_block_id?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  name?: Prisma.SortOrder
+  folder_id?: Prisma.SortOrderInput | Prisma.SortOrder
+  block_type?: Prisma.SortOrder
   content?: Prisma.SortOrder
   parent_id?: Prisma.SortOrderInput | Prisma.SortOrder
   revision?: Prisma.SortOrder
@@ -256,6 +283,9 @@ export type ReusableBlockVersionWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.ReusableBlockVersionWhereInput | Prisma.ReusableBlockVersionWhereInput[]
   reusable_block_id?: Prisma.UuidFilter<"ReusableBlockVersion"> | string
   status?: Prisma.StringFilter<"ReusableBlockVersion"> | string
+  name?: Prisma.StringFilter<"ReusableBlockVersion"> | string
+  folder_id?: Prisma.UuidNullableFilter<"ReusableBlockVersion"> | string | null
+  block_type?: Prisma.StringFilter<"ReusableBlockVersion"> | string
   content?: Prisma.JsonFilter<"ReusableBlockVersion">
   parent_id?: Prisma.UuidNullableFilter<"ReusableBlockVersion"> | string | null
   revision?: Prisma.IntFilter<"ReusableBlockVersion"> | number
@@ -267,6 +297,9 @@ export type ReusableBlockVersionOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   reusable_block_id?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  name?: Prisma.SortOrder
+  folder_id?: Prisma.SortOrderInput | Prisma.SortOrder
+  block_type?: Prisma.SortOrder
   content?: Prisma.SortOrder
   parent_id?: Prisma.SortOrderInput | Prisma.SortOrder
   revision?: Prisma.SortOrder
@@ -286,6 +319,9 @@ export type ReusableBlockVersionScalarWhereWithAggregatesInput = {
   id?: Prisma.UuidWithAggregatesFilter<"ReusableBlockVersion"> | string
   reusable_block_id?: Prisma.UuidWithAggregatesFilter<"ReusableBlockVersion"> | string
   status?: Prisma.StringWithAggregatesFilter<"ReusableBlockVersion"> | string
+  name?: Prisma.StringWithAggregatesFilter<"ReusableBlockVersion"> | string
+  folder_id?: Prisma.UuidNullableWithAggregatesFilter<"ReusableBlockVersion"> | string | null
+  block_type?: Prisma.StringWithAggregatesFilter<"ReusableBlockVersion"> | string
   content?: Prisma.JsonWithAggregatesFilter<"ReusableBlockVersion">
   parent_id?: Prisma.UuidNullableWithAggregatesFilter<"ReusableBlockVersion"> | string | null
   revision?: Prisma.IntWithAggregatesFilter<"ReusableBlockVersion"> | number
@@ -297,6 +333,9 @@ export type ReusableBlockVersionCreateInput = {
   id?: string
   reusable_block_id: string
   status: string
+  name: string
+  folder_id?: string | null
+  block_type: string
   content: Prisma.JsonNullValueInput | runtime.InputJsonValue
   parent_id?: string | null
   revision: number
@@ -308,6 +347,9 @@ export type ReusableBlockVersionUncheckedCreateInput = {
   id?: string
   reusable_block_id: string
   status: string
+  name: string
+  folder_id?: string | null
+  block_type: string
   content: Prisma.JsonNullValueInput | runtime.InputJsonValue
   parent_id?: string | null
   revision: number
@@ -319,6 +361,9 @@ export type ReusableBlockVersionUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   reusable_block_id?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  folder_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  block_type?: Prisma.StringFieldUpdateOperationsInput | string
   content?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   parent_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   revision?: Prisma.IntFieldUpdateOperationsInput | number
@@ -330,6 +375,9 @@ export type ReusableBlockVersionUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   reusable_block_id?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  folder_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  block_type?: Prisma.StringFieldUpdateOperationsInput | string
   content?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   parent_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   revision?: Prisma.IntFieldUpdateOperationsInput | number
@@ -341,6 +389,9 @@ export type ReusableBlockVersionCreateManyInput = {
   id?: string
   reusable_block_id: string
   status: string
+  name: string
+  folder_id?: string | null
+  block_type: string
   content: Prisma.JsonNullValueInput | runtime.InputJsonValue
   parent_id?: string | null
   revision: number
@@ -352,6 +403,9 @@ export type ReusableBlockVersionUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   reusable_block_id?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  folder_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  block_type?: Prisma.StringFieldUpdateOperationsInput | string
   content?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   parent_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   revision?: Prisma.IntFieldUpdateOperationsInput | number
@@ -363,6 +417,9 @@ export type ReusableBlockVersionUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   reusable_block_id?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  folder_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  block_type?: Prisma.StringFieldUpdateOperationsInput | string
   content?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   parent_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   revision?: Prisma.IntFieldUpdateOperationsInput | number
@@ -374,6 +431,9 @@ export type ReusableBlockVersionCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   reusable_block_id?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  name?: Prisma.SortOrder
+  folder_id?: Prisma.SortOrder
+  block_type?: Prisma.SortOrder
   content?: Prisma.SortOrder
   parent_id?: Prisma.SortOrder
   revision?: Prisma.SortOrder
@@ -389,6 +449,9 @@ export type ReusableBlockVersionMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   reusable_block_id?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  name?: Prisma.SortOrder
+  folder_id?: Prisma.SortOrder
+  block_type?: Prisma.SortOrder
   parent_id?: Prisma.SortOrder
   revision?: Prisma.SortOrder
   created_at?: Prisma.SortOrder
@@ -399,6 +462,9 @@ export type ReusableBlockVersionMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   reusable_block_id?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  name?: Prisma.SortOrder
+  folder_id?: Prisma.SortOrder
+  block_type?: Prisma.SortOrder
   parent_id?: Prisma.SortOrder
   revision?: Prisma.SortOrder
   created_at?: Prisma.SortOrder
@@ -415,6 +481,9 @@ export type ReusableBlockVersionSelect<ExtArgs extends runtime.Types.Extensions.
   id?: boolean
   reusable_block_id?: boolean
   status?: boolean
+  name?: boolean
+  folder_id?: boolean
+  block_type?: boolean
   content?: boolean
   parent_id?: boolean
   revision?: boolean
@@ -426,6 +495,9 @@ export type ReusableBlockVersionSelectCreateManyAndReturn<ExtArgs extends runtim
   id?: boolean
   reusable_block_id?: boolean
   status?: boolean
+  name?: boolean
+  folder_id?: boolean
+  block_type?: boolean
   content?: boolean
   parent_id?: boolean
   revision?: boolean
@@ -437,6 +509,9 @@ export type ReusableBlockVersionSelectUpdateManyAndReturn<ExtArgs extends runtim
   id?: boolean
   reusable_block_id?: boolean
   status?: boolean
+  name?: boolean
+  folder_id?: boolean
+  block_type?: boolean
   content?: boolean
   parent_id?: boolean
   revision?: boolean
@@ -448,6 +523,9 @@ export type ReusableBlockVersionSelectScalar = {
   id?: boolean
   reusable_block_id?: boolean
   status?: boolean
+  name?: boolean
+  folder_id?: boolean
+  block_type?: boolean
   content?: boolean
   parent_id?: boolean
   revision?: boolean
@@ -455,7 +533,7 @@ export type ReusableBlockVersionSelectScalar = {
   published_at?: boolean
 }
 
-export type ReusableBlockVersionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "reusable_block_id" | "status" | "content" | "parent_id" | "revision" | "created_at" | "published_at", ExtArgs["result"]["reusableBlockVersion"]>
+export type ReusableBlockVersionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "reusable_block_id" | "status" | "name" | "folder_id" | "block_type" | "content" | "parent_id" | "revision" | "created_at" | "published_at", ExtArgs["result"]["reusableBlockVersion"]>
 
 export type $ReusableBlockVersionPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "ReusableBlockVersion"
@@ -464,6 +542,9 @@ export type $ReusableBlockVersionPayload<ExtArgs extends runtime.Types.Extension
     id: string
     reusable_block_id: string
     status: string
+    name: string
+    folder_id: string | null
+    block_type: string
     content: runtime.JsonValue
     parent_id: string | null
     revision: number
@@ -895,6 +976,9 @@ export interface ReusableBlockVersionFieldRefs {
   readonly id: Prisma.FieldRef<"ReusableBlockVersion", 'String'>
   readonly reusable_block_id: Prisma.FieldRef<"ReusableBlockVersion", 'String'>
   readonly status: Prisma.FieldRef<"ReusableBlockVersion", 'String'>
+  readonly name: Prisma.FieldRef<"ReusableBlockVersion", 'String'>
+  readonly folder_id: Prisma.FieldRef<"ReusableBlockVersion", 'String'>
+  readonly block_type: Prisma.FieldRef<"ReusableBlockVersion", 'String'>
   readonly content: Prisma.FieldRef<"ReusableBlockVersion", 'Json'>
   readonly parent_id: Prisma.FieldRef<"ReusableBlockVersion", 'String'>
   readonly revision: Prisma.FieldRef<"ReusableBlockVersion", 'Int'>

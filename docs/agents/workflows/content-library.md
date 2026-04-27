@@ -9,6 +9,7 @@
 - Manage them from dedicated `/content` route, not dashboard.
 - Content names are editor-facing labels, not unique ids.
 - Stable content id stays constant across draft/published versions.
+- Name, folder, block type, and content are versioned together.
 - New content starts unpublished.
 
 ## Editor Contract

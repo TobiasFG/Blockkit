@@ -26,9 +26,6 @@ export type AggregateReusableBlock = {
 
 export type ReusableBlockMinAggregateOutputType = {
   id: string | null
-  name: string | null
-  folder_id: string | null
-  block_type: string | null
   draft_version_id: string | null
   published_version_id: string | null
   created_at: Date | null
@@ -38,9 +35,6 @@ export type ReusableBlockMinAggregateOutputType = {
 
 export type ReusableBlockMaxAggregateOutputType = {
   id: string | null
-  name: string | null
-  folder_id: string | null
-  block_type: string | null
   draft_version_id: string | null
   published_version_id: string | null
   created_at: Date | null
@@ -50,10 +44,6 @@ export type ReusableBlockMaxAggregateOutputType = {
 
 export type ReusableBlockCountAggregateOutputType = {
   id: number
-  name: number
-  folder_id: number
-  block_type: number
-  content: number
   draft_version_id: number
   published_version_id: number
   created_at: number
@@ -65,9 +55,6 @@ export type ReusableBlockCountAggregateOutputType = {
 
 export type ReusableBlockMinAggregateInputType = {
   id?: true
-  name?: true
-  folder_id?: true
-  block_type?: true
   draft_version_id?: true
   published_version_id?: true
   created_at?: true
@@ -77,9 +64,6 @@ export type ReusableBlockMinAggregateInputType = {
 
 export type ReusableBlockMaxAggregateInputType = {
   id?: true
-  name?: true
-  folder_id?: true
-  block_type?: true
   draft_version_id?: true
   published_version_id?: true
   created_at?: true
@@ -89,10 +73,6 @@ export type ReusableBlockMaxAggregateInputType = {
 
 export type ReusableBlockCountAggregateInputType = {
   id?: true
-  name?: true
-  folder_id?: true
-  block_type?: true
-  content?: true
   draft_version_id?: true
   published_version_id?: true
   created_at?: true
@@ -175,10 +155,6 @@ export type ReusableBlockGroupByArgs<ExtArgs extends runtime.Types.Extensions.In
 
 export type ReusableBlockGroupByOutputType = {
   id: string
-  name: string
-  folder_id: string | null
-  block_type: string
-  content: runtime.JsonValue
   draft_version_id: string | null
   published_version_id: string | null
   created_at: Date
@@ -209,10 +185,6 @@ export type ReusableBlockWhereInput = {
   OR?: Prisma.ReusableBlockWhereInput[]
   NOT?: Prisma.ReusableBlockWhereInput | Prisma.ReusableBlockWhereInput[]
   id?: Prisma.UuidFilter<"ReusableBlock"> | string
-  name?: Prisma.StringFilter<"ReusableBlock"> | string
-  folder_id?: Prisma.UuidNullableFilter<"ReusableBlock"> | string | null
-  block_type?: Prisma.StringFilter<"ReusableBlock"> | string
-  content?: Prisma.JsonFilter<"ReusableBlock">
   draft_version_id?: Prisma.UuidNullableFilter<"ReusableBlock"> | string | null
   published_version_id?: Prisma.UuidNullableFilter<"ReusableBlock"> | string | null
   created_at?: Prisma.DateTimeFilter<"ReusableBlock"> | Date | string
@@ -222,10 +194,6 @@ export type ReusableBlockWhereInput = {
 
 export type ReusableBlockOrderByWithRelationInput = {
   id?: Prisma.SortOrder
-  name?: Prisma.SortOrder
-  folder_id?: Prisma.SortOrderInput | Prisma.SortOrder
-  block_type?: Prisma.SortOrder
-  content?: Prisma.SortOrder
   draft_version_id?: Prisma.SortOrderInput | Prisma.SortOrder
   published_version_id?: Prisma.SortOrderInput | Prisma.SortOrder
   created_at?: Prisma.SortOrder
@@ -238,10 +206,6 @@ export type ReusableBlockWhereUniqueInput = Prisma.AtLeast<{
   AND?: Prisma.ReusableBlockWhereInput | Prisma.ReusableBlockWhereInput[]
   OR?: Prisma.ReusableBlockWhereInput[]
   NOT?: Prisma.ReusableBlockWhereInput | Prisma.ReusableBlockWhereInput[]
-  name?: Prisma.StringFilter<"ReusableBlock"> | string
-  folder_id?: Prisma.UuidNullableFilter<"ReusableBlock"> | string | null
-  block_type?: Prisma.StringFilter<"ReusableBlock"> | string
-  content?: Prisma.JsonFilter<"ReusableBlock">
   draft_version_id?: Prisma.UuidNullableFilter<"ReusableBlock"> | string | null
   published_version_id?: Prisma.UuidNullableFilter<"ReusableBlock"> | string | null
   created_at?: Prisma.DateTimeFilter<"ReusableBlock"> | Date | string
@@ -251,10 +215,6 @@ export type ReusableBlockWhereUniqueInput = Prisma.AtLeast<{
 
 export type ReusableBlockOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
-  name?: Prisma.SortOrder
-  folder_id?: Prisma.SortOrderInput | Prisma.SortOrder
-  block_type?: Prisma.SortOrder
-  content?: Prisma.SortOrder
   draft_version_id?: Prisma.SortOrderInput | Prisma.SortOrder
   published_version_id?: Prisma.SortOrderInput | Prisma.SortOrder
   created_at?: Prisma.SortOrder
@@ -270,10 +230,6 @@ export type ReusableBlockScalarWhereWithAggregatesInput = {
   OR?: Prisma.ReusableBlockScalarWhereWithAggregatesInput[]
   NOT?: Prisma.ReusableBlockScalarWhereWithAggregatesInput | Prisma.ReusableBlockScalarWhereWithAggregatesInput[]
   id?: Prisma.UuidWithAggregatesFilter<"ReusableBlock"> | string
-  name?: Prisma.StringWithAggregatesFilter<"ReusableBlock"> | string
-  folder_id?: Prisma.UuidNullableWithAggregatesFilter<"ReusableBlock"> | string | null
-  block_type?: Prisma.StringWithAggregatesFilter<"ReusableBlock"> | string
-  content?: Prisma.JsonWithAggregatesFilter<"ReusableBlock">
   draft_version_id?: Prisma.UuidNullableWithAggregatesFilter<"ReusableBlock"> | string | null
   published_version_id?: Prisma.UuidNullableWithAggregatesFilter<"ReusableBlock"> | string | null
   created_at?: Prisma.DateTimeWithAggregatesFilter<"ReusableBlock"> | Date | string
@@ -283,10 +239,6 @@ export type ReusableBlockScalarWhereWithAggregatesInput = {
 
 export type ReusableBlockCreateInput = {
   id?: string
-  name: string
-  folder_id?: string | null
-  block_type: string
-  content: Prisma.JsonNullValueInput | runtime.InputJsonValue
   draft_version_id?: string | null
   published_version_id?: string | null
   created_at?: Date | string
@@ -296,10 +248,6 @@ export type ReusableBlockCreateInput = {
 
 export type ReusableBlockUncheckedCreateInput = {
   id?: string
-  name: string
-  folder_id?: string | null
-  block_type: string
-  content: Prisma.JsonNullValueInput | runtime.InputJsonValue
   draft_version_id?: string | null
   published_version_id?: string | null
   created_at?: Date | string
@@ -309,10 +257,6 @@ export type ReusableBlockUncheckedCreateInput = {
 
 export type ReusableBlockUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  folder_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  block_type?: Prisma.StringFieldUpdateOperationsInput | string
-  content?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   draft_version_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   published_version_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -322,10 +266,6 @@ export type ReusableBlockUpdateInput = {
 
 export type ReusableBlockUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  folder_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  block_type?: Prisma.StringFieldUpdateOperationsInput | string
-  content?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   draft_version_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   published_version_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -335,10 +275,6 @@ export type ReusableBlockUncheckedUpdateInput = {
 
 export type ReusableBlockCreateManyInput = {
   id?: string
-  name: string
-  folder_id?: string | null
-  block_type: string
-  content: Prisma.JsonNullValueInput | runtime.InputJsonValue
   draft_version_id?: string | null
   published_version_id?: string | null
   created_at?: Date | string
@@ -348,10 +284,6 @@ export type ReusableBlockCreateManyInput = {
 
 export type ReusableBlockUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  folder_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  block_type?: Prisma.StringFieldUpdateOperationsInput | string
-  content?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   draft_version_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   published_version_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -361,10 +293,6 @@ export type ReusableBlockUpdateManyMutationInput = {
 
 export type ReusableBlockUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  folder_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  block_type?: Prisma.StringFieldUpdateOperationsInput | string
-  content?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   draft_version_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   published_version_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -374,10 +302,6 @@ export type ReusableBlockUncheckedUpdateManyInput = {
 
 export type ReusableBlockCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  name?: Prisma.SortOrder
-  folder_id?: Prisma.SortOrder
-  block_type?: Prisma.SortOrder
-  content?: Prisma.SortOrder
   draft_version_id?: Prisma.SortOrder
   published_version_id?: Prisma.SortOrder
   created_at?: Prisma.SortOrder
@@ -387,9 +311,6 @@ export type ReusableBlockCountOrderByAggregateInput = {
 
 export type ReusableBlockMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  name?: Prisma.SortOrder
-  folder_id?: Prisma.SortOrder
-  block_type?: Prisma.SortOrder
   draft_version_id?: Prisma.SortOrder
   published_version_id?: Prisma.SortOrder
   created_at?: Prisma.SortOrder
@@ -399,9 +320,6 @@ export type ReusableBlockMaxOrderByAggregateInput = {
 
 export type ReusableBlockMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  name?: Prisma.SortOrder
-  folder_id?: Prisma.SortOrder
-  block_type?: Prisma.SortOrder
   draft_version_id?: Prisma.SortOrder
   published_version_id?: Prisma.SortOrder
   created_at?: Prisma.SortOrder
@@ -413,10 +331,6 @@ export type ReusableBlockMinOrderByAggregateInput = {
 
 export type ReusableBlockSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  name?: boolean
-  folder_id?: boolean
-  block_type?: boolean
-  content?: boolean
   draft_version_id?: boolean
   published_version_id?: boolean
   created_at?: boolean
@@ -426,10 +340,6 @@ export type ReusableBlockSelect<ExtArgs extends runtime.Types.Extensions.Interna
 
 export type ReusableBlockSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  name?: boolean
-  folder_id?: boolean
-  block_type?: boolean
-  content?: boolean
   draft_version_id?: boolean
   published_version_id?: boolean
   created_at?: boolean
@@ -439,10 +349,6 @@ export type ReusableBlockSelectCreateManyAndReturn<ExtArgs extends runtime.Types
 
 export type ReusableBlockSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  name?: boolean
-  folder_id?: boolean
-  block_type?: boolean
-  content?: boolean
   draft_version_id?: boolean
   published_version_id?: boolean
   created_at?: boolean
@@ -452,10 +358,6 @@ export type ReusableBlockSelectUpdateManyAndReturn<ExtArgs extends runtime.Types
 
 export type ReusableBlockSelectScalar = {
   id?: boolean
-  name?: boolean
-  folder_id?: boolean
-  block_type?: boolean
-  content?: boolean
   draft_version_id?: boolean
   published_version_id?: boolean
   created_at?: boolean
@@ -463,17 +365,13 @@ export type ReusableBlockSelectScalar = {
   deleted_at?: boolean
 }
 
-export type ReusableBlockOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "folder_id" | "block_type" | "content" | "draft_version_id" | "published_version_id" | "created_at" | "updated_at" | "deleted_at", ExtArgs["result"]["reusableBlock"]>
+export type ReusableBlockOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "draft_version_id" | "published_version_id" | "created_at" | "updated_at" | "deleted_at", ExtArgs["result"]["reusableBlock"]>
 
 export type $ReusableBlockPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "ReusableBlock"
   objects: {}
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
-    name: string
-    folder_id: string | null
-    block_type: string
-    content: runtime.JsonValue
     draft_version_id: string | null
     published_version_id: string | null
     created_at: Date
@@ -903,10 +801,6 @@ export interface Prisma__ReusableBlockClient<T, Null = never, ExtArgs extends ru
  */
 export interface ReusableBlockFieldRefs {
   readonly id: Prisma.FieldRef<"ReusableBlock", 'String'>
-  readonly name: Prisma.FieldRef<"ReusableBlock", 'String'>
-  readonly folder_id: Prisma.FieldRef<"ReusableBlock", 'String'>
-  readonly block_type: Prisma.FieldRef<"ReusableBlock", 'String'>
-  readonly content: Prisma.FieldRef<"ReusableBlock", 'Json'>
   readonly draft_version_id: Prisma.FieldRef<"ReusableBlock", 'String'>
   readonly published_version_id: Prisma.FieldRef<"ReusableBlock", 'String'>
   readonly created_at: Prisma.FieldRef<"ReusableBlock", 'DateTime'>
@@ -1111,7 +1005,7 @@ export type ReusableBlockCreateArgs<ExtArgs extends runtime.Types.Extensions.Int
   /**
    * The data needed to create a ReusableBlock.
    */
-  data: Prisma.XOR<Prisma.ReusableBlockCreateInput, Prisma.ReusableBlockUncheckedCreateInput>
+  data?: Prisma.XOR<Prisma.ReusableBlockCreateInput, Prisma.ReusableBlockUncheckedCreateInput>
 }
 
 /**
