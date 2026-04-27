@@ -8,24 +8,22 @@ import {
 import { derivePathSegment, buildPagePathMap } from '$lib/pagePath';
 import { serializePageSeoMeta, type PageSeoMeta } from '$lib/pageSeoMeta';
 import type { Page, PageDraftVersion, ReferencingPage } from '$lib/types';
-import { supabaseAdmin } from '$lib/server/supabase.server';
-
-const TABLE = 'pages' as const;
-const PAGE_VERSIONS_TABLE = 'page_versions' as const;
+import { prisma } from '$lib/server/prisma.server';
+import type { Prisma } from '../../../generated/prisma/client';
 
 type PageShellRow = {
 	id: string;
-	created_at: string;
-	updated_at: string;
+	created_at: Date;
+	updated_at: Date;
 	draft_version_id: string | null;
 	published_version_id: string | null;
-	deleted_at: string | null;
+	deleted_at: Date | null;
 };
 
 type PageVersionRow = {
 	id: string;
 	page_id: string;
-	status: 'draft' | 'published' | 'archived';
+	status: string;
 	title: string;
 	parent_page_id: string | null;
 	url_name: string | null;
@@ -34,19 +32,30 @@ type PageVersionRow = {
 	meta: Record<string, unknown> | null;
 	parent_id: string | null;
 	revision: number | null;
-	created_at: string;
-	updated_at: string;
-	published_at: string | null;
+	created_at: Date;
+	updated_at: Date;
+	published_at: Date | null;
 };
+
+const toIso = (value: Date | string | null | undefined) =>
+	value instanceof Date ? value.toISOString() : (value ?? null);
+
+const toJsonInput = (value: unknown) => value as Prisma.InputJsonValue;
+
+const normalizePageVersionRow = (row: PageVersionRow): PageVersionRow => ({
+	...row,
+	meta: (row.meta as Record<string, unknown> | null) ?? null
+});
 
 const getVersionRowsById = async (versionIds: string[]): Promise<Map<string, PageVersionRow>> => {
 	const uniqueIds = Array.from(new Set(versionIds.filter(Boolean)));
 	if (uniqueIds.length === 0) return new Map();
 
-	const { data, error } = await supabaseAdmin.from(PAGE_VERSIONS_TABLE).select('*').in('id', uniqueIds);
-	if (error) throw error;
+	const data = await prisma.pageVersion.findMany({
+		where: { id: { in: uniqueIds } }
+	});
 
-	return new Map(((data ?? []) as PageVersionRow[]).map((row) => [row.id, row]));
+	return new Map(data.map((row) => [row.id, normalizePageVersionRow(row as PageVersionRow)]));
 };
 
 const pageVersionsMatch = (draftVersion: PageVersionRow | null, publishedVersion: PageVersionRow | null) => {
@@ -72,8 +81,9 @@ const parsePage = (
 	const draftVersion = row.draft_version_id ? versionsById.get(row.draft_version_id) ?? null : null;
 	const publishedVersion = row.published_version_id ? versionsById.get(row.published_version_id) ?? null : null;
 	const isPublished = publishedVersion !== null;
-	const updatedAt = [row.updated_at, draftVersion?.updated_at ?? '', publishedVersion?.updated_at ?? '']
+	const updatedAt = [row.updated_at, draftVersion?.updated_at, publishedVersion?.updated_at]
 		.filter(Boolean)
+		.map((value) => toIso(value) as string)
 		.sort()
 		.at(-1);
 
@@ -89,14 +99,14 @@ const parsePage = (
 		path_segment: draftVersion?.path_segment ?? null,
 		published_url_name: publishedVersion?.url_name ?? null,
 		published_path_segment: publishedVersion?.path_segment ?? null,
-		created_at: row.created_at,
-		updated_at: updatedAt ?? row.updated_at,
+		created_at: toIso(row.created_at) as string,
+		updated_at: updatedAt ?? (toIso(row.updated_at) as string),
 		draft_version_id: row.draft_version_id,
 		published_version_id: row.published_version_id,
 		has_unpublished_changes: draftVersion !== null && (!isPublished || !pageVersionsMatch(draftVersion, publishedVersion)),
 		is_published: isPublished,
-		last_published_at: publishedVersion?.published_at ?? null,
-		deleted_at: row.deleted_at
+		last_published_at: toIso(publishedVersion?.published_at) as string | null,
+		deleted_at: toIso(row.deleted_at) as string | null
 	};
 };
 
@@ -151,35 +161,23 @@ const getPageRows = async ({
 	includeDeleted?: boolean;
 	deletedOnly?: boolean;
 } = {}) => {
-	let query = supabaseAdmin.from(TABLE).select('*').order('created_at');
-
-	if (deletedOnly) {
-		query = query.not('deleted_at', 'is', null);
-	} else if (!includeDeleted) {
-		query = query.is('deleted_at', null);
-	}
-
-	const { data, error } = await query;
-	if (error) throw error;
-
-	return (data ?? []) as PageShellRow[];
+	return prisma.page.findMany({
+		where: deletedOnly ? { deleted_at: { not: null } } : includeDeleted ? undefined : { deleted_at: null },
+		orderBy: { created_at: 'asc' }
+	}) as Promise<PageShellRow[]>;
 };
 
 const touchPageShell = async (pageId: string) => {
-	const { error } = await supabaseAdmin.from(TABLE).update({ updated_at: new Date().toISOString() }).eq('id', pageId);
-	if (error) throw error;
+	await prisma.page.update({ where: { id: pageId }, data: { updated_at: new Date() } });
 };
 
 const getNextPageRevision = async (pageId: string) => {
-	const { data, error } = await supabaseAdmin
-		.from(PAGE_VERSIONS_TABLE)
-		.select('revision')
-		.eq('page_id', pageId)
-		.order('revision', { ascending: false })
-		.limit(1)
-		.maybeSingle();
+	const data = await prisma.pageVersion.findFirst({
+		where: { page_id: pageId },
+		orderBy: { revision: 'desc' },
+		select: { revision: true }
+	});
 
-	if (error) throw error;
 	return Number(data?.revision ?? 0) + 1;
 };
 
@@ -188,25 +186,23 @@ const createCleanDraftFromPublishedVersion = async (
 	publishedVersion: PageDraftVersion,
 	revision: number
 ): Promise<string> => {
-	const { data, error } = await supabaseAdmin
-		.from(PAGE_VERSIONS_TABLE)
-		.insert({
+	const data = await prisma.pageVersion.create({
+		data: {
 			page_id: pageId,
 			status: 'draft',
 			title: publishedVersion.title,
 			parent_page_id: publishedVersion.parent_page_id,
 			url_name: publishedVersion.url_name,
 			path_segment: publishedVersion.path_segment,
-			content: serializePageContent(publishedVersion.content),
-			meta: publishedVersion.meta,
+			content: toJsonInput(serializePageContent(publishedVersion.content)),
+			meta: toJsonInput(publishedVersion.meta),
 			parent_id: publishedVersion.id,
 			revision
-		})
-		.select('id')
-		.single();
+		},
+		select: { id: true }
+	});
 
-	if (error) throw error;
-	return String(data.id);
+	return data.id;
 };
 
 const pageContentReferencesReusableBlock = (blocks: PageBlockNode[], reusableBlockId: string): boolean =>
@@ -235,44 +231,34 @@ export const createPage = async ({
 	urlName?: string | null;
 }): Promise<Page> => {
 	const pathSegment = derivePathSegment(title, urlName);
-	const { data: pageRow, error } = await supabaseAdmin.from(TABLE).insert({}).select('id').single();
-	if (error) throw error;
+	const pageRow = await prisma.page.create({ data: {}, select: { id: true } });
 
-	const pageId = String(pageRow.id);
-	const { data: draftRow, error: draftError } = await supabaseAdmin
-		.from(PAGE_VERSIONS_TABLE)
-		.insert({
+	const pageId = pageRow.id;
+	const draftRow = await prisma.pageVersion.create({
+		data: {
 			page_id: pageId,
 			status: 'draft',
 			title,
 			parent_page_id: parentPageId,
 			url_name: (urlName ?? '').trim() || null,
 			path_segment: pathSegment,
-			content: serializePageContent({ version: 1, layout: null, blocks: [] }),
-			meta: {},
+			content: toJsonInput(serializePageContent({ version: 1, layout: null, blocks: [] })),
+			meta: toJsonInput({}),
 			revision: 1
-		})
-		.select('id')
-		.single();
+		},
+		select: { id: true }
+	});
 
-	if (draftError) throw draftError;
-
-	const { error: updateError } = await supabaseAdmin
-		.from(TABLE)
-		.update({ draft_version_id: String(draftRow.id) })
-		.eq('id', pageId);
-	if (updateError) throw updateError;
+	await prisma.page.update({ where: { id: pageId }, data: { draft_version_id: draftRow.id } });
 
 	return (await getPageById(pageId)) as Page;
 };
 
 export const softDeletePageById = async (id: string): Promise<void> => {
-	const { error } = await supabaseAdmin
-		.from(TABLE)
-		.update({ deleted_at: new Date().toISOString() })
-		.eq('id', id)
-		.is('deleted_at', null);
-	if (error) throw error;
+	await prisma.page.updateMany({
+		where: { id, deleted_at: null },
+		data: { deleted_at: new Date() }
+	});
 };
 
 export const getPages = async (): Promise<Page[]> => {
@@ -290,21 +276,13 @@ export const getPageById = async (
 };
 
 export const getDraftVersionById = async (id: string): Promise<PageDraftVersion | null> => {
-	const { data, error } = await supabaseAdmin
-		.from(PAGE_VERSIONS_TABLE)
-		.select(
-			'id, page_id, status, title, parent_page_id, url_name, path_segment, content, meta, parent_id, revision, created_at, updated_at, published_at'
-		)
-		.eq('id', id)
-		.maybeSingle();
-
-	if (error) throw error;
+	const data = await prisma.pageVersion.findUnique({ where: { id } });
 	if (!data) return null;
 
 	return {
 		id: data.id,
 		page_id: data.page_id,
-		status: data.status,
+		status: data.status as PageDraftVersion['status'],
 		title: data.title,
 		parent_page_id: data.parent_page_id,
 		url_name: data.url_name,
@@ -313,9 +291,9 @@ export const getDraftVersionById = async (id: string): Promise<PageDraftVersion 
 		meta: (data.meta as Record<string, unknown> | null) ?? {},
 		parent_id: data.parent_id,
 		revision: data.revision,
-		created_at: data.created_at,
-		updated_at: data.updated_at,
-		published_at: data.published_at
+		created_at: toIso(data.created_at) as string,
+		updated_at: toIso(data.updated_at) as string,
+		published_at: toIso(data.published_at) as string | null
 	};
 };
 
@@ -326,9 +304,8 @@ export const updatePageShell = async (
 	updates: Partial<Pick<Page, 'draft_version_id' | 'published_version_id'>>
 ): Promise<Page> => {
 	const payload = Object.fromEntries(Object.entries(updates).filter(([, value]) => value !== undefined));
-	const { data, error } = await supabaseAdmin.from(TABLE).update(payload).eq('id', id).select('id').single();
-	if (error) throw error;
-	return (await getPageById(String(data.id))) as Page;
+	const data = await prisma.page.update({ where: { id }, data: payload, select: { id: true } });
+	return (await getPageById(data.id)) as Page;
 };
 
 export const draftPathSegmentExists = async ({
@@ -446,12 +423,10 @@ export const updateDraftVersionContent = async (
 	draftVersionId: string,
 	content: PageContent
 ): Promise<void> => {
-	const { error } = await supabaseAdmin
-		.from(PAGE_VERSIONS_TABLE)
-		.update({ content: serializePageContent(content) })
-		.eq('id', draftVersionId);
-
-	if (error) throw error;
+	await prisma.pageVersion.update({
+		where: { id: draftVersionId },
+		data: { content: toJsonInput(serializePageContent(content)) }
+	});
 };
 
 export const updatePageDraftSeoAndContent = async (
@@ -481,19 +456,18 @@ export const updatePageDraftSeoAndContent = async (
 
 	const nextMeta = serializePageSeoMeta(draftVersion.meta, seo);
 	const pathSegment = parentPageId === null ? null : derivePathSegment(title, urlName);
-	const { error } = await supabaseAdmin
-		.from(PAGE_VERSIONS_TABLE)
-		.update({
+	await prisma.pageVersion.update({
+		where: { id: draftVersion.id },
+		data: {
 			title,
 			parent_page_id: parentPageId,
 			url_name: parentPageId === null ? null : (urlName ?? '').trim() || null,
 			path_segment: pathSegment,
-			meta: nextMeta,
-			content: serializePageContent(content)
-		})
-		.eq('id', draftVersion.id);
+			meta: toJsonInput(nextMeta),
+			content: toJsonInput(serializePageContent(content))
+		}
+	});
 
-	if (error) throw error;
 	await touchPageShell(page.id);
 	return (await getPageById(page.id)) as Page;
 };
@@ -509,42 +483,36 @@ export const publishPage = async (page: Page): Promise<Page> => {
 	}
 
 	const publishedRevision = await getNextPageRevision(page.id);
-	const { error: archivePublishedError } = await supabaseAdmin
-		.from(PAGE_VERSIONS_TABLE)
-		.update({ status: 'archived' })
-		.eq('page_id', page.id)
-		.eq('status', 'published');
-	if (archivePublishedError) throw archivePublishedError;
+	await prisma.pageVersion.updateMany({
+		where: { page_id: page.id, status: 'published' },
+		data: { status: 'archived' }
+	});
 
-	const { data: publishedRow, error: publishError } = await supabaseAdmin
-		.from(PAGE_VERSIONS_TABLE)
-		.insert({
+	const publishedRow = await prisma.pageVersion.create({
+		data: {
 			page_id: page.id,
 			status: 'published',
 			title: draftVersion.title,
 			parent_page_id: draftVersion.parent_page_id,
 			url_name: draftVersion.url_name,
 			path_segment: draftVersion.path_segment,
-			content: serializePageContent(draftVersion.content),
-			meta: draftVersion.meta,
+			content: toJsonInput(serializePageContent(draftVersion.content)),
+			meta: toJsonInput(draftVersion.meta),
 			parent_id: draftVersion.id,
 			revision: publishedRevision,
-			published_at: new Date().toISOString()
-		})
-		.select('id')
-		.single();
-	if (publishError) throw publishError;
+			published_at: new Date()
+		},
+		select: { id: true }
+	});
 
-	const { error: archiveDraftError } = await supabaseAdmin
-		.from(PAGE_VERSIONS_TABLE)
-		.update({ status: 'archived' })
-		.eq('id', draftVersion.id)
-		.eq('status', 'draft');
-	if (archiveDraftError) throw archiveDraftError;
+	await prisma.pageVersion.updateMany({
+		where: { id: draftVersion.id, status: 'draft' },
+		data: { status: 'archived' }
+	});
 
-	const publishedVersion = await getDraftVersionById(String(publishedRow.id));
+	const publishedVersion = await getDraftVersionById(publishedRow.id);
 	if (!publishedVersion) {
-		throw new Error(`Published version ${String(publishedRow.id)} not found for page ${page.id}`);
+		throw new Error(`Published version ${publishedRow.id} not found for page ${page.id}`);
 	}
 
 	const cleanDraftId = await createCleanDraftFromPublishedVersion(page.id, publishedVersion, publishedRevision + 1);
@@ -599,22 +567,20 @@ export const restorePageById = async (id: string, parentPageId: string | null): 
 		throw new Error('Another page already uses this URL under selected parent');
 	}
 
-	const { error: pageError } = await supabaseAdmin
-		.from(TABLE)
-		.update({ deleted_at: null, updated_at: new Date().toISOString() })
-		.eq('id', id);
-	if (pageError) throw pageError;
+	await prisma.page.update({
+		where: { id },
+		data: { deleted_at: null, updated_at: new Date() }
+	});
 
 	for (const versionId of [page.draft_version_id, page.published_version_id]) {
 		if (!versionId) continue;
 		const version = await getPageVersionById(versionId);
 		if (!version || version.parent_page_id === nextParentId) continue;
 
-		const { error: versionError } = await supabaseAdmin
-			.from(PAGE_VERSIONS_TABLE)
-			.update({ parent_page_id: nextParentId })
-			.eq('id', version.id);
-		if (versionError) throw versionError;
+		await prisma.pageVersion.update({
+			where: { id: version.id },
+			data: { parent_page_id: nextParentId }
+		});
 	}
 
 	return (await getPageById(id)) as Page;

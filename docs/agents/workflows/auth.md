@@ -16,8 +16,7 @@
   - `PUBLIC_SUPABASE_URL`
   - `PUBLIC_SUPABASE_PUBLISHABLE_KEY`
 - Server:
-  - `SUPABASE_URL`
-  - `SUPABASE_SERVICE_ROLE_KEY`
+  - `DATABASE_URL`
 
 ## Implementation Points
 - `src/hooks.server.ts`
@@ -30,6 +29,6 @@
   - handle login, signup, logout
 
 ## Constraints
-- Service-role controllers still power CMS data. Auth gate must remain intact on every route/action.
+- Prisma controllers power CMS data. Auth gate must remain intact on every route/action.
 - Reduced-motion users should avoid decorative auth transition motion.
 - Password reset, social login, MFA, invite-only flows are not current baseline.

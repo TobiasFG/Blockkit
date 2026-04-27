@@ -4,21 +4,18 @@ import {
 	normalizeBlockInstance
 } from '$lib/reusableBlocks';
 import type { BlockFolder, ReusableBlock } from '$lib/types';
-import { supabaseAdmin } from '$lib/server/supabase.server';
-
-const FOLDERS_TABLE = 'block_folders' as const;
-const BLOCKS_TABLE = 'reusable_blocks' as const;
-const BLOCK_VERSIONS_TABLE = 'reusable_block_versions' as const;
+import { prisma } from '$lib/server/prisma.server';
+import type { Prisma } from '../../../generated/prisma/client';
 
 type ReusableBlockVersionRow = {
 	id: string;
 	reusable_block_id: string;
-	status: 'draft' | 'published' | 'archived';
+	status: string;
 	content: unknown;
 	parent_id: string | null;
 	revision: number;
-	created_at: string;
-	published_at: string | null;
+	created_at: Date;
+	published_at: Date | null;
 };
 
 type ReusableBlockRow = Record<string, unknown> & {
@@ -27,13 +24,18 @@ type ReusableBlockRow = Record<string, unknown> & {
 	published_version_id: string | null;
 };
 
+const toIso = (value: Date | string | null | undefined) =>
+	value instanceof Date ? value.toISOString() : (value ?? null);
+
+const toJsonInput = (value: unknown) => value as Prisma.InputJsonValue;
+
 const parseFolder = (data: Record<string, unknown>): BlockFolder => ({
 	id: String(data.id),
 	name: String(data.name),
 	parent_id: (data.parent_id as string | null) ?? null,
 	sort_order: Number(data.sort_order ?? 0),
-	created_at: String(data.created_at ?? ''),
-	updated_at: String(data.updated_at ?? '')
+	created_at: String(toIso(data.created_at as Date | string | null) ?? ''),
+	updated_at: String(toIso(data.updated_at as Date | string | null) ?? '')
 });
 
 const parseReusableBlockContent = (blockId: string, blockType: string, rawContent: unknown) => {
@@ -71,10 +73,10 @@ const parseReusableBlock = (
 			draftVersionId !== null &&
 			(publishedVersionId === null || draftVersionId !== publishedVersionId),
 		is_published: publishedVersionId !== null,
-		last_published_at: publishedVersion?.published_at ?? null,
-		created_at: String(data.created_at ?? ''),
-		updated_at: String(data.updated_at ?? ''),
-		deleted_at: (data.deleted_at as string | null) ?? null
+		last_published_at: toIso(publishedVersion?.published_at) as string | null,
+		created_at: String(toIso(data.created_at as Date | string | null) ?? ''),
+		updated_at: String(toIso(data.updated_at as Date | string | null) ?? ''),
+		deleted_at: toIso(data.deleted_at as Date | string | null) as string | null
 	};
 };
 
@@ -85,71 +87,46 @@ const getReusableBlockRows = async ({
 	includeDeleted?: boolean;
 	deletedOnly?: boolean;
 } = {}) => {
-	let query = supabaseAdmin.from(BLOCKS_TABLE).select('*').order('created_at');
-
-	if (deletedOnly) {
-		query = query.not('deleted_at', 'is', null);
-	} else if (!includeDeleted) {
-		query = query.is('deleted_at', null);
-	}
-
-	const { data, error } = await query;
-	if (error) throw error;
-
-	return (data ?? []) as Array<Record<string, unknown>>;
+	return (await prisma.reusableBlock.findMany({
+		where: deletedOnly ? { deleted_at: { not: null } } : includeDeleted ? undefined : { deleted_at: null },
+		orderBy: { created_at: 'asc' }
+	})) as Array<Record<string, unknown>>;
 };
 
 const getVersionRowsById = async (versionIds: string[]): Promise<Map<string, ReusableBlockVersionRow>> => {
 	const uniqueIds = Array.from(new Set(versionIds.filter(Boolean)));
 	if (uniqueIds.length === 0) return new Map();
 
-	const { data, error } = await supabaseAdmin
-		.from(BLOCK_VERSIONS_TABLE)
-		.select('*')
-		.in('id', uniqueIds);
+	const data = await prisma.reusableBlockVersion.findMany({
+		where: { id: { in: uniqueIds } }
+	});
 
-	if (error) throw error;
-
-	return new Map(((data ?? []) as ReusableBlockVersionRow[]).map((row) => [row.id, row]));
+	return new Map((data as ReusableBlockVersionRow[]).map((row) => [row.id, row]));
 };
 
 const getReusableBlockRowById = async (id: string): Promise<ReusableBlockRow | null> => {
-	const { data, error } = await supabaseAdmin.from(BLOCKS_TABLE).select('*').eq('id', id).maybeSingle();
-	if (error) throw error;
-	return (data as ReusableBlockRow | null) ?? null;
+	return (await prisma.reusableBlock.findUnique({ where: { id } })) as ReusableBlockRow | null;
 };
 
 const getReusableBlockVersionById = async (id: string): Promise<ReusableBlockVersionRow | null> => {
-	const { data, error } = await supabaseAdmin
-		.from(BLOCK_VERSIONS_TABLE)
-		.select('*')
-		.eq('id', id)
-		.maybeSingle();
-	if (error) throw error;
-	return (data as ReusableBlockVersionRow | null) ?? null;
+	return (await prisma.reusableBlockVersion.findUnique({ where: { id } })) as ReusableBlockVersionRow | null;
 };
 
 const getNextReusableBlockRevision = async (reusableBlockId: string) => {
-	const { data, error } = await supabaseAdmin
-		.from(BLOCK_VERSIONS_TABLE)
-		.select('revision')
-		.eq('reusable_block_id', reusableBlockId)
-		.order('revision', { ascending: false })
-		.limit(1)
-		.maybeSingle();
-	if (error) throw error;
+	const data = await prisma.reusableBlockVersion.findFirst({
+		where: { reusable_block_id: reusableBlockId },
+		orderBy: { revision: 'desc' },
+		select: { revision: true }
+	});
 	return Number(data?.revision ?? 0) + 1;
 };
 
 export const getBlockFolders = async (): Promise<BlockFolder[]> => {
-	const { data, error } = await supabaseAdmin
-		.from(FOLDERS_TABLE)
-		.select('*')
-		.order('sort_order')
-		.order('name');
+	const data = await prisma.blockFolder.findMany({
+		orderBy: [{ sort_order: 'asc' }, { name: 'asc' }]
+	});
 
-	if (error) throw error;
-	return (data ?? []).map((item) => parseFolder(item as Record<string, unknown>));
+	return data.map((item) => parseFolder(item as Record<string, unknown>));
 };
 
 export const getReusableBlocks = async (): Promise<ReusableBlock[]> => {
@@ -178,12 +155,9 @@ export const getReusableBlockById = async (
 	id: string,
 	{ includeDeleted = false }: { includeDeleted?: boolean } = {}
 ): Promise<ReusableBlock | null> => {
-	let query = supabaseAdmin.from(BLOCKS_TABLE).select('*').eq('id', id);
-	if (!includeDeleted) {
-		query = query.is('deleted_at', null);
-	}
-	const { data, error } = await query.maybeSingle();
-	if (error) throw error;
+	const data = await prisma.reusableBlock.findFirst({
+		where: includeDeleted ? { id } : { id, deleted_at: null }
+	});
 	if (!data) return null;
 	const versionsById = await getVersionRowsById([
 		String(data.draft_version_id ?? ''),
@@ -193,16 +167,13 @@ export const getReusableBlockById = async (
 };
 
 export const createBlockFolder = async (name: string, parentId: string | null): Promise<BlockFolder> => {
-	const { data, error } = await supabaseAdmin
-		.from(FOLDERS_TABLE)
-		.insert({
+	const data = await prisma.blockFolder.create({
+		data: {
 			name,
 			parent_id: parentId
-		})
-		.select('*')
-		.single();
+		}
+	});
 
-	if (error) throw error;
 	return parseFolder(data as Record<string, unknown>);
 };
 
@@ -211,40 +182,34 @@ export const updateBlockFolder = async (
 	updates: Partial<Pick<BlockFolder, 'name' | 'parent_id' | 'sort_order'>>
 ): Promise<BlockFolder> => {
 	const payload = Object.fromEntries(Object.entries(updates).filter(([, value]) => value !== undefined));
-	const { data, error } = await supabaseAdmin
-		.from(FOLDERS_TABLE)
-		.update(payload)
-		.eq('id', id)
-		.select('*')
-		.single();
+	const data = await prisma.blockFolder.update({
+		where: { id },
+		data: payload
+	});
 
-	if (error) throw error;
 	return parseFolder(data as Record<string, unknown>);
 };
 
 export const deleteBlockFolder = async (id: string): Promise<void> => {
-	const { data: childFolders, error: foldersError } = await supabaseAdmin
-		.from(FOLDERS_TABLE)
-		.select('id')
-		.eq('parent_id', id);
+	const childFolders = await prisma.blockFolder.findMany({
+		where: { parent_id: id },
+		select: { id: true }
+	});
 
-	if (foldersError) throw foldersError;
-	if ((childFolders ?? []).length > 0) {
+	if (childFolders.length > 0) {
 		throw new Error('Folder must be empty before it can be deleted');
 	}
 
-	const { data: childBlocks, error: blocksError } = await supabaseAdmin
-		.from(BLOCKS_TABLE)
-		.select('id')
-		.eq('folder_id', id);
+	const childBlocks = await prisma.reusableBlock.findMany({
+		where: { folder_id: id },
+		select: { id: true }
+	});
 
-	if (blocksError) throw blocksError;
-	if ((childBlocks ?? []).length > 0) {
+	if (childBlocks.length > 0) {
 		throw new Error('Folder must be empty before it can be deleted');
 	}
 
-	const { error } = await supabaseAdmin.from(FOLDERS_TABLE).delete().eq('id', id);
-	if (error) throw error;
+	await prisma.blockFolder.delete({ where: { id } });
 };
 
 export const createReusableBlock = async (
@@ -253,41 +218,35 @@ export const createReusableBlock = async (
 	folderId: string | null
 ): Promise<ReusableBlock> => {
 	const content = createDefaultBlockInstance(type, crypto.randomUUID());
-	const { data: blockRow, error: blockError } = await supabaseAdmin
-		.from(BLOCKS_TABLE)
-		.insert({
+	const blockRow = await prisma.reusableBlock.create({
+		data: {
 			name,
 			block_type: type,
 			folder_id: folderId,
-			content
-		})
-		.select('id')
-		.single();
-	if (blockError) throw blockError;
+			content: toJsonInput(content)
+		},
+		select: { id: true }
+	});
 
-	const blockId = String(blockRow.id);
-	const { data: draftRow, error: draftError } = await supabaseAdmin
-		.from(BLOCK_VERSIONS_TABLE)
-		.insert({
-			reusable_block_id: blockId,
+	const draftRow = await prisma.reusableBlockVersion.create({
+		data: {
+			reusable_block_id: blockRow.id,
 			status: 'draft',
-			content,
+			content: toJsonInput(content),
 			revision: 1
-		})
-		.select('id')
-		.single();
-	if (draftError) throw draftError;
+		},
+		select: { id: true }
+	});
 
-	const { error: updateError } = await supabaseAdmin
-		.from(BLOCKS_TABLE)
-		.update({
-			draft_version_id: String(draftRow.id),
-			updated_at: new Date().toISOString()
-		})
-		.eq('id', blockId);
-	if (updateError) throw updateError;
+	await prisma.reusableBlock.update({
+		where: { id: blockRow.id },
+		data: {
+			draft_version_id: draftRow.id,
+			updated_at: new Date()
+		}
+	});
 
-	const block = await getReusableBlockById(blockId);
+	const block = await getReusableBlockById(blockRow.id);
 	if (!block) {
 		throw new Error('Reusable block was created but could not be loaded');
 	}
@@ -296,20 +255,17 @@ export const createReusableBlock = async (
 };
 
 export const softDeleteReusableBlock = async (id: string): Promise<void> => {
-	const { error } = await supabaseAdmin
-		.from(BLOCKS_TABLE)
-		.update({ deleted_at: new Date().toISOString() })
-		.eq('id', id)
-		.is('deleted_at', null);
-	if (error) throw error;
+	await prisma.reusableBlock.updateMany({
+		where: { id, deleted_at: null },
+		data: { deleted_at: new Date() }
+	});
 };
 
 export const restoreReusableBlock = async (id: string): Promise<ReusableBlock> => {
-	const { error } = await supabaseAdmin
-		.from(BLOCKS_TABLE)
-		.update({ deleted_at: null, updated_at: new Date().toISOString() })
-		.eq('id', id);
-	if (error) throw error;
+	await prisma.reusableBlock.update({
+		where: { id },
+		data: { deleted_at: null, updated_at: new Date() }
+	});
 
 	const block = await getReusableBlockById(id);
 	if (!block) {
@@ -327,8 +283,7 @@ export const updateReusableBlock = async (
 	const payload = Object.fromEntries(Object.entries(recordUpdates).filter(([, value]) => value !== undefined));
 
 	if (Object.keys(payload).length > 0) {
-		const { error } = await supabaseAdmin.from(BLOCKS_TABLE).update(payload).eq('id', id);
-		if (error) throw error;
+		await prisma.reusableBlock.update({ where: { id }, data: payload });
 	}
 
 	if (content) {
@@ -338,37 +293,32 @@ export const updateReusableBlock = async (
 		}
 
 		if (blockRow.draft_version_id) {
-			const { error: archiveError } = await supabaseAdmin
-				.from(BLOCK_VERSIONS_TABLE)
-				.update({ status: 'archived' })
-				.eq('id', blockRow.draft_version_id)
-				.eq('status', 'draft');
-			if (archiveError) throw archiveError;
+			await prisma.reusableBlockVersion.updateMany({
+				where: { id: blockRow.draft_version_id, status: 'draft' },
+				data: { status: 'archived' }
+			});
 		}
 
 		const nextRevision = await getNextReusableBlockRevision(id);
-		const { data: draftRow, error: draftError } = await supabaseAdmin
-			.from(BLOCK_VERSIONS_TABLE)
-			.insert({
+		const draftRow = await prisma.reusableBlockVersion.create({
+			data: {
 				reusable_block_id: id,
 				status: 'draft',
-				content,
+				content: toJsonInput(content),
 				parent_id: blockRow.draft_version_id,
 				revision: nextRevision
-			})
-			.select('id')
-			.single();
-		if (draftError) throw draftError;
+			},
+			select: { id: true }
+		});
 
-		const { error: updateError } = await supabaseAdmin
-			.from(BLOCKS_TABLE)
-			.update({
-				content,
-				draft_version_id: String(draftRow.id),
-				updated_at: new Date().toISOString()
-			})
-			.eq('id', id);
-		if (updateError) throw updateError;
+		await prisma.reusableBlock.update({
+			where: { id },
+			data: {
+				content: toJsonInput(content),
+				draft_version_id: draftRow.id,
+				updated_at: new Date()
+			}
+		});
 	}
 
 	const block = await getReusableBlockById(id);
@@ -394,59 +344,50 @@ export const publishReusableBlock = async (id: string): Promise<ReusableBlock> =
 	}
 
 	if (blockRow.published_version_id) {
-		const { error: archivePublishedError } = await supabaseAdmin
-			.from(BLOCK_VERSIONS_TABLE)
-			.update({ status: 'archived' })
-			.eq('id', blockRow.published_version_id)
-			.eq('status', 'published');
-		if (archivePublishedError) throw archivePublishedError;
+		await prisma.reusableBlockVersion.updateMany({
+			where: { id: blockRow.published_version_id, status: 'published' },
+			data: { status: 'archived' }
+		});
 	}
 
-	const { error: archiveDraftError } = await supabaseAdmin
-		.from(BLOCK_VERSIONS_TABLE)
-		.update({ status: 'archived' })
-		.eq('id', draftVersion.id)
-		.eq('status', 'draft');
-	if (archiveDraftError) throw archiveDraftError;
+	await prisma.reusableBlockVersion.updateMany({
+		where: { id: draftVersion.id, status: 'draft' },
+		data: { status: 'archived' }
+	});
 
 	const publishedRevision = await getNextReusableBlockRevision(id);
-	const { data: publishedRow, error: publishError } = await supabaseAdmin
-		.from(BLOCK_VERSIONS_TABLE)
-		.insert({
+	const publishedRow = await prisma.reusableBlockVersion.create({
+		data: {
 			reusable_block_id: id,
 			status: 'published',
-			content: draftVersion.content,
+			content: toJsonInput(draftVersion.content),
 			parent_id: draftVersion.id,
 			revision: publishedRevision,
-			published_at: new Date().toISOString()
-		})
-		.select('id')
-		.single();
-	if (publishError) throw publishError;
+			published_at: new Date()
+		},
+		select: { id: true }
+	});
 
-	const { data: cleanDraftRow, error: cleanDraftError } = await supabaseAdmin
-		.from(BLOCK_VERSIONS_TABLE)
-		.insert({
+	const cleanDraftRow = await prisma.reusableBlockVersion.create({
+		data: {
 			reusable_block_id: id,
 			status: 'draft',
-			content: draftVersion.content,
-			parent_id: String(publishedRow.id),
+			content: toJsonInput(draftVersion.content),
+			parent_id: publishedRow.id,
 			revision: publishedRevision + 1
-		})
-		.select('id')
-		.single();
-	if (cleanDraftError) throw cleanDraftError;
+		},
+		select: { id: true }
+	});
 
-	const { error: updateError } = await supabaseAdmin
-		.from(BLOCKS_TABLE)
-		.update({
-			content: draftVersion.content,
-			published_version_id: String(publishedRow.id),
-			draft_version_id: String(cleanDraftRow.id),
-			updated_at: new Date().toISOString()
-		})
-		.eq('id', id);
-	if (updateError) throw updateError;
+	await prisma.reusableBlock.update({
+		where: { id },
+		data: {
+			content: toJsonInput(draftVersion.content),
+			published_version_id: publishedRow.id,
+			draft_version_id: cleanDraftRow.id,
+			updated_at: new Date()
+		}
+	});
 
 	const block = await getReusableBlockById(id);
 	if (!block) {

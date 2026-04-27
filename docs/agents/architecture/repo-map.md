@@ -17,7 +17,7 @@
 - `src/lib/Toasts/`
   - Shared CMS toast state + provider + viewport.
 - `src/lib/server/`
-  - Server controllers, auth helpers, service-role Supabase access.
+  - Server controllers, auth helpers, Prisma DB access.
 - `src/lib/supabase/`
   - Shared Supabase client helpers used outside server-only controller layer.
 - `src/lib/page*.ts`
