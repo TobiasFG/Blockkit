@@ -8,6 +8,7 @@
     import { Badge } from "$lib/components/ui/badge/index.js";
     import { Button } from "$lib/components/ui/button/index.js";
     import { Label } from "$lib/components/ui/label/index.js";
+    import { FileText, Filter, Package, RotateCcw, Trash2 } from "$lib/icons";
     import type { Page, ReusableBlock } from "$lib/types";
     import type { PageProps } from "./$types";
 
@@ -21,6 +22,9 @@
     const activePages = $derived(data.pages ?? []);
     const deletedPages = $derived(data.deletedPages ?? []);
     const deletedReusableBlocks = $derived(data.deletedReusableBlocks ?? []);
+    const deletedTotal = $derived(
+        deletedPages.length + deletedReusableBlocks.length,
+    );
 
     const formatDate = (value: string | null | undefined) =>
         value
@@ -37,6 +41,17 @@
         value && value.trim() ? value : "/";
     const parentOptions = (pageId: string) =>
         activePages.filter((page) => page.id !== pageId);
+    const defaultParentSelection = (page: Page) => {
+        const options = parentOptions(page.id);
+        if (
+            page.parent_page_id &&
+            options.some((parent) => parent.id === page.parent_page_id)
+        ) {
+            return page.parent_page_id;
+        }
+
+        return options[0]?.id ?? "";
+    };
 
     $effect(() => {
         if (browser) {
@@ -48,7 +63,7 @@
             if (pageParentSelections[page.id] !== undefined) continue;
             pageParentSelections = {
                 ...pageParentSelections,
-                [page.id]: page.parent_page_id ?? "",
+                [page.id]: defaultParentSelection(page),
             };
         }
     });
@@ -58,103 +73,72 @@
     <title>Trash</title>
 </svelte:head>
 
-<main class="space-y-8">
-    <section
-        class="rounded-[2rem] border border-border/80 bg-card/95 px-6 py-8 shadow-[0_24px_70px_-48px_rgba(15,23,42,0.3)] sm:px-8"
-    >
-        <p
-            class="text-xs font-semibold uppercase tracking-[0.32em] text-muted-foreground"
+<main class="space-y-6">
+    <section class="flex flex-wrap items-start justify-between gap-4">
+        <div>
+            <h1
+                class="text-3xl font-semibold tracking-tight text-foreground sm:text-4xl"
+            >
+                Trash
+            </h1>
+            <p class="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">
+                Review and restore deleted pages and reusable content.
+            </p>
+        </div>
+        <div
+            class="rounded-lg border border-border bg-card px-4 py-3 text-sm text-muted-foreground shadow-sm"
         >
-            Trash
-        </p>
-        <h1
-            class="mt-2 text-[2.4rem] font-semibold tracking-[-0.045em] text-foreground sm:text-5xl"
-        >
-            Deleted work stays recoverable.
-        </h1>
-        <p class="mt-3 max-w-3xl text-base leading-7 text-muted-foreground">
-            Pages and content moved here stay out of normal CMS lists until
-            restored. Deleted content does not auto-reinsert into pages it was
-            removed from.
-        </p>
+            <span class="font-semibold text-foreground">{deletedTotal}</span>
+            recoverable items
+        </div>
     </section>
 
-    <section class="grid gap-6 xl:grid-cols-[1.2fr_1fr]">
-        <div
-            class="rounded-[1.75rem] border border-border/80 bg-card p-5 shadow-[0_18px_55px_-42px_rgba(15,23,42,0.3)]"
-        >
-            <div class="space-y-2 border-b border-border pb-4">
-                <p
-                    class="text-xs font-semibold uppercase tracking-[0.28em] text-muted-foreground"
-                >
-                    Pages
-                </p>
-                <h2
-                    class="text-[1.45rem] font-semibold tracking-[-0.03em] text-foreground"
-                >
-                    Deleted pages
-                </h2>
-                <p class="text-sm leading-6 text-muted-foreground">
-                    Pages with child pages still cannot be deleted. Restoring
-                    can target a new parent.
-                </p>
+    <section
+        class="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-800 dark:text-emerald-200"
+    >
+        <span class="flex items-center gap-2">
+            <RotateCcw class="size-4" />
+            Deleted work stays outside normal CMS lists until restored.
+        </span>
+        <a href="/content" class="font-medium underline-offset-4 hover:underline">
+            Content library
+        </a>
+    </section>
+
+    <section class="grid gap-4 xl:grid-cols-2">
+        <div class="rounded-lg border border-border bg-card shadow-sm">
+            <div
+                class="flex flex-wrap items-center justify-between gap-3 border-b border-border px-5 py-4"
+            >
+                <div>
+                    <h2 class="text-base font-semibold text-foreground">
+                        Deleted pages ({deletedPages.length})
+                    </h2>
+                    <p class="mt-1 text-sm text-muted-foreground">
+                        Restore pages under active parent page.
+                    </p>
+                </div>
+                <Button variant="outline" size="icon-sm" aria-label="Filter pages">
+                    <Filter class="size-4" />
+                </Button>
             </div>
 
-            <div class="mt-5 space-y-4">
+            <div>
                 {#if deletedPages.length === 0}
-                    <CmsEmptyState
-                        eyebrow="Clean"
-                        title="No deleted pages."
-                        description="Pages moved to trash appear here with restore controls and parent selection."
-                    />
+                    <div class="p-5">
+                        <CmsEmptyState
+                            eyebrow="Clean"
+                            title="No deleted pages."
+                            description="Pages moved to trash appear here with restore controls and parent selection."
+                        />
+                    </div>
                 {:else}
-                    {#each deletedPages as page (page.id)}
-                        <div
-                            class="rounded-2xl border border-border bg-muted/35 p-4"
-                        >
-                            <div
-                                class="flex flex-wrap items-start justify-between gap-3"
-                            >
-                                <div class="space-y-1">
-                                    <div
-                                        class="flex flex-wrap items-center gap-2"
-                                    >
-                                        <h3
-                                            class="text-lg font-semibold text-foreground"
-                                        >
-                                            {page.title}
-                                        </h3>
-                                        <Badge
-                                            variant="outline"
-                                            class="uppercase tracking-[0.18em]"
-                                        >
-                                            Page
-                                        </Badge>
-                                    </div>
-                                    <div
-                                        class="flex flex-wrap gap-x-3 gap-y-1 text-sm text-muted-foreground"
-                                    >
-                                        <span
-                                            class="font-mono text-[12px] text-foreground"
-                                            >{displayPath(page.path)}</span
-                                        >
-                                        <span
-                                            >Deleted {formatDate(
-                                                page.deleted_at,
-                                            )}</span
-                                        >
-                                    </div>
-                                </div>
-                                <span
-                                    class="text-sm font-medium text-muted-foreground"
-                                    >Editor unavailable while trashed</span
-                                >
-                            </div>
-
+                    <div class="divide-y divide-border">
+                        {#each deletedPages as page (page.id)}
                             <form
                                 method="POST"
                                 action="?/restorePage"
-                                class="mt-4 space-y-3"
+                                class="grid gap-3 px-5 py-4 lg:grid-cols-[minmax(0,1fr)_12rem_auto] lg:items-center"
                                 use:enhance={() => {
                                     restoringPageId = page.id;
 
@@ -191,17 +175,46 @@
                                     name="pageId"
                                     value={page.id}
                                 />
+                                <div class="flex min-w-0 items-start gap-3">
+                                    <span
+                                        class="mt-1 flex size-8 shrink-0 items-center justify-center rounded-md bg-muted text-muted-foreground"
+                                    >
+                                        <FileText class="size-4" />
+                                    </span>
+                                    <span class="min-w-0">
+                                        <span
+                                            class="block truncate text-sm font-semibold text-foreground"
+                                            >{page.title}</span
+                                        >
+                                        <span
+                                            class="mt-1 block truncate font-mono text-xs text-muted-foreground"
+                                            >{displayPath(page.path)}</span
+                                        >
+                                        <span
+                                            class="mt-2 flex flex-wrap items-center gap-2 text-xs text-muted-foreground"
+                                        >
+                                            <Badge
+                                                class="bg-amber-500/15 text-[10px] font-semibold uppercase tracking-[0.18em] text-amber-700 dark:text-amber-300"
+                                                >Page</Badge
+                                            >
+                                            Deleted {formatDate(page.deleted_at)}
+                                        </span>
+                                    </span>
+                                </div>
                                 <div class="space-y-1">
-                                    <Label for={`parent-${page.id}`}
-                                        >Restore under parent</Label
+                                    <Label
+                                        for={`parent-${page.id}`}
+                                        class="text-xs"
+                                        >Parent</Label
                                     >
                                     <select
                                         id={`parent-${page.id}`}
                                         name="parentPageId"
+                                        aria-label="Restore under parent"
                                         bind:value={
                                             pageParentSelections[page.id]
                                         }
-                                        class="border-input bg-background focus-visible:border-ring focus-visible:ring-ring/50 flex h-11 w-full rounded-2xl border px-4 py-3 text-sm outline-none focus-visible:ring-3"
+                                        class="border-input bg-background focus-visible:border-ring focus-visible:ring-ring/50 flex h-9 w-full rounded-lg border px-3 py-2 text-sm outline-none focus-visible:ring-3"
                                     >
                                         <option value="" disabled
                                             >Select parent page</option
@@ -217,7 +230,9 @@
                                 </div>
                                 <Button
                                     type="submit"
-                                    class="h-11 rounded-full"
+                                    size="sm"
+                                    variant="outline"
+                                    class="w-fit rounded-lg"
                                     disabled={restoringPageId === page.id ||
                                         !pageParentSelections[page.id]}
                                 >
@@ -226,77 +241,49 @@
                                         : "Restore page"}
                                 </Button>
                             </form>
-                        </div>
-                    {/each}
+                        {/each}
+                    </div>
                 {/if}
             </div>
         </div>
 
-        <div
-            class="rounded-[1.75rem] border border-border/80 bg-card p-5 shadow-[0_18px_55px_-42px_rgba(15,23,42,0.3)]"
-        >
-            <div class="space-y-2 border-b border-border pb-4">
-                <p
-                    class="text-xs font-semibold uppercase tracking-[0.28em] text-muted-foreground"
+        <div class="rounded-lg border border-border bg-card shadow-sm">
+            <div
+                class="flex flex-wrap items-center justify-between gap-3 border-b border-border px-5 py-4"
+            >
+                <div>
+                    <h2 class="text-base font-semibold text-foreground">
+                        Deleted content ({deletedReusableBlocks.length})
+                    </h2>
+                    <p class="mt-1 text-sm text-muted-foreground">
+                        Restored content returns to library without page refs.
+                    </p>
+                </div>
+                <Button
+                    variant="outline"
+                    size="icon-sm"
+                    aria-label="Filter content"
                 >
-                    Content
-                </p>
-                <h2
-                    class="text-[1.45rem] font-semibold tracking-[-0.03em] text-foreground"
-                >
-                    Deleted content
-                </h2>
-                <p class="text-sm leading-6 text-muted-foreground">
-                    Restoring content makes item available again, but does not
-                    reinsert removed page references.
-                </p>
+                    <Filter class="size-4" />
+                </Button>
             </div>
 
-            <div class="mt-5 space-y-4">
+            <div>
                 {#if deletedReusableBlocks.length === 0}
-                    <CmsEmptyState
-                        eyebrow="Clean"
-                        title="No deleted content."
-                        description="Deleted content items appear here. Restoring does not reinsert removed page references."
-                    />
+                    <div class="p-5">
+                        <CmsEmptyState
+                            eyebrow="Clean"
+                            title="No deleted content."
+                            description="Deleted content items appear here. Restoring does not reinsert removed page references."
+                        />
+                    </div>
                 {:else}
-                    {#each deletedReusableBlocks as block (block.id)}
-                        <div
-                            class="rounded-2xl border border-border bg-muted/35 p-4"
-                        >
-                            <div class="space-y-1">
-                                <div class="flex flex-wrap items-center gap-2">
-                                    <h3
-                                        class="text-lg font-semibold text-foreground"
-                                    >
-                                        {block.name}
-                                    </h3>
-                                    <Badge
-                                        class="bg-amber-500/15 text-[10px] font-semibold uppercase tracking-[0.18em] text-amber-700 dark:text-amber-300"
-                                    >
-                                        {block.block_type}
-                                    </Badge>
-                                </div>
-                                <div
-                                    class="flex flex-wrap gap-x-3 gap-y-1 text-sm text-muted-foreground"
-                                >
-                                    <span
-                                        >Deleted {formatDate(
-                                            block.deleted_at,
-                                        )}</span
-                                    >
-                                    <span
-                                        >{block.is_published
-                                            ? "Had published version"
-                                            : "Draft only"}</span
-                                    >
-                                </div>
-                            </div>
-
+                    <div class="divide-y divide-border">
+                        {#each deletedReusableBlocks as block (block.id)}
                             <form
                                 method="POST"
                                 action="?/restoreReusableBlock"
-                                class="mt-4"
+                                class="grid gap-3 px-5 py-4 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center"
                                 use:enhance={() => {
                                     restoringBlockId = block.id;
 
@@ -334,9 +321,41 @@
                                     name="id"
                                     value={block.id}
                                 />
+                                <div class="flex min-w-0 items-start gap-3">
+                                    <span
+                                        class="mt-1 flex size-8 shrink-0 items-center justify-center rounded-md bg-muted text-muted-foreground"
+                                    >
+                                        <Package class="size-4" />
+                                    </span>
+                                    <span class="min-w-0">
+                                        <span
+                                            class="block truncate text-sm font-semibold text-foreground"
+                                            >{block.name}</span
+                                        >
+                                        <span
+                                            class="mt-1 block text-xs text-muted-foreground"
+                                        >
+                                            Deleted {formatDate(block.deleted_at)}
+                                        </span>
+                                        <span
+                                            class="mt-2 flex flex-wrap items-center gap-2 text-xs text-muted-foreground"
+                                        >
+                                            <Badge
+                                                class="bg-emerald-500/15 text-[10px] font-semibold uppercase tracking-[0.18em] text-emerald-700 dark:text-emerald-300"
+                                            >
+                                                {block.block_type}
+                                            </Badge>
+                                            {block.is_published
+                                                ? "Had published version"
+                                                : "Draft only"}
+                                        </span>
+                                    </span>
+                                </div>
                                 <Button
                                     type="submit"
-                                    class="h-11 rounded-full"
+                                    size="sm"
+                                    variant="outline"
+                                    class="w-fit rounded-lg"
                                     disabled={restoringBlockId === block.id}
                                 >
                                     {restoringBlockId === block.id
@@ -344,10 +363,39 @@
                                         : "Restore content"}
                                 </Button>
                             </form>
-                        </div>
-                    {/each}
+                        {/each}
+                    </div>
                 {/if}
             </div>
+        </div>
+    </section>
+
+    <section class="grid gap-4 xl:grid-cols-2">
+        <div class="rounded-lg border border-border bg-card p-8 text-center shadow-sm">
+            <span
+                class="mx-auto flex size-14 items-center justify-center rounded-full bg-muted text-muted-foreground"
+            >
+                <Trash2 class="size-7" />
+            </span>
+            <h2 class="mt-5 text-base font-semibold text-foreground">
+                No more deleted pages
+            </h2>
+            <p class="mt-2 text-sm text-muted-foreground">
+                When pages are deleted, restore controls appear above.
+            </p>
+        </div>
+        <div class="rounded-lg border border-border bg-card p-8 text-center shadow-sm">
+            <span
+                class="mx-auto flex size-14 items-center justify-center rounded-full bg-muted text-muted-foreground"
+            >
+                <Trash2 class="size-7" />
+            </span>
+            <h2 class="mt-5 text-base font-semibold text-foreground">
+                No more deleted content
+            </h2>
+            <p class="mt-2 text-sm text-muted-foreground">
+                Restored content stays out of pages until reinserted.
+            </p>
         </div>
     </section>
 </main>

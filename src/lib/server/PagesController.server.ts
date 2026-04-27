@@ -273,7 +273,10 @@ export const getPages = async (): Promise<Page[]> => {
 	return parsePages(await getPageRows());
 };
 
-export const getDeletedPages = async (): Promise<Page[]> => parsePages(await getPageRows({ deletedOnly: true }));
+export const getDeletedPages = async (): Promise<Page[]> => {
+	const pages = await parsePages(await getPageRows({ includeDeleted: true }));
+	return pages.filter((page) => page.deleted_at !== null);
+};
 
 export const getPageById = async (
 	id: string,

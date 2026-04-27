@@ -19,6 +19,7 @@
         Plus,
         Search,
         Sparkles,
+        Trash2,
     } from "$lib/icons";
     import { buildEditPagePath } from "$lib/pagePath";
     import type { SidebarExpandedContentProps } from "./Types";
@@ -259,6 +260,21 @@
                     </div>
                 </Sidebar.MenuItem>
             {/if}
+        </Sidebar.Menu>
+    </Sidebar.Group>
+
+    <Sidebar.Group>
+        <Sidebar.Menu>
+            <Sidebar.MenuItem>
+                <Sidebar.MenuButton isActive={isActive("/trash")}>
+                    {#snippet child({ props })}
+                        <a href="/trash" {...props} onclick={onClose}>
+                            <Trash2 class="size-4" />
+                            <span>Trash</span>
+                        </a>
+                    {/snippet}
+                </Sidebar.MenuButton>
+            </Sidebar.MenuItem>
         </Sidebar.Menu>
     </Sidebar.Group>
 </Sidebar.Content>
