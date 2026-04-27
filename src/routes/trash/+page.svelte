@@ -4,6 +4,7 @@
     import { getToastState } from "$lib/Toasts/ToastState.svelte";
     import { pagesStore } from "$lib/client/pagesStore";
     import { reusableBlocksStore } from "$lib/client/reusableBlocksStore";
+    import CmsEmptyState from "$lib/components/cms/CmsEmptyState.svelte";
     import { Badge } from "$lib/components/ui/badge/index.js";
     import { Button } from "$lib/components/ui/button/index.js";
     import { Label } from "$lib/components/ui/label/index.js";
@@ -101,11 +102,11 @@
 
             <div class="mt-5 space-y-4">
                 {#if deletedPages.length === 0}
-                    <div
-                        class="rounded-2xl border border-dashed border-border bg-muted/40 px-4 py-6 text-sm text-muted-foreground"
-                    >
-                        No deleted pages.
-                    </div>
+                    <CmsEmptyState
+                        eyebrow="Clean"
+                        title="No deleted pages."
+                        description="Pages moved to trash appear here with restore controls and parent selection."
+                    />
                 {:else}
                     {#each deletedPages as page (page.id)}
                         <div
@@ -253,11 +254,11 @@
 
             <div class="mt-5 space-y-4">
                 {#if deletedReusableBlocks.length === 0}
-                    <div
-                        class="rounded-2xl border border-dashed border-border bg-muted/40 px-4 py-6 text-sm text-muted-foreground"
-                    >
-                        No deleted content.
-                    </div>
+                    <CmsEmptyState
+                        eyebrow="Clean"
+                        title="No deleted content."
+                        description="Deleted content items appear here. Restoring does not reinsert removed page references."
+                    />
                 {:else}
                     {#each deletedReusableBlocks as block (block.id)}
                         <div

@@ -5,6 +5,7 @@ export { default as ChevronsRight } from "@lucide/svelte/icons/chevrons-right";
 export { default as ChevronsUpDown } from "@lucide/svelte/icons/chevrons-up-down";
 export { default as Bell } from "@lucide/svelte/icons/bell";
 export { default as BadgeCheck } from "@lucide/svelte/icons/badge-check";
+export { default as CircleAlert } from "@lucide/svelte/icons/circle-alert";
 export { default as EllipsisVertical } from "@lucide/svelte/icons/ellipsis-vertical";
 export { default as FileText } from "@lucide/svelte/icons/file-text";
 export { default as Folder } from "@lucide/svelte/icons/folder";

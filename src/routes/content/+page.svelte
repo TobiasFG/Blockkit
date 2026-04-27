@@ -12,6 +12,7 @@
     import { Label } from "$lib/components/ui/label/index.js";
     import { listBlockDefinitions } from "$lib/blocks/registry";
     import ActionModal from "$lib/components/cms/ActionModal.svelte";
+    import CmsEmptyState from "$lib/components/cms/CmsEmptyState.svelte";
     import type {
         BlockFolder,
         ReusableBlock,
@@ -317,11 +318,11 @@
 
         <div class="mt-6">
             {#if currentBlockFolders.length === 0 && currentReusableBlocks.length === 0}
-                <div
-                    class="rounded-[1.5rem] border border-dashed border-border bg-muted/40 px-6 py-10 text-sm text-muted-foreground"
-                >
-                    No content yet. Create first folder or content item above.
-                </div>
+                <CmsEmptyState
+                    eyebrow="Empty library"
+                    title="Create reusable content for shared sections."
+                    description="Start with a folder if you want structure first, or create a content item and move it into folders later."
+                />
             {:else}
                 <div class="space-y-4">
                     {#each reusableBlocksTree.folders as folder (folder.folder?.id)}
