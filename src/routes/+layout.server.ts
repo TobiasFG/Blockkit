@@ -7,7 +7,7 @@ import type { LayoutServerLoad } from './$types';
 export const load: LayoutServerLoad = async ({ locals, url }) => {
 	const { session, user } = await locals.safeGetSession();
 	const isAuthRoute = url.pathname === AUTH_ROUTE;
-	const isDevRoute = url.pathname === '/dev';
+	const isDevRoute = url.pathname === '/dev' || url.pathname.startsWith('/dev/');
 
 	if (!user && !isAuthRoute && !isDevRoute) {
 		throw redirect(303, buildAuthRedirectPath(url.pathname, url.search));
