@@ -1,0 +1,602 @@
+{
+  "nodes": [
+    {
+      "id": "cms_layout_data_gate",
+      "label": "CMS Layout Data Gate",
+      "file_type": "code",
+      "source_file": "src/routes/+layout.server.ts",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "cms_shell_authenticated_workspace",
+      "label": "Authenticated CMS Workspace Shell",
+      "file_type": "code",
+      "source_file": "src/lib/components/cms/CmsShell.svelte",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "layout_client_store_sync",
+      "label": "Layout Client Store Sync",
+      "file_type": "code",
+      "source_file": "src/routes/+layout.svelte",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "auth_route_action_flow",
+      "label": "Auth Route Action Flow",
+      "file_type": "code",
+      "source_file": "src/routes/auth/+page.server.ts",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "auth_page_transition_flow",
+      "label": "Auth Page Transition Flow",
+      "file_type": "code",
+      "source_file": "src/routes/auth/+page.svelte",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "auth_rail_form_surface",
+      "label": "Auth Rail Form Surface",
+      "file_type": "code",
+      "source_file": "src/lib/components/auth/AuthRail.svelte",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "auth_preview_stage_motion",
+      "label": "Auth Preview Stage Motion",
+      "file_type": "code",
+      "source_file": "src/lib/components/auth/AuthPreviewStage.svelte",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "dashboard_operational_overview",
+      "label": "Dashboard Operational Overview",
+      "file_type": "code",
+      "source_file": "src/routes/+page.svelte",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "dashboard_deleted_counts_load",
+      "label": "Dashboard Deleted Counts Load",
+      "file_type": "code",
+      "source_file": "src/routes/+page.server.ts",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "content_library_server_actions",
+      "label": "Content Library Server Actions",
+      "file_type": "code",
+      "source_file": "src/routes/content/+page.server.ts",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "content_library_management_page",
+      "label": "Content Library Management Page",
+      "file_type": "code",
+      "source_file": "src/routes/content/+page.svelte",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "reusable_block_library_tree_item",
+      "label": "Reusable Block Library Tree Item",
+      "file_type": "code",
+      "source_file": "src/routes/content/ReusableBlockLibraryTreeItem.svelte",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "block_list_editor_nested_composer",
+      "label": "Block List Editor Nested Composer",
+      "file_type": "code",
+      "source_file": "src/lib/components/cms/BlockListEditor.svelte",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "cms_action_modal_confirmation",
+      "label": "CMS Action Modal Confirmation",
+      "file_type": "code",
+      "source_file": "src/lib/components/cms/ActionModal.svelte",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "cms_empty_state_prompt",
+      "label": "CMS Empty State Prompt",
+      "file_type": "code",
+      "source_file": "src/lib/components/cms/CmsEmptyState.svelte",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "cms_icon_button_accessible_wrapper",
+      "label": "CMS Icon Button Accessible Wrapper",
+      "file_type": "code",
+      "source_file": "src/lib/components/cms/CmsIconButton.svelte",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "theme_toggle_mode_control",
+      "label": "Theme Toggle Mode Control",
+      "file_type": "code",
+      "source_file": "src/lib/Theme/ThemeToggle.svelte",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "typography_size_token_system",
+      "label": "Typography Size Token System",
+      "file_type": "code",
+      "source_file": "src/lib/Typography/SizeClasses.ts",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "typography_component_family",
+      "label": "Typography Component Family",
+      "file_type": "code",
+      "source_file": "src/lib/Typography/Index.ts",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "shared_icon_export_surface",
+      "label": "Shared Icon Export Surface",
+      "file_type": "code",
+      "source_file": "src/lib/icons/index.ts",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    }
+  ],
+  "edges": [
+    {
+      "source": "cms_layout_data_gate",
+      "target": "cms_shell_authenticated_workspace",
+      "relation": "provides_data_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 0.98,
+      "source_file": "src/routes/+layout.server.ts",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "cms_layout_data_gate",
+      "target": "auth_route_action_flow",
+      "relation": "guards",
+      "confidence": "EXTRACTED",
+      "confidence_score": 0.96,
+      "source_file": "src/routes/+layout.server.ts",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "layout_client_store_sync",
+      "target": "cms_shell_authenticated_workspace",
+      "relation": "coordinates_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 0.95,
+      "source_file": "src/routes/+layout.svelte",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "layout_client_store_sync",
+      "target": "content_library_management_page",
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 0.93,
+      "source_file": "src/routes/+layout.svelte",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "cms_shell_authenticated_workspace",
+      "target": "theme_toggle_mode_control",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "confidence_score": 0.99,
+      "source_file": "src/lib/components/cms/CmsShell.svelte",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "cms_shell_authenticated_workspace",
+      "target": "auth_route_action_flow",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 0.94,
+      "source_file": "src/lib/components/cms/CmsShell.svelte",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "auth_page_transition_flow",
+      "target": "auth_route_action_flow",
+      "relation": "submits_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 0.99,
+      "source_file": "src/routes/auth/+page.svelte",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "auth_page_transition_flow",
+      "target": "auth_rail_form_surface",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "confidence_score": 0.99,
+      "source_file": "src/routes/auth/+page.svelte",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "auth_page_transition_flow",
+      "target": "auth_preview_stage_motion",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "confidence_score": 0.99,
+      "source_file": "src/routes/auth/+page.svelte",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "auth_page_transition_flow",
+      "target": "theme_toggle_mode_control",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "confidence_score": 0.96,
+      "source_file": "src/routes/auth/+page.svelte",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "auth_rail_form_surface",
+      "target": "auth_route_action_flow",
+      "relation": "submits_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 0.98,
+      "source_file": "src/lib/components/auth/AuthRail.svelte",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "auth_preview_stage_motion",
+      "target": "auth_page_transition_flow",
+      "relation": "coordinates_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 0.94,
+      "source_file": "src/lib/components/auth/AuthPreviewStage.svelte",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "dashboard_deleted_counts_load",
+      "target": "dashboard_operational_overview",
+      "relation": "provides_data_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 0.98,
+      "source_file": "src/routes/+page.server.ts",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "dashboard_operational_overview",
+      "target": "content_library_management_page",
+      "relation": "links_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 0.92,
+      "source_file": "src/routes/+page.svelte",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "dashboard_operational_overview",
+      "target": "cms_empty_state_prompt",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "confidence_score": 0.95,
+      "source_file": "src/routes/+page.svelte",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "content_library_server_actions",
+      "target": "content_library_management_page",
+      "relation": "provides_data_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 0.99,
+      "source_file": "src/routes/content/+page.server.ts",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "content_library_server_actions",
+      "target": "cms_action_modal_confirmation",
+      "relation": "serves",
+      "confidence": "EXTRACTED",
+      "confidence_score": 0.93,
+      "source_file": "src/routes/content/+page.server.ts",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "content_library_management_page",
+      "target": "reusable_block_library_tree_item",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "confidence_score": 0.99,
+      "source_file": "src/routes/content/+page.svelte",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "content_library_management_page",
+      "target": "cms_action_modal_confirmation",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "confidence_score": 0.98,
+      "source_file": "src/routes/content/+page.svelte",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "content_library_management_page",
+      "target": "cms_empty_state_prompt",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "confidence_score": 0.96,
+      "source_file": "src/routes/content/+page.svelte",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "content_library_management_page",
+      "target": "layout_client_store_sync",
+      "relation": "updates",
+      "confidence": "EXTRACTED",
+      "confidence_score": 0.95,
+      "source_file": "src/routes/content/+page.svelte",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "reusable_block_library_tree_item",
+      "target": "content_library_management_page",
+      "relation": "coordinates_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 0.95,
+      "source_file": "src/routes/content/ReusableBlockLibraryTreeItem.svelte",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "reusable_block_library_tree_item",
+      "target": "content_library_server_actions",
+      "relation": "triggers",
+      "confidence": "INFERRED",
+      "confidence_score": 0.86,
+      "source_file": "src/routes/content/ReusableBlockLibraryTreeItem.svelte",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "block_list_editor_nested_composer",
+      "target": "content_library_management_page",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.82,
+      "source_file": "src/lib/components/cms/BlockListEditor.svelte",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "block_list_editor_nested_composer",
+      "target": "content_library_server_actions",
+      "relation": "depends_on_data",
+      "confidence": "EXTRACTED",
+      "confidence_score": 0.88,
+      "source_file": "src/lib/components/cms/BlockListEditor.svelte",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "cms_action_modal_confirmation",
+      "target": "content_library_server_actions",
+      "relation": "protects",
+      "confidence": "INFERRED",
+      "confidence_score": 0.9,
+      "source_file": "src/lib/components/cms/ActionModal.svelte",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "typography_component_family",
+      "target": "typography_size_token_system",
+      "relation": "depends_on",
+      "confidence": "EXTRACTED",
+      "confidence_score": 0.99,
+      "source_file": "src/lib/Typography/Index.ts",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "typography_component_family",
+      "target": "cms_empty_state_prompt",
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.78,
+      "source_file": "src/lib/Typography/Index.ts",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "shared_icon_export_surface",
+      "target": "dashboard_operational_overview",
+      "relation": "supports",
+      "confidence": "EXTRACTED",
+      "confidence_score": 0.92,
+      "source_file": "src/lib/icons/index.ts",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "shared_icon_export_surface",
+      "target": "cms_shell_authenticated_workspace",
+      "relation": "supports",
+      "confidence": "EXTRACTED",
+      "confidence_score": 0.88,
+      "source_file": "src/lib/icons/index.ts",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "cms_icon_button_accessible_wrapper",
+      "target": "block_list_editor_nested_composer",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "src/lib/components/cms/CmsIconButton.svelte",
+      "source_location": null,
+      "weight": 1.0
+    }
+  ],
+  "hyperedges": [
+    {
+      "id": "authenticated_workspace_flow",
+      "label": "Authenticated Workspace Flow",
+      "nodes": [
+        "cms_layout_data_gate",
+        "layout_client_store_sync",
+        "cms_shell_authenticated_workspace",
+        "theme_toggle_mode_control",
+        "dashboard_operational_overview"
+      ],
+      "relation": "participate_in",
+      "confidence": "EXTRACTED",
+      "confidence_score": 0.94,
+      "source_file": "src/routes/+layout.server.ts"
+    },
+    {
+      "id": "auth_login_signup_transition_flow",
+      "label": "Auth Login Signup Transition Flow",
+      "nodes": [
+        "auth_route_action_flow",
+        "auth_page_transition_flow",
+        "auth_rail_form_surface",
+        "auth_preview_stage_motion",
+        "theme_toggle_mode_control"
+      ],
+      "relation": "participate_in",
+      "confidence": "EXTRACTED",
+      "confidence_score": 0.96,
+      "source_file": "src/routes/auth/+page.svelte"
+    },
+    {
+      "id": "content_library_mutation_flow",
+      "label": "Content Library Mutation Flow",
+      "nodes": [
+        "content_library_server_actions",
+        "content_library_management_page",
+        "reusable_block_library_tree_item",
+        "cms_action_modal_confirmation",
+        "cms_empty_state_prompt",
+        "layout_client_store_sync"
+      ],
+      "relation": "participate_in",
+      "confidence": "EXTRACTED",
+      "confidence_score": 0.95,
+      "source_file": "src/routes/content/+page.svelte"
+    },
+    {
+      "id": "editor_support_components_flow",
+      "label": "Editor Support Components Flow",
+      "nodes": [
+        "block_list_editor_nested_composer",
+        "cms_icon_button_accessible_wrapper",
+        "cms_action_modal_confirmation",
+        "typography_component_family",
+        "typography_size_token_system",
+        "shared_icon_export_surface"
+      ],
+      "relation": "participate_in",
+      "confidence": "INFERRED",
+      "confidence_score": 0.82,
+      "source_file": "src/lib/components/cms/BlockListEditor.svelte"
+    }
+  ],
+  "input_tokens": 0,
+  "output_tokens": 0
+}

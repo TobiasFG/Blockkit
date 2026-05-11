@@ -1,0 +1,367 @@
+{
+  "chunk_index": 12,
+  "chunk_count": 13,
+  "deep_mode": false,
+  "source_files": [
+    "/Users/tfg/Documents/Blockkit/src/routes/content/[id]/+page.server.ts",
+    "/Users/tfg/Documents/Blockkit/src/routes/content/[id]/+page.svelte",
+    "/Users/tfg/Documents/Blockkit/src/routes/trash/+page.server.ts",
+    "/Users/tfg/Documents/Blockkit/src/routes/trash/+page.svelte",
+    "/Users/tfg/Documents/Blockkit/src/routes/trash/trash-page.svelte.spec.ts",
+    "/Users/tfg/Documents/Blockkit/src/routes/edit/page/[id]/+page.server.ts",
+    "/Users/tfg/Documents/Blockkit/src/routes/edit/page/[id]/+page.svelte",
+    "/Users/tfg/Documents/Blockkit/src/routes/api/sidebar-actions/+server.ts",
+    "/Users/tfg/Documents/Blockkit/src/routes/dev/DevSidebarFrame.svelte",
+    "/Users/tfg/Documents/Blockkit/src/routes/dev/+page.svelte",
+    "/Users/tfg/Documents/Blockkit/src/routes/dev/DevSidebarPageItem.svelte",
+    "/Users/tfg/Documents/Blockkit/src/routes/dev/+layout.svelte",
+    "/Users/tfg/Documents/Blockkit/src/routes/dev/design-system/+page.svelte",
+    "/Users/tfg/Documents/Blockkit/LICENSE.md",
+    "/Users/tfg/Documents/Blockkit/README.md",
+    "/Users/tfg/Documents/Blockkit/AGENTS.md",
+    "/Users/tfg/Documents/Blockkit/LLMS/Archive.md",
+    "/Users/tfg/Documents/Blockkit/LLMS/Suggestions.md",
+    "/Users/tfg/Documents/Blockkit/LLMS/Changes.md",
+    "/Users/tfg/Documents/Blockkit/LLMS/Design/20260417-page-publish-workflow.md",
+    "/Users/tfg/Documents/Blockkit/LLMS/Design/20260417-page-parent-based-url-model.md",
+    "/Users/tfg/Documents/Blockkit/LLMS/Design/20260410-reusable-block-instances.md"
+  ],
+  "semantic_edges": [
+    {
+      "source": "src/routes/content/[id]/+page.server.ts",
+      "target": "src/lib/server/ReusableBlocksController.server.ts",
+      "type": "route_load_contract",
+      "summary": "Reusable content editor load fetches one reusable block including deleted markers, redirects deleted content to trash, and supplies folders plus block definitions for editor UI.",
+      "confidence_score": 0.98
+    },
+    {
+      "source": "src/routes/content/[id]/+page.server.ts",
+      "target": "src/lib/server/auth.ts",
+      "type": "guards_mutation",
+      "summary": "All reusable content edit actions require authenticated user before updating, publishing, or moving folders.",
+      "confidence_score": 0.99
+    },
+    {
+      "source": "src/routes/content/[id]/+page.server.ts",
+      "target": "src/lib/reusableBlockEditor.ts",
+      "type": "validates_submitted_payload",
+      "summary": "Reusable block update parses submitted JSON content and rejects empty payloads or content whose type differs from current block_type.",
+      "confidence_score": 0.98
+    },
+    {
+      "source": "src/routes/content/[id]/+page.server.ts",
+      "target": "reusable block folder hierarchy invariant",
+      "type": "enforces_tree_invariant",
+      "summary": "Folder update action prevents moving a folder into itself or one of its descendants before persisting parent_id.",
+      "confidence_score": 0.97
+    },
+    {
+      "source": "src/routes/content/[id]/+page.svelte",
+      "target": "src/lib/reusableBlockStatus.ts",
+      "type": "drives_editor_state_machine",
+      "summary": "Reusable content editor derives publish status, draft-change status, primary action label, disabled state, and hints from reusable block publish helpers plus local dirty state.",
+      "confidence_score": 0.98
+    },
+    {
+      "source": "src/routes/content/[id]/+page.svelte",
+      "target": "src/lib/reusableBlockEditor.ts",
+      "type": "delegates_content_mutations",
+      "summary": "Reusable content editor uses reusableBlockEditor helpers for editable snapshots, field updates, nested block add/remove/move operations, validation, and submitted content shape.",
+      "confidence_score": 0.99
+    },
+    {
+      "source": "src/routes/content/[id]/+page.svelte",
+      "target": "src/lib/components/cms/BlockListEditor.svelte",
+      "type": "composes_editor_surface",
+      "summary": "Reusable content editor renders nested blocks through BlockListEditor for fields whose definition accepts block arrays, while disabling reusable references inside reusable blocks.",
+      "confidence_score": 0.97
+    },
+    {
+      "source": "src/routes/content/[id]/+page.svelte",
+      "target": "src/lib/client/reusableBlocksStore.ts",
+      "type": "syncs_client_cache",
+      "summary": "After successful save or publish, reusable content editor updates client reusable block store and block folder store without full invalidation.",
+      "confidence_score": 0.96
+    },
+    {
+      "source": "src/routes/content/[id]/+page.svelte",
+      "target": "src/lib/Toasts/ToastState.svelte.ts",
+      "type": "reports_form_outcome",
+      "summary": "Enhanced reusable content form emits success and failure toast messages for draft saves, publishing, and validation blockers.",
+      "confidence_score": 0.97
+    },
+    {
+      "source": "src/routes/trash/+page.server.ts",
+      "target": "src/lib/server/PagesController.server.ts",
+      "type": "trash_restore_contract",
+      "summary": "Trash page load and page restore action combine deleted pages, active pages, restorePageById, and fresh page state so restored pages rejoin the normal CMS tree.",
+      "confidence_score": 0.98
+    },
+    {
+      "source": "src/routes/trash/+page.server.ts",
+      "target": "src/lib/server/ReusableBlocksController.server.ts",
+      "type": "trash_restore_contract",
+      "summary": "Trash page load and reusable content restore action combine deleted reusable blocks, active reusable blocks, restoreReusableBlock, and fresh library state.",
+      "confidence_score": 0.98
+    },
+    {
+      "source": "src/routes/trash/+page.server.ts",
+      "target": "src/lib/server/auth.ts",
+      "type": "guards_mutation",
+      "summary": "Trash restore actions require authenticated user before restoring pages or reusable content.",
+      "confidence_score": 0.99
+    },
+    {
+      "source": "src/routes/trash/+page.svelte",
+      "target": "src/lib/client/pagesStore.ts",
+      "type": "syncs_client_cache",
+      "summary": "Trash page hydrates active pages into pagesStore in browser and updates it from restorePage action results.",
+      "confidence_score": 0.96
+    },
+    {
+      "source": "src/routes/trash/+page.svelte",
+      "target": "src/lib/client/reusableBlocksStore.ts",
+      "type": "syncs_client_cache",
+      "summary": "Trash page hydrates active reusable blocks into reusableBlocksStore and refreshes it after reusable content restore.",
+      "confidence_score": 0.96
+    },
+    {
+      "source": "src/routes/trash/+page.svelte",
+      "target": "page restore parent selection",
+      "type": "implements_recovery_constraint",
+      "summary": "Deleted pages must be restored under an active parent; UI defaults to original parent when still active and disables restore until a parent is selected.",
+      "confidence_score": 0.95
+    },
+    {
+      "source": "src/routes/trash/+page.svelte",
+      "target": "src/lib/Toasts/ToastState.svelte.ts",
+      "type": "reports_form_outcome",
+      "summary": "Trash page enhanced forms show restore success and failure toasts for page and reusable content recovery.",
+      "confidence_score": 0.97
+    },
+    {
+      "source": "src/routes/trash/trash-page.svelte.spec.ts",
+      "target": "src/routes/trash/+page.svelte",
+      "type": "tests_user_feedback_contract",
+      "summary": "Trash page test mocks SvelteKit enhance/applyAction and verifies successful page restore appears once in toast stack.",
+      "confidence_score": 0.99
+    },
+    {
+      "source": "src/routes/edit/page/[id]/+page.server.ts",
+      "target": "src/lib/server/PagesController.server.ts",
+      "type": "route_load_contract",
+      "summary": "Page editor load fetches page including deleted markers, redirects deleted pages to trash, reads draft version content/meta, and supplies page tree plus reusable blocks.",
+      "confidence_score": 0.98
+    },
+    {
+      "source": "src/routes/edit/page/[id]/+page.server.ts",
+      "target": "src/lib/pagePath.ts",
+      "type": "validates_route_identity",
+      "summary": "Page update action validates title/urlName/root rules and checks draft path segment conflicts under selected parent before saving draft identity.",
+      "confidence_score": 0.98
+    },
+    {
+      "source": "src/routes/edit/page/[id]/+page.server.ts",
+      "target": "page hierarchy invariant",
+      "type": "enforces_tree_invariant",
+      "summary": "Page update rejects missing parent for non-root pages, self-parenting, unknown parent pages, and moves into descendant page trees.",
+      "confidence_score": 0.97
+    },
+    {
+      "source": "src/routes/edit/page/[id]/+page.server.ts",
+      "target": "src/lib/pageContentEditor.ts",
+      "type": "validates_submitted_payload",
+      "summary": "Page update and publish actions validate parsed page content against known reusable block IDs before saving or publishing.",
+      "confidence_score": 0.99
+    },
+    {
+      "source": "src/routes/edit/page/[id]/+page.server.ts",
+      "target": "src/lib/pageSeoMeta.ts",
+      "type": "normalizes_metadata",
+      "summary": "Page editor parses existing draft meta and submitted SEO fields into canonical PageSeoMeta shape for draft updates and publish responses.",
+      "confidence_score": 0.97
+    },
+    {
+      "source": "src/routes/edit/page/[id]/+page.server.ts",
+      "target": "src/lib/server/auth.ts",
+      "type": "guards_mutation",
+      "summary": "Page update and publish actions require authenticated user before draft mutation or publishing.",
+      "confidence_score": 0.99
+    },
+    {
+      "source": "src/routes/edit/page/[id]/+page.svelte",
+      "target": "src/lib/pageStatus.ts",
+      "type": "drives_editor_state_machine",
+      "summary": "Page editor derives publish badge, draft-change state, primary action state, disabled state, and hints from page status helpers plus local dirty snapshot.",
+      "confidence_score": 0.98
+    },
+    {
+      "source": "src/routes/edit/page/[id]/+page.svelte",
+      "target": "src/lib/pageContentEditor.ts",
+      "type": "delegates_content_mutations",
+      "summary": "Page editor uses pageContentEditor helpers for editable content, block add/remove/move, field updates, reusable block reference insertion, and validation.",
+      "confidence_score": 0.99
+    },
+    {
+      "source": "src/routes/edit/page/[id]/+page.svelte",
+      "target": "src/lib/Sidebar/Index.ts",
+      "type": "registers_cross_component_action",
+      "summary": "Page editor registers reusable block insertion handler so sidebar-driven insertion can append reusable references into current page draft.",
+      "confidence_score": 0.96
+    },
+    {
+      "source": "src/routes/edit/page/[id]/+page.svelte",
+      "target": "src/lib/components/cms/BlockListEditor.svelte",
+      "type": "composes_editor_surface",
+      "summary": "Page editor renders page blocks through BlockListEditor and passes reusable block list, drag state, insertion handlers, and validation errors.",
+      "confidence_score": 0.98
+    },
+    {
+      "source": "src/routes/edit/page/[id]/+page.svelte",
+      "target": "src/lib/pagePath.ts",
+      "type": "previews_identity_change",
+      "summary": "Page editor builds live path preview from title, urlName, parent selection, and page tree, falling back to current path if preview cannot be built.",
+      "confidence_score": 0.97
+    },
+    {
+      "source": "src/routes/edit/page/[id]/+page.svelte",
+      "target": "src/lib/client/pagesStore.ts",
+      "type": "syncs_client_cache",
+      "summary": "After successful page draft save or publish, page editor updates pagesStore with returned pages without full invalidation.",
+      "confidence_score": 0.96
+    },
+    {
+      "source": "src/routes/edit/page/[id]/+page.svelte",
+      "target": "src/lib/Toasts/ToastState.svelte.ts",
+      "type": "reports_form_outcome",
+      "summary": "Enhanced page editor form emits toast feedback for validation blockers, draft saves, publish success, and server failures.",
+      "confidence_score": 0.97
+    },
+    {
+      "source": "src/routes/api/sidebar-actions/+server.ts",
+      "target": "src/lib/server/auth.ts",
+      "type": "guards_api_mutation",
+      "summary": "Sidebar action endpoint requires API authentication before handling create/delete folder, reusable block delete, or page delete intents.",
+      "confidence_score": 0.99
+    },
+    {
+      "source": "src/routes/api/sidebar-actions/+server.ts",
+      "target": "src/lib/server/ReusableBlocksController.server.ts",
+      "type": "sidebar_mutation_contract",
+      "summary": "Sidebar API creates/deletes block folders and soft-deletes reusable blocks, then returns refreshed page, folder, block, and reference state.",
+      "confidence_score": 0.98
+    },
+    {
+      "source": "src/routes/api/sidebar-actions/+server.ts",
+      "target": "src/lib/server/PagesController.server.ts",
+      "type": "sidebar_mutation_contract",
+      "summary": "Sidebar API removes reusable block references from pages before soft-deleting reusable content and validates page deletability before soft-deleting pages.",
+      "confidence_score": 0.98
+    },
+    {
+      "source": "src/routes/dev/+layout.svelte",
+      "target": "src/routes/dev/DevSidebarFrame.svelte",
+      "type": "provides_reference_fixture",
+      "summary": "Dev layout supplies nested static page data to DevSidebarFrame as a reference fixture for sidebar behavior.",
+      "confidence_score": 0.97
+    },
+    {
+      "source": "src/routes/dev/+layout.svelte",
+      "target": "src/lib/components/ui/sidebar/index.ts",
+      "type": "demonstrates_layout_composition",
+      "summary": "Dev layout composes Sidebar.Provider, DevSidebarFrame, Sidebar.Inset, trigger, separator, theme toggle, breadcrumbs, and route children to exercise inset sidebar shell.",
+      "confidence_score": 0.97
+    },
+    {
+      "source": "src/routes/dev/DevSidebarFrame.svelte",
+      "target": "src/lib/components/ui/sidebar/index.ts",
+      "type": "reference_implementation",
+      "summary": "DevSidebarFrame demonstrates expanded and icon-collapsed sidebar layouts, including header, content groups, menu buttons, footer account menu, and tooltips.",
+      "confidence_score": 0.97
+    },
+    {
+      "source": "src/routes/dev/DevSidebarPageItem.svelte",
+      "target": "recursive sidebar tree pattern",
+      "type": "reference_implementation",
+      "summary": "DevSidebarPageItem recursively renders nested pages with depth-based padding, collapsible child groups, actions menu, active-open state, and leaf/folder icons.",
+      "confidence_score": 0.98
+    },
+    {
+      "source": "src/routes/dev/design-system/+page.svelte",
+      "target": "src/lib/components/ui",
+      "type": "design_system_catalog",
+      "summary": "Design-system dev page showcases production UI primitives including buttons, button groups, inputs, select, textarea, tabs, overlays, feedback, progress, avatars, icons, tokens, and skeletons.",
+      "confidence_score": 0.97
+    },
+    {
+      "source": "src/routes/dev/+page.svelte",
+      "target": "src/routes/dev/design-system/+page.svelte",
+      "type": "navigation_entrypoint",
+      "summary": "Dev index routes engineers to design-system reference surface for inspecting primitives, tokens, icons, and feedback states.",
+      "confidence_score": 0.97
+    },
+    {
+      "source": "README.md",
+      "target": "project setup contract",
+      "type": "documents_operational_workflow",
+      "summary": "README defines Blockkit as SvelteKit, TypeScript, Tailwind, Supabase CMS experiment with install, Supabase, env, database reset, dev, and verification commands.",
+      "confidence_score": 0.96
+    },
+    {
+      "source": "README.md",
+      "target": "server-only secret boundary",
+      "type": "documents_security_boundary",
+      "summary": "README states SUPABASE_SERVICE_ROLE_KEY must stay server-only and not be exposed in browser code.",
+      "confidence_score": 0.99
+    },
+    {
+      "source": "LLMS/Changes.md",
+      "target": "docs/agents",
+      "type": "process_contract",
+      "summary": "Changes queue requires agents to read repo instructions and docs index, maintain feature/refactor/bug entries, and update docs/agents alongside implementation work.",
+      "confidence_score": 0.95
+    },
+    {
+      "source": "LLMS/Changes.md",
+      "target": "LLMS/Design",
+      "type": "governance_contract",
+      "summary": "Queued work that references a design must review unresolved points, risks, defaults, and open questions before implementation and ask user when they affect scope.",
+      "confidence_score": 0.96
+    },
+    {
+      "source": "LLMS/Design/20260410-reusable-block-instances.md",
+      "target": "reusable block library domain model",
+      "type": "defines_product_architecture",
+      "summary": "Design document defines reusable block instances as separate CMS records grouped by block folders, independent from page URL hierarchy and backed by code-defined block types.",
+      "confidence_score": 0.97
+    },
+    {
+      "source": "LLMS/Design/20260410-reusable-block-instances.md",
+      "target": "src/lib/blocks/registry.ts",
+      "type": "requires_code_defined_schema",
+      "summary": "Reusable block entries must use blockType values from code registry, keep content.type aligned with blockType, and rely on app-layer validation.",
+      "confidence_score": 0.96
+    },
+    {
+      "source": "LLMS/Design/20260410-reusable-block-instances.md",
+      "target": "src/lib/Sidebar",
+      "type": "drives_sidebar_requirements",
+      "summary": "Reusable block design requires sidebar Blocks section with collapsible folders, leaf block items, block type badges, and local collapse state alongside unchanged page navigation.",
+      "confidence_score": 0.96
+    },
+    {
+      "source": "LLMS/Design/20260417-page-parent-based-url-model.md",
+      "target": "src/lib/pagePath.ts",
+      "type": "drives_url_model",
+      "summary": "Page parent-based URL design informs page path behavior where parent hierarchy and urlName/title determine draft/live paths while root remains slash.",
+      "confidence_score": 0.82
+    },
+    {
+      "source": "LLMS/Design/20260417-page-publish-workflow.md",
+      "target": "src/lib/pageStatus.ts",
+      "type": "drives_publish_workflow",
+      "summary": "Page publish workflow design informs draft versus published status behavior surfaced by page editor primary actions and publish-state badges.",
+      "confidence_score": 0.82
+    }
+  ]
+}

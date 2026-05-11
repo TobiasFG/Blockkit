@@ -1,0 +1,376 @@
+{
+  "chunk_index": 9,
+  "chunk_count": 13,
+  "deep_mode": false,
+  "source_files": [
+    "/Users/tfg/Documents/Blockkit/src/lib/components/ui/avatar/avatar-image.svelte",
+    "/Users/tfg/Documents/Blockkit/src/lib/components/ui/select/select-separator.svelte",
+    "/Users/tfg/Documents/Blockkit/src/lib/components/ui/select/select-group.svelte",
+    "/Users/tfg/Documents/Blockkit/src/lib/components/ui/select/select-label.svelte",
+    "/Users/tfg/Documents/Blockkit/src/lib/components/ui/select/select-group-heading.svelte",
+    "/Users/tfg/Documents/Blockkit/src/lib/components/ui/select/select-item.svelte",
+    "/Users/tfg/Documents/Blockkit/src/lib/components/ui/select/select-content.svelte",
+    "/Users/tfg/Documents/Blockkit/src/lib/components/ui/select/select.svelte",
+    "/Users/tfg/Documents/Blockkit/src/lib/components/ui/select/select-portal.svelte",
+    "/Users/tfg/Documents/Blockkit/src/lib/components/ui/select/select-scroll-up-button.svelte",
+    "/Users/tfg/Documents/Blockkit/src/lib/components/ui/select/select-trigger.svelte",
+    "/Users/tfg/Documents/Blockkit/src/lib/components/ui/select/index.ts",
+    "/Users/tfg/Documents/Blockkit/src/lib/components/ui/select/select-scroll-down-button.svelte",
+    "/Users/tfg/Documents/Blockkit/src/lib/components/ui/breadcrumb/breadcrumb-item.svelte",
+    "/Users/tfg/Documents/Blockkit/src/lib/components/ui/breadcrumb/breadcrumb-link.svelte",
+    "/Users/tfg/Documents/Blockkit/src/lib/components/ui/breadcrumb/breadcrumb-separator.svelte",
+    "/Users/tfg/Documents/Blockkit/src/lib/components/ui/breadcrumb/breadcrumb-page.svelte",
+    "/Users/tfg/Documents/Blockkit/src/lib/components/ui/breadcrumb/breadcrumb-ellipsis.svelte",
+    "/Users/tfg/Documents/Blockkit/src/lib/components/ui/breadcrumb/breadcrumb-list.svelte",
+    "/Users/tfg/Documents/Blockkit/src/lib/components/ui/breadcrumb/index.ts",
+    "/Users/tfg/Documents/Blockkit/src/lib/components/ui/breadcrumb/breadcrumb.svelte",
+    "/Users/tfg/Documents/Blockkit/src/lib/components/ui/sheet/sheet-content.svelte"
+  ],
+  "semantic_edges": [
+    {
+      "source": "src/lib/components/ui/avatar/avatar-image.svelte",
+      "target": "bits-ui Avatar primitive",
+      "type": "wraps_accessible_primitive",
+      "summary": "AvatarImage delegates image behavior and ref binding to bits-ui Avatar.Image while enforcing square rounded object-cover presentation.",
+      "confidence_score": 0.98
+    },
+    {
+      "source": "src/lib/components/ui/select/index.ts",
+      "target": "src/lib/components/ui/select/select.svelte",
+      "type": "public_api_alias",
+      "summary": "Select barrel exposes Root and Select aliases for select state root.",
+      "confidence_score": 0.99
+    },
+    {
+      "source": "src/lib/components/ui/select/index.ts",
+      "target": "src/lib/components/ui/select/select-trigger.svelte",
+      "type": "public_api_alias",
+      "summary": "Select barrel exposes Trigger and SelectTrigger aliases for trigger button wrapper.",
+      "confidence_score": 0.99
+    },
+    {
+      "source": "src/lib/components/ui/select/index.ts",
+      "target": "src/lib/components/ui/select/select-content.svelte",
+      "type": "public_api_alias",
+      "summary": "Select barrel exposes Content and SelectContent aliases for popover content wrapper.",
+      "confidence_score": 0.99
+    },
+    {
+      "source": "src/lib/components/ui/select/index.ts",
+      "target": "src/lib/components/ui/select/select-item.svelte",
+      "type": "public_api_alias",
+      "summary": "Select barrel exposes Item and SelectItem aliases for selectable options.",
+      "confidence_score": 0.99
+    },
+    {
+      "source": "src/lib/components/ui/select/index.ts",
+      "target": "src/lib/components/ui/select/select-group.svelte",
+      "type": "public_api_alias",
+      "summary": "Select barrel exposes Group and SelectGroup aliases for grouped option sections.",
+      "confidence_score": 0.99
+    },
+    {
+      "source": "src/lib/components/ui/select/index.ts",
+      "target": "src/lib/components/ui/select/select-label.svelte",
+      "type": "public_api_alias",
+      "summary": "Select barrel exposes Label and SelectLabel aliases for lightweight group labels.",
+      "confidence_score": 0.99
+    },
+    {
+      "source": "src/lib/components/ui/select/index.ts",
+      "target": "src/lib/components/ui/select/select-group-heading.svelte",
+      "type": "public_api_alias",
+      "summary": "Select barrel exposes GroupHeading and SelectGroupHeading aliases for primitive-backed group headings.",
+      "confidence_score": 0.99
+    },
+    {
+      "source": "src/lib/components/ui/select/index.ts",
+      "target": "src/lib/components/ui/select/select-separator.svelte",
+      "type": "public_api_alias",
+      "summary": "Select barrel exposes Separator and SelectSeparator aliases for menu separators.",
+      "confidence_score": 0.99
+    },
+    {
+      "source": "src/lib/components/ui/select/index.ts",
+      "target": "src/lib/components/ui/select/select-scroll-up-button.svelte",
+      "type": "public_api_alias",
+      "summary": "Select barrel exposes ScrollUpButton and SelectScrollUpButton aliases for overflow scroll affordance.",
+      "confidence_score": 0.99
+    },
+    {
+      "source": "src/lib/components/ui/select/index.ts",
+      "target": "src/lib/components/ui/select/select-scroll-down-button.svelte",
+      "type": "public_api_alias",
+      "summary": "Select barrel exposes ScrollDownButton and SelectScrollDownButton aliases for overflow scroll affordance.",
+      "confidence_score": 0.99
+    },
+    {
+      "source": "src/lib/components/ui/select/index.ts",
+      "target": "src/lib/components/ui/select/select-portal.svelte",
+      "type": "public_api_alias",
+      "summary": "Select barrel exposes Portal and SelectPortal aliases for portal placement control.",
+      "confidence_score": 0.99
+    },
+    {
+      "source": "src/lib/components/ui/select/select.svelte",
+      "target": "bits-ui Select primitive",
+      "type": "wraps_accessible_primitive",
+      "summary": "Select root binds open and value state while delegating select behavior to bits-ui Select.Root.",
+      "confidence_score": 0.98
+    },
+    {
+      "source": "src/lib/components/ui/select/select-content.svelte",
+      "target": "src/lib/components/ui/select/select-portal.svelte",
+      "type": "composes_component",
+      "summary": "SelectContent renders inside SelectPortal and forwards optional portalProps.",
+      "confidence_score": 0.99
+    },
+    {
+      "source": "src/lib/components/ui/select/select-content.svelte",
+      "target": "src/lib/components/ui/select/select-scroll-up-button.svelte",
+      "type": "composes_component",
+      "summary": "SelectContent places SelectScrollUpButton before viewport to expose upward overflow navigation.",
+      "confidence_score": 0.99
+    },
+    {
+      "source": "src/lib/components/ui/select/select-content.svelte",
+      "target": "src/lib/components/ui/select/select-scroll-down-button.svelte",
+      "type": "composes_component",
+      "summary": "SelectContent places SelectScrollDownButton after viewport to expose downward overflow navigation.",
+      "confidence_score": 0.99
+    },
+    {
+      "source": "src/lib/components/ui/select/select-content.svelte",
+      "target": "bits-ui Select primitive",
+      "type": "wraps_accessible_primitive",
+      "summary": "SelectContent delegates popover positioning, viewport sizing vars, sideOffset, and preventScroll behavior to bits-ui Select.Content and Select.Viewport.",
+      "confidence_score": 0.98
+    },
+    {
+      "source": "src/lib/components/ui/select/select-content.svelte",
+      "target": "select item visual contract",
+      "type": "defines_descendant_style_contract",
+      "summary": "SelectContent scopes focus, highlighted, separator, trigger, and destructive descendant styles through data-slot and data-variant selectors.",
+      "confidence_score": 0.95
+    },
+    {
+      "source": "src/lib/components/ui/select/select-trigger.svelte",
+      "target": "select trigger size contract",
+      "type": "defines_variant_contract",
+      "summary": "SelectTrigger accepts size default|sm and publishes data-size to control height and radius.",
+      "confidence_score": 0.97
+    },
+    {
+      "source": "src/lib/components/ui/select/select-trigger.svelte",
+      "target": "lucide chevron icons",
+      "type": "uses_icon_affordance",
+      "summary": "SelectTrigger always renders ChevronDownIcon as non-interactive dropdown affordance after trigger children.",
+      "confidence_score": 0.96
+    },
+    {
+      "source": "src/lib/components/ui/select/select-item.svelte",
+      "target": "bits-ui Select primitive",
+      "type": "wraps_accessible_primitive",
+      "summary": "SelectItem delegates option state, disabled handling, selected, and highlighted snippet state to bits-ui Select.Item.",
+      "confidence_score": 0.98
+    },
+    {
+      "source": "src/lib/components/ui/select/select-item.svelte",
+      "target": "select option label fallback",
+      "type": "computes_rendered_content",
+      "summary": "SelectItem renders custom child snippet when supplied, otherwise falls back to label or value text.",
+      "confidence_score": 0.97
+    },
+    {
+      "source": "src/lib/components/ui/select/select-item.svelte",
+      "target": "lucide check icon",
+      "type": "uses_icon_affordance",
+      "summary": "SelectItem renders CheckIcon only while bits-ui selected state is true.",
+      "confidence_score": 0.98
+    },
+    {
+      "source": "src/lib/components/ui/select/select-separator.svelte",
+      "target": "src/lib/components/ui/separator/index.ts",
+      "type": "composes_component",
+      "summary": "SelectSeparator reuses shared Separator component with select-specific spacing and non-interactive styling.",
+      "confidence_score": 0.98
+    },
+    {
+      "source": "src/lib/components/ui/select/select-group.svelte",
+      "target": "bits-ui Select primitive",
+      "type": "wraps_accessible_primitive",
+      "summary": "SelectGroup delegates grouping semantics and ref binding to bits-ui Select.Group.",
+      "confidence_score": 0.98
+    },
+    {
+      "source": "src/lib/components/ui/select/select-group-heading.svelte",
+      "target": "bits-ui Select primitive",
+      "type": "wraps_accessible_primitive",
+      "summary": "SelectGroupHeading delegates accessible group heading behavior to bits-ui Select.GroupHeading.",
+      "confidence_score": 0.98
+    },
+    {
+      "source": "src/lib/components/ui/select/select-scroll-up-button.svelte",
+      "target": "bits-ui Select primitive",
+      "type": "wraps_accessible_primitive",
+      "summary": "SelectScrollUpButton delegates overflow scrolling behavior to bits-ui Select.ScrollUpButton and uses ChevronUpIcon.",
+      "confidence_score": 0.98
+    },
+    {
+      "source": "src/lib/components/ui/select/select-scroll-down-button.svelte",
+      "target": "bits-ui Select primitive",
+      "type": "wraps_accessible_primitive",
+      "summary": "SelectScrollDownButton delegates overflow scrolling behavior to bits-ui Select.ScrollDownButton and uses ChevronDownIcon.",
+      "confidence_score": 0.98
+    },
+    {
+      "source": "src/lib/components/ui/breadcrumb/index.ts",
+      "target": "src/lib/components/ui/breadcrumb/breadcrumb.svelte",
+      "type": "public_api_alias",
+      "summary": "Breadcrumb barrel exposes Root and Breadcrumb aliases for nav container.",
+      "confidence_score": 0.99
+    },
+    {
+      "source": "src/lib/components/ui/breadcrumb/index.ts",
+      "target": "src/lib/components/ui/breadcrumb/breadcrumb-list.svelte",
+      "type": "public_api_alias",
+      "summary": "Breadcrumb barrel exposes List and BreadcrumbList aliases for ordered crumb list.",
+      "confidence_score": 0.99
+    },
+    {
+      "source": "src/lib/components/ui/breadcrumb/index.ts",
+      "target": "src/lib/components/ui/breadcrumb/breadcrumb-item.svelte",
+      "type": "public_api_alias",
+      "summary": "Breadcrumb barrel exposes Item and BreadcrumbItem aliases for individual crumb list items.",
+      "confidence_score": 0.99
+    },
+    {
+      "source": "src/lib/components/ui/breadcrumb/index.ts",
+      "target": "src/lib/components/ui/breadcrumb/breadcrumb-link.svelte",
+      "type": "public_api_alias",
+      "summary": "Breadcrumb barrel exposes Link and BreadcrumbLink aliases for navigable crumbs.",
+      "confidence_score": 0.99
+    },
+    {
+      "source": "src/lib/components/ui/breadcrumb/index.ts",
+      "target": "src/lib/components/ui/breadcrumb/breadcrumb-page.svelte",
+      "type": "public_api_alias",
+      "summary": "Breadcrumb barrel exposes Page and BreadcrumbPage aliases for current-page crumb.",
+      "confidence_score": 0.99
+    },
+    {
+      "source": "src/lib/components/ui/breadcrumb/index.ts",
+      "target": "src/lib/components/ui/breadcrumb/breadcrumb-separator.svelte",
+      "type": "public_api_alias",
+      "summary": "Breadcrumb barrel exposes Separator and BreadcrumbSeparator aliases for separator glyphs.",
+      "confidence_score": 0.99
+    },
+    {
+      "source": "src/lib/components/ui/breadcrumb/index.ts",
+      "target": "src/lib/components/ui/breadcrumb/breadcrumb-ellipsis.svelte",
+      "type": "public_api_alias",
+      "summary": "Breadcrumb barrel exposes Ellipsis and BreadcrumbEllipsis aliases for collapsed crumb indicator.",
+      "confidence_score": 0.99
+    },
+    {
+      "source": "src/lib/components/ui/breadcrumb/breadcrumb.svelte",
+      "target": "breadcrumb accessibility contract",
+      "type": "defines_accessibility_contract",
+      "summary": "Breadcrumb root renders nav with aria-label=breadcrumb for landmark semantics.",
+      "confidence_score": 0.97
+    },
+    {
+      "source": "src/lib/components/ui/breadcrumb/breadcrumb-list.svelte",
+      "target": "breadcrumb composition contract",
+      "type": "defines_layout_contract",
+      "summary": "BreadcrumbList renders flex-wrapped ordered list with muted text and gap for crumb composition.",
+      "confidence_score": 0.96
+    },
+    {
+      "source": "src/lib/components/ui/breadcrumb/breadcrumb-item.svelte",
+      "target": "breadcrumb composition contract",
+      "type": "participates_in_layout",
+      "summary": "BreadcrumbItem renders inline-flex list item for crumb, separator, or ellipsis alignment.",
+      "confidence_score": 0.96
+    },
+    {
+      "source": "src/lib/components/ui/breadcrumb/breadcrumb-link.svelte",
+      "target": "breadcrumb polymorphic link contract",
+      "type": "defines_composition_contract",
+      "summary": "BreadcrumbLink can render default anchor or child snippet with computed attrs for router/link integration.",
+      "confidence_score": 0.97
+    },
+    {
+      "source": "src/lib/components/ui/breadcrumb/breadcrumb-page.svelte",
+      "target": "breadcrumb accessibility contract",
+      "type": "defines_accessibility_contract",
+      "summary": "BreadcrumbPage marks current location with role=link, aria-disabled=true, and aria-current=page.",
+      "confidence_score": 0.97
+    },
+    {
+      "source": "src/lib/components/ui/breadcrumb/breadcrumb-separator.svelte",
+      "target": "lucide chevron icons",
+      "type": "uses_icon_affordance",
+      "summary": "BreadcrumbSeparator defaults to ChevronRightIcon while allowing custom separator children.",
+      "confidence_score": 0.96
+    },
+    {
+      "source": "src/lib/components/ui/breadcrumb/breadcrumb-separator.svelte",
+      "target": "breadcrumb accessibility contract",
+      "type": "defines_accessibility_contract",
+      "summary": "BreadcrumbSeparator uses role=presentation and aria-hidden=true so separator glyphs stay out of navigation semantics.",
+      "confidence_score": 0.97
+    },
+    {
+      "source": "src/lib/components/ui/breadcrumb/breadcrumb-ellipsis.svelte",
+      "target": "lucide more-horizontal icon",
+      "type": "uses_icon_affordance",
+      "summary": "BreadcrumbEllipsis renders MoreHorizontalIcon and sr-only More label for collapsed path affordance.",
+      "confidence_score": 0.96
+    },
+    {
+      "source": "src/lib/components/ui/sheet/sheet-content.svelte",
+      "target": "src/lib/components/ui/sheet/sheet-portal.svelte",
+      "type": "composes_component",
+      "summary": "SheetContent renders inside SheetPortal and forwards optional portalProps.",
+      "confidence_score": 0.99
+    },
+    {
+      "source": "src/lib/components/ui/sheet/sheet-content.svelte",
+      "target": "src/lib/components/ui/sheet/sheet-overlay.svelte",
+      "type": "composes_component",
+      "summary": "SheetContent always renders SheetOverlay before dialog content.",
+      "confidence_score": 0.99
+    },
+    {
+      "source": "src/lib/components/ui/sheet/sheet-content.svelte",
+      "target": "bits-ui Dialog primitive",
+      "type": "wraps_accessible_primitive",
+      "summary": "SheetContent delegates modal content behavior, close action, and animation state data attrs to bits-ui Dialog.Content and Dialog.Close.",
+      "confidence_score": 0.98
+    },
+    {
+      "source": "src/lib/components/ui/sheet/sheet-content.svelte",
+      "target": "sheet side placement contract",
+      "type": "defines_variant_contract",
+      "summary": "SheetContent accepts side top|right|bottom|left, publishes data-side, and maps each side to inset, border, size, and slide animation classes.",
+      "confidence_score": 0.98
+    },
+    {
+      "source": "src/lib/components/ui/sheet/sheet-content.svelte",
+      "target": "src/lib/components/ui/button/index.ts",
+      "type": "uses_variant_system",
+      "summary": "SheetContent optional close control uses shared Button with ghost variant and icon-sm size.",
+      "confidence_score": 0.98
+    },
+    {
+      "source": "src/lib/components/ui/sheet/sheet-content.svelte",
+      "target": "lucide x icon",
+      "type": "uses_icon_affordance",
+      "summary": "SheetContent close button renders XIcon plus sr-only Close text when showCloseButton is true.",
+      "confidence_score": 0.97
+    }
+  ],
+  "input_tokens": 0,
+  "output_tokens": 0
+}

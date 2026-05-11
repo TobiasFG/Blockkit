@@ -1,11 +1,11 @@
 import { listBlockDefinitions } from '$lib/blocks/registry';
 import { requireAuthenticatedUser } from '$lib/server/auth';
-import { getPagesReferencingReusableBlock, removeReusableBlockReferencesFromPages } from '$lib/server/PagesController.server';
+import { getPagesReferencingReusableBlock } from '$lib/server/PagesController.server';
+import { trashReusableBlock } from '$lib/server/TrashController.server';
 import {
 	createBlockFolder,
 	createReusableBlock,
 	deleteBlockFolder,
-	softDeleteReusableBlock,
 	getBlockFolders,
 	getReusableBlocks
 } from '$lib/server/ReusableBlocksController.server';
@@ -143,8 +143,7 @@ export const actions = {
 		}
 
 		try {
-			const pagesReferencingDeletedBlock = await removeReusableBlockReferencesFromPages(id);
-			await softDeleteReusableBlock(id);
+			const pagesReferencingDeletedBlock = await trashReusableBlock(id);
 			return {
 				blockFolders: await getBlockFolders(),
 				reusableBlocks: await getReusableBlocks(),

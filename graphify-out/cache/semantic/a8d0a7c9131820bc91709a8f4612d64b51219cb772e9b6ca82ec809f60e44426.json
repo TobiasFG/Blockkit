@@ -1,0 +1,1 @@
+{"nodes": [], "edges": [{"source": "auth_redirect_preservation", "target": "auth_route_guard", "relation": "HAS_REGRESSION_COVERAGE", "context": "auth.spec.ts verifies root redirects to /auth and nested/query paths preserve redirectTo.", "confidence": "EXTRACTED", "confidence_score": 0.96, "source_file": "src/lib/server/auth.spec.ts", "source_location": "L5"}], "hyperedges": []}

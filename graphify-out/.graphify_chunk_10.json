@@ -1,0 +1,395 @@
+{
+  "chunk_index": 10,
+  "chunk_count": 13,
+  "deep_mode": false,
+  "source_files": [
+    "/Users/tfg/Documents/Blockkit/src/lib/components/ui/sheet/sheet-footer.svelte",
+    "/Users/tfg/Documents/Blockkit/src/lib/components/ui/sheet/sheet-portal.svelte",
+    "/Users/tfg/Documents/Blockkit/src/lib/components/ui/sheet/sheet-overlay.svelte",
+    "/Users/tfg/Documents/Blockkit/src/lib/components/ui/sheet/sheet-close.svelte",
+    "/Users/tfg/Documents/Blockkit/src/lib/components/ui/sheet/sheet-header.svelte",
+    "/Users/tfg/Documents/Blockkit/src/lib/components/ui/sheet/sheet-title.svelte",
+    "/Users/tfg/Documents/Blockkit/src/lib/components/ui/sheet/sheet-trigger.svelte",
+    "/Users/tfg/Documents/Blockkit/src/lib/components/ui/sheet/sheet.svelte",
+    "/Users/tfg/Documents/Blockkit/src/lib/components/ui/sheet/index.ts",
+    "/Users/tfg/Documents/Blockkit/src/lib/components/ui/sheet/sheet-description.svelte",
+    "/Users/tfg/Documents/Blockkit/src/lib/components/ui/button-group/button-group-separator.svelte",
+    "/Users/tfg/Documents/Blockkit/src/lib/components/ui/button-group/button-group-text.svelte",
+    "/Users/tfg/Documents/Blockkit/src/lib/components/ui/button-group/button-group.svelte",
+    "/Users/tfg/Documents/Blockkit/src/lib/components/ui/button-group/index.ts",
+    "/Users/tfg/Documents/Blockkit/src/lib/components/ui/badge/index.ts",
+    "/Users/tfg/Documents/Blockkit/src/lib/components/ui/badge/badge.svelte",
+    "/Users/tfg/Documents/Blockkit/src/lib/components/auth/AuthPreviewStage.svelte",
+    "/Users/tfg/Documents/Blockkit/src/lib/components/auth/AuthRail.svelte",
+    "/Users/tfg/Documents/Blockkit/src/lib/components/cms/ActionModal.svelte",
+    "/Users/tfg/Documents/Blockkit/src/lib/components/cms/BlockListEditor.svelte",
+    "/Users/tfg/Documents/Blockkit/src/lib/components/cms/CmsShell.svelte",
+    "/Users/tfg/Documents/Blockkit/src/lib/components/cms/CmsIconButton.svelte"
+  ],
+  "semantic_edges": [
+    {
+      "source": "src/lib/components/ui/sheet/index.ts",
+      "target": "src/lib/components/ui/sheet/sheet.svelte",
+      "type": "public_api_alias",
+      "summary": "Sheet barrel exposes Root and Sheet aliases for dialog root state.",
+      "confidence_score": 0.99
+    },
+    {
+      "source": "src/lib/components/ui/sheet/index.ts",
+      "target": "src/lib/components/ui/sheet/sheet-content.svelte",
+      "type": "public_api_alias",
+      "summary": "Sheet barrel exposes Content and SheetContent aliases for side panel body.",
+      "confidence_score": 0.99
+    },
+    {
+      "source": "src/lib/components/ui/sheet/index.ts",
+      "target": "src/lib/components/ui/sheet/sheet-header.svelte",
+      "type": "public_api_alias",
+      "summary": "Sheet barrel exposes Header and SheetHeader aliases for top title/description area.",
+      "confidence_score": 0.99
+    },
+    {
+      "source": "src/lib/components/ui/sheet/index.ts",
+      "target": "src/lib/components/ui/sheet/sheet-footer.svelte",
+      "type": "public_api_alias",
+      "summary": "Sheet barrel exposes Footer and SheetFooter aliases for bottom action region.",
+      "confidence_score": 0.99
+    },
+    {
+      "source": "src/lib/components/ui/sheet/sheet.svelte",
+      "target": "bits-ui Dialog primitive",
+      "type": "wraps_accessible_primitive",
+      "summary": "Sheet root binds open state while delegating dialog behavior to bits-ui Dialog.Root.",
+      "confidence_score": 0.98
+    },
+    {
+      "source": "src/lib/components/ui/sheet/sheet-content.svelte",
+      "target": "src/lib/components/ui/sheet/sheet-portal.svelte",
+      "type": "composes_component",
+      "summary": "SheetContent renders its panel inside SheetPortal and forwards optional portalProps.",
+      "confidence_score": 0.99
+    },
+    {
+      "source": "src/lib/components/ui/sheet/sheet-content.svelte",
+      "target": "src/lib/components/ui/sheet/sheet-overlay.svelte",
+      "type": "composes_component",
+      "summary": "SheetContent always renders SheetOverlay beside the side panel.",
+      "confidence_score": 0.99
+    },
+    {
+      "source": "src/lib/components/ui/sheet/sheet-content.svelte",
+      "target": "sheet side placement contract",
+      "type": "defines_variant_contract",
+      "summary": "SheetContent publishes data-side and maps top/right/bottom/left to fixed positioning, size, border, and slide animations.",
+      "confidence_score": 0.98
+    },
+    {
+      "source": "src/lib/components/ui/sheet/sheet-content.svelte",
+      "target": "src/lib/components/ui/button/index.ts",
+      "type": "uses_variant_system",
+      "summary": "SheetContent optional close affordance uses shared Button variant ghost with icon-sm sizing.",
+      "confidence_score": 0.97
+    },
+    {
+      "source": "src/lib/components/ui/sheet/sheet-overlay.svelte",
+      "target": "modal backdrop visual contract",
+      "type": "defines_region_style",
+      "summary": "SheetOverlay creates fixed translucent black backdrop with optional backdrop blur at z-50.",
+      "confidence_score": 0.96
+    },
+    {
+      "source": "src/lib/components/ui/sheet/sheet-footer.svelte",
+      "target": "sheet flex layout contract",
+      "type": "participates_in_layout",
+      "summary": "SheetFooter uses mt-auto inside flex-column sheet content so actions pin toward bottom.",
+      "confidence_score": 0.95
+    },
+    {
+      "source": "src/lib/components/ui/button-group/index.ts",
+      "target": "src/lib/components/ui/button-group/button-group.svelte",
+      "type": "public_api_alias",
+      "summary": "Button group barrel exposes Root and ButtonGroup aliases plus variant helpers and orientation type.",
+      "confidence_score": 0.99
+    },
+    {
+      "source": "src/lib/components/ui/button-group/index.ts",
+      "target": "src/lib/components/ui/button-group/button-group-text.svelte",
+      "type": "public_api_alias",
+      "summary": "Button group barrel exposes Text and ButtonGroupText aliases for non-interactive grouped labels.",
+      "confidence_score": 0.99
+    },
+    {
+      "source": "src/lib/components/ui/button-group/index.ts",
+      "target": "src/lib/components/ui/button-group/button-group-separator.svelte",
+      "type": "public_api_alias",
+      "summary": "Button group barrel exposes Separator and ButtonGroupSeparator aliases for dividers inside groups.",
+      "confidence_score": 0.99
+    },
+    {
+      "source": "src/lib/components/ui/button-group/button-group.svelte",
+      "target": "button group child-shape contract",
+      "type": "defines_variant_contract",
+      "summary": "ButtonGroup orientation controls child border merging and rounded-end restoration for horizontal and vertical groups.",
+      "confidence_score": 0.97
+    },
+    {
+      "source": "src/lib/components/ui/button-group/button-group.svelte",
+      "target": "grouped control accessibility",
+      "type": "sets_accessibility_semantics",
+      "summary": "ButtonGroup renders role=group and data-orientation for assistive and styling semantics.",
+      "confidence_score": 0.95
+    },
+    {
+      "source": "src/lib/components/ui/button-group/button-group-text.svelte",
+      "target": "button group child-shape contract",
+      "type": "participates_in_layout",
+      "summary": "ButtonGroupText marks data-slot=button-group-text and uses consistent border, gap, icon size, and label styling as grouped child.",
+      "confidence_score": 0.95
+    },
+    {
+      "source": "src/lib/components/ui/button-group/button-group-text.svelte",
+      "target": "svelte child snippet composition",
+      "type": "supports_render_override",
+      "summary": "ButtonGroupText can render caller-provided child snippet with merged props instead of its default div.",
+      "confidence_score": 0.94
+    },
+    {
+      "source": "src/lib/components/ui/button-group/button-group-separator.svelte",
+      "target": "src/lib/components/ui/separator/index.ts",
+      "type": "wraps_design_system_component",
+      "summary": "ButtonGroupSeparator reuses shared Separator while adapting dimensions for grouped controls.",
+      "confidence_score": 0.98
+    },
+    {
+      "source": "src/lib/components/ui/badge/index.ts",
+      "target": "src/lib/components/ui/badge/badge.svelte",
+      "type": "public_api_alias",
+      "summary": "Badge barrel exposes Badge component plus badgeVariants and BadgeVariant type.",
+      "confidence_score": 0.99
+    },
+    {
+      "source": "src/lib/components/ui/badge/badge.svelte",
+      "target": "badge visual variant contract",
+      "type": "defines_variant_contract",
+      "summary": "Badge supports default, secondary, destructive, outline, ghost, and link variants through tailwind-variants.",
+      "confidence_score": 0.98
+    },
+    {
+      "source": "src/lib/components/ui/badge/badge.svelte",
+      "target": "badge polymorphic element contract",
+      "type": "defines_rendering_contract",
+      "summary": "Badge renders as anchor when href exists, otherwise span, while sharing data-slot and variant styling.",
+      "confidence_score": 0.98
+    },
+    {
+      "source": "src/lib/components/auth/AuthPreviewStage.svelte",
+      "target": "auth page exit choreography",
+      "type": "defines_transition_behavior",
+      "summary": "AuthPreviewStage slides right on outro, with shorter distance and duration when reducedMotion is true.",
+      "confidence_score": 0.97
+    },
+    {
+      "source": "src/lib/components/auth/AuthPreviewStage.svelte",
+      "target": "auth page completion callback",
+      "type": "emits_lifecycle_callback",
+      "summary": "AuthPreviewStage forwards Svelte outro completion through onOutroEnd prop.",
+      "confidence_score": 0.95
+    },
+    {
+      "source": "src/lib/components/auth/AuthRail.svelte",
+      "target": "SvelteKit form enhancement",
+      "type": "delegates_form_submission",
+      "summary": "AuthRail applies caller-provided enhanceSubmit to POST form and submits redirectTo hidden field.",
+      "confidence_score": 0.97
+    },
+    {
+      "source": "src/lib/components/auth/AuthRail.svelte",
+      "target": "auth mode form contract",
+      "type": "defines_form_state_contract",
+      "summary": "AuthRail switches password autocomplete between current-password and new-password based on login/signup mode.",
+      "confidence_score": 0.97
+    },
+    {
+      "source": "src/lib/components/auth/AuthRail.svelte",
+      "target": "src/lib/components/ui/alert/index.ts",
+      "type": "composes_design_system_component",
+      "summary": "AuthRail displays feedback through Alert with destructive variant only for error tone.",
+      "confidence_score": 0.96
+    },
+    {
+      "source": "src/lib/components/auth/AuthRail.svelte",
+      "target": "src/lib/components/ui/button/index.ts",
+      "type": "composes_design_system_component",
+      "summary": "AuthRail uses Button for submit and mode-toggle actions, disabling submit while pending.",
+      "confidence_score": 0.96
+    },
+    {
+      "source": "src/lib/components/auth/AuthRail.svelte",
+      "target": "auth page exit choreography",
+      "type": "defines_transition_behavior",
+      "summary": "AuthRail slides left on outro with reduced-motion fallback and shared ease-out-quint curve.",
+      "confidence_score": 0.97
+    },
+    {
+      "source": "src/lib/components/cms/ActionModal.svelte",
+      "target": "src/lib/components/ui/alert-dialog/index.ts",
+      "type": "composes_design_system_component",
+      "summary": "ActionModal wraps AlertDialog components into reusable CMS modal shell with title, optional description, and child body.",
+      "confidence_score": 0.98
+    },
+    {
+      "source": "src/lib/components/cms/ActionModal.svelte",
+      "target": "modal close callback contract",
+      "type": "maps_state_change_to_callback",
+      "summary": "ActionModal calls onClose only when AlertDialog onOpenChange reports next open state false.",
+      "confidence_score": 0.97
+    },
+    {
+      "source": "src/lib/components/cms/ActionModal.svelte",
+      "target": "modal accessibility labeling",
+      "type": "sets_accessibility_semantics",
+      "summary": "ActionModal chooses aria-label from title when labelledBy is absent, otherwise wires aria-labelledby to Title id.",
+      "confidence_score": 0.96
+    },
+    {
+      "source": "src/lib/components/cms/BlockListEditor.svelte",
+      "target": "src/lib/blocks/registry.ts",
+      "type": "drives_ui_from_schema",
+      "summary": "BlockListEditor derives selectable block types and field editors from block registry definitions.",
+      "confidence_score": 0.98
+    },
+    {
+      "source": "src/lib/components/cms/BlockListEditor.svelte",
+      "target": "src/lib/pageContent.ts",
+      "type": "branches_on_domain_node_type",
+      "summary": "BlockListEditor treats reusable block references separately from inline block instances using isReusableBlockReference.",
+      "confidence_score": 0.98
+    },
+    {
+      "source": "src/lib/components/cms/BlockListEditor.svelte",
+      "target": "src/lib/pageContentEditor.ts",
+      "type": "uses_editor_path_contract",
+      "summary": "BlockListEditor represents nested block positions as BlockPath arrays and field locations as BlockListLocation.",
+      "confidence_score": 0.98
+    },
+    {
+      "source": "src/lib/components/cms/BlockListEditor.svelte",
+      "target": "src/lib/Sidebar/ReusableBlockInsertion.ts",
+      "type": "accepts_external_drag_payload",
+      "summary": "BlockListEditor parses reusable-block drag payloads and inserts references only into root block lists.",
+      "confidence_score": 0.97
+    },
+    {
+      "source": "src/lib/components/cms/BlockListEditor.svelte",
+      "target": "nested block editing",
+      "type": "recursive_component_composition",
+      "summary": "BlockListEditor renders itself for fields of type blocks, passing nested location, path prefix, handlers, and reusable block data.",
+      "confidence_score": 0.98
+    },
+    {
+      "source": "src/lib/components/cms/BlockListEditor.svelte",
+      "target": "block drag reorder contract",
+      "type": "defines_interaction_contract",
+      "summary": "BlockListEditor serializes source paths into dataTransfer text/plain and only reorders within matching parent path.",
+      "confidence_score": 0.98
+    },
+    {
+      "source": "src/lib/components/cms/BlockListEditor.svelte",
+      "target": "page content validation display",
+      "type": "maps_validation_errors_to_ui",
+      "summary": "BlockListEditor reads errors by path and path:field keys, showing destructive alerts for block errors and red text for field errors.",
+      "confidence_score": 0.97
+    },
+    {
+      "source": "src/lib/components/cms/BlockListEditor.svelte",
+      "target": "block field value parsing",
+      "type": "normalizes_user_input",
+      "summary": "BlockListEditor converts number fields to finite numbers, empty number strings to undefined, dates to strings, and body-like strings to textarea input.",
+      "confidence_score": 0.97
+    },
+    {
+      "source": "src/lib/components/cms/BlockListEditor.svelte",
+      "target": "src/lib/components/ui/dropdown-menu/index.ts",
+      "type": "composes_design_system_component",
+      "summary": "BlockListEditor uses dropdown menu actions for move, reusable-content insertion, and destructive removal.",
+      "confidence_score": 0.96
+    },
+    {
+      "source": "src/lib/components/cms/BlockListEditor.svelte",
+      "target": "src/lib/components/ui/badge/index.ts",
+      "type": "composes_design_system_component",
+      "summary": "BlockListEditor uses badges to show block type, content reference type, reusable block_type, and dragging state.",
+      "confidence_score": 0.96
+    },
+    {
+      "source": "src/lib/components/cms/CmsShell.svelte",
+      "target": "src/lib/Sidebar/Sidebar.svelte",
+      "type": "owns_navigation_shell",
+      "summary": "CmsShell hosts Sidebar with pages, folders, reusable blocks, references, user, mobile open state, desktop collapse state, and logout enhancement.",
+      "confidence_score": 0.98
+    },
+    {
+      "source": "src/lib/components/cms/CmsShell.svelte",
+      "target": "src/lib/components/ui/sidebar/index.ts",
+      "type": "composes_layout_provider",
+      "summary": "CmsShell wraps app chrome in UiSidebar.Provider and uses Inset plus Trigger for collapsible sidebar layout.",
+      "confidence_score": 0.98
+    },
+    {
+      "source": "src/lib/components/cms/CmsShell.svelte",
+      "target": "route path to sidebar focus mapping",
+      "type": "derives_navigation_state",
+      "summary": "CmsShell infers desktop sidebar focus from current pathname for content, edit pages, trash, and dashboard routes.",
+      "confidence_score": 0.97
+    },
+    {
+      "source": "src/lib/components/cms/CmsShell.svelte",
+      "target": "logout transition flow",
+      "type": "coordinates_async_navigation",
+      "summary": "CmsShell applyAction handles logout result, marks pending /auth navigation on success, starts exit state, then navigates after content outro.",
+      "confidence_score": 0.98
+    },
+    {
+      "source": "src/lib/components/cms/CmsShell.svelte",
+      "target": "reduced motion preference",
+      "type": "observes_user_preference",
+      "summary": "CmsShell watches prefers-reduced-motion media query and shortens overlay/sidebar/content transitions accordingly.",
+      "confidence_score": 0.98
+    },
+    {
+      "source": "src/lib/components/cms/CmsShell.svelte",
+      "target": "app breadcrumb state",
+      "type": "derives_navigation_label",
+      "summary": "CmsShell maps current route to breadcrumb page labels: Content, Page editor, Trash, or Dashboard.",
+      "confidence_score": 0.97
+    },
+    {
+      "source": "src/lib/components/cms/CmsShell.svelte",
+      "target": "src/lib/Toasts/ToastProvider.svelte",
+      "type": "provides_global_ui_context",
+      "summary": "CmsShell wraps full authenticated app layout in ToastProvider so descendants can show toasts.",
+      "confidence_score": 0.96
+    },
+    {
+      "source": "src/lib/components/cms/CmsIconButton.svelte",
+      "target": "src/lib/components/ui/button/index.ts",
+      "type": "specializes_design_system_component",
+      "summary": "CmsIconButton standardizes CMS icon actions as outline icon-sm Buttons with required aria-label.",
+      "confidence_score": 0.98
+    },
+    {
+      "source": "src/lib/components/cms/CmsEmptyState.svelte",
+      "target": "src/lib/components/ui/button/index.ts",
+      "type": "composes_design_system_component",
+      "summary": "CmsEmptyState renders optional call-to-action as shared Button only when both href and label are present.",
+      "confidence_score": 0.96
+    },
+    {
+      "source": "src/lib/components/cms/CmsEmptyState.svelte",
+      "target": "CMS empty state content contract",
+      "type": "defines_content_contract",
+      "summary": "CmsEmptyState accepts optional eyebrow plus required title and description to render dashed muted empty-state panel.",
+      "confidence_score": 0.96
+    }
+  ]
+}

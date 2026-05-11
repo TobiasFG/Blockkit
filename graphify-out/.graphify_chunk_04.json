@@ -1,0 +1,412 @@
+{
+  "nodes": [
+    {
+      "id": "semantic_auth_guard_flow",
+      "label": "Auth guard flow",
+      "type": "concept",
+      "source_file": "src/lib/server/auth.ts",
+      "source_location": "L5-L29"
+    },
+    {
+      "id": "semantic_reusable_block_version_lifecycle",
+      "label": "Reusable block version lifecycle",
+      "type": "concept",
+      "source_file": "src/lib/server/ReusableBlocksController.server.ts",
+      "source_location": "L54-L426"
+    },
+    {
+      "id": "semantic_reusable_block_soft_delete",
+      "label": "Reusable block soft-delete visibility",
+      "type": "concept",
+      "source_file": "src/lib/server/ReusableBlocksController.server.ts",
+      "source_location": "L104-L186"
+    },
+    {
+      "id": "semantic_sidebar_state_contract",
+      "label": "Sidebar state contract",
+      "type": "concept",
+      "source_file": "src/lib/components/ui/sidebar/sidebar-provider.svelte",
+      "source_location": "L1-L39"
+    },
+    {
+      "id": "semantic_tabs_variant_contract",
+      "label": "Tabs variant contract",
+      "type": "concept",
+      "source_file": "src/lib/components/ui/tabs/tabs-list.svelte",
+      "source_location": "L1-L34"
+    }
+  ],
+  "edges": [
+    {
+      "source": "server_auth_requireauthenticateduser",
+      "target": "semantic_auth_guard_flow",
+      "relation": "implements",
+      "context": "guards server requests by reading locals.safeGetSession and either returning user, throwing 401 for API callers, or redirecting browser callers",
+      "confidence": "INFERRED",
+      "confidence_score": 0.96,
+      "source_file": "src/lib/server/auth.ts",
+      "source_location": "L16-L29"
+    },
+    {
+      "source": "server_auth_requireauthenticateduser",
+      "target": "server_auth_buildauthredirectpath",
+      "relation": "delegates_redirect_target_to",
+      "context": "browser unauthenticated branch builds /auth redirect URL with original pathname/search when meaningful",
+      "confidence": "INFERRED",
+      "confidence_score": 0.98,
+      "source_file": "src/lib/server/auth.ts",
+      "source_location": "L27-L29"
+    },
+    {
+      "source": "server_auth_buildauthredirectpath",
+      "target": "semantic_auth_guard_flow",
+      "relation": "preserves_return_target_for",
+      "context": "adds redirectTo unless target is root or auth route",
+      "confidence": "INFERRED",
+      "confidence_score": 0.94,
+      "source_file": "src/lib/server/auth.ts",
+      "source_location": "L5-L13"
+    },
+    {
+      "source": "supabase_client_createsupabasebrowserclient",
+      "target": "supabase_client_getsupabasepublicenv",
+      "relation": "requires_validated_config_from",
+      "context": "browser client creation first validates public Supabase URL and publishable key",
+      "confidence": "INFERRED",
+      "confidence_score": 0.99,
+      "source_file": "src/lib/supabase/client.ts",
+      "source_location": "L20-L23"
+    },
+    {
+      "source": "supabase_client_getsupabasepublicenv",
+      "target": "semantic_auth_guard_flow",
+      "relation": "supports_client_auth_by_validating_public_env",
+      "context": "missing public Supabase env fails fast before auth client creation",
+      "confidence": "INFERRED",
+      "confidence_score": 0.86,
+      "source_file": "src/lib/supabase/client.ts",
+      "source_location": "L4-L18"
+    },
+    {
+      "source": "server_reusableblockscontroller_server_parsereusableblock",
+      "target": "semantic_reusable_block_version_lifecycle",
+      "relation": "projects_version_rows_into_domain_state",
+      "context": "chooses draft over published version, derives publication flags, unpublished-change flag, timestamps, and deleted marker",
+      "confidence": "INFERRED",
+      "confidence_score": 0.98,
+      "source_file": "src/lib/server/ReusableBlocksController.server.ts",
+      "source_location": "L69-L102"
+    },
+    {
+      "source": "server_reusableblockscontroller_server_parsereusableblock",
+      "target": "server_reusableblockscontroller_server_parsereusableblockcontent",
+      "relation": "validates_content_with",
+      "context": "normalizes and validates block content against version block_type before exposing ReusableBlock",
+      "confidence": "INFERRED",
+      "confidence_score": 0.97,
+      "source_file": "src/lib/server/ReusableBlocksController.server.ts",
+      "source_location": "L84-L86"
+    },
+    {
+      "source": "server_reusableblockscontroller_server_parsereusableblock",
+      "target": "server_reusableblockscontroller_server_reusableblockversionsmatch",
+      "relation": "derives_unpublished_change_flag_with",
+      "context": "compares draft and published version fields/content to set has_unpublished_changes",
+      "confidence": "INFERRED",
+      "confidence_score": 0.99,
+      "source_file": "src/lib/server/ReusableBlocksController.server.ts",
+      "source_location": "L92-L94"
+    },
+    {
+      "source": "server_reusableblockscontroller_server_getreusableblocks",
+      "target": "semantic_reusable_block_soft_delete",
+      "relation": "returns_only_visible_blocks_by_default",
+      "context": "fetches reusable blocks through getReusableBlockRows without includeDeleted or deletedOnly",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "src/lib/server/ReusableBlocksController.server.ts",
+      "source_location": "L104-L162"
+    },
+    {
+      "source": "server_reusableblockscontroller_server_getdeletedreusableblocks",
+      "target": "semantic_reusable_block_soft_delete",
+      "relation": "returns_trash_view",
+      "context": "uses deletedOnly query branch to load blocks with deleted_at not null",
+      "confidence": "INFERRED",
+      "confidence_score": 0.97,
+      "source_file": "src/lib/server/ReusableBlocksController.server.ts",
+      "source_location": "L164-L173"
+    },
+    {
+      "source": "server_reusableblockscontroller_server_getreusableblockbyid",
+      "target": "semantic_reusable_block_soft_delete",
+      "relation": "honors_include_deleted_option",
+      "context": "adds deleted_at null filter unless includeDeleted is true",
+      "confidence": "INFERRED",
+      "confidence_score": 0.98,
+      "source_file": "src/lib/server/ReusableBlocksController.server.ts",
+      "source_location": "L175-L186"
+    },
+    {
+      "source": "server_reusableblockscontroller_server_softdeletereusableblock",
+      "target": "semantic_reusable_block_soft_delete",
+      "relation": "marks_hidden_without_removing_versions",
+      "context": "sets deleted_at on reusableBlock row and leaves reusableBlockVersion rows intact",
+      "confidence": "INFERRED",
+      "confidence_score": 0.94,
+      "source_file": "src/lib/server/ReusableBlocksController.server.ts",
+      "source_location": "L286-L291"
+    },
+    {
+      "source": "server_reusableblockscontroller_server_restorereusableblock",
+      "target": "semantic_reusable_block_soft_delete",
+      "relation": "reopens_hidden_block",
+      "context": "clears deleted_at, updates timestamp, then reloads through standard non-deleted lookup",
+      "confidence": "INFERRED",
+      "confidence_score": 0.96,
+      "source_file": "src/lib/server/ReusableBlocksController.server.ts",
+      "source_location": "L293-L305"
+    },
+    {
+      "source": "server_reusableblockscontroller_server_createreusableblock",
+      "target": "semantic_reusable_block_version_lifecycle",
+      "relation": "starts_lifecycle_with_draft_version",
+      "context": "creates reusableBlock shell, creates revision 1 draft version, stores draft_version_id on parent row",
+      "confidence": "INFERRED",
+      "confidence_score": 0.99,
+      "source_file": "src/lib/server/ReusableBlocksController.server.ts",
+      "source_location": "L246-L284"
+    },
+    {
+      "source": "server_reusableblockscontroller_server_createreusableblock",
+      "target": "server_reusableblockscontroller_server_getreusableblockbyid",
+      "relation": "reloads_domain_projection_after_mutation",
+      "context": "after writing rows, reloads block through parser path before returning",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "src/lib/server/ReusableBlocksController.server.ts",
+      "source_location": "L276-L283"
+    },
+    {
+      "source": "server_reusableblockscontroller_server_updatereusableblock",
+      "target": "semantic_reusable_block_version_lifecycle",
+      "relation": "archives_current_draft_and_creates_successor",
+      "context": "loads existing draft, archives it, creates next revision draft with parent_id set to previous draft",
+      "confidence": "INFERRED",
+      "confidence_score": 0.99,
+      "source_file": "src/lib/server/ReusableBlocksController.server.ts",
+      "source_location": "L307-L358"
+    },
+    {
+      "source": "server_reusableblockscontroller_server_updatereusableblock",
+      "target": "server_reusableblockscontroller_server_getnextreusableblockrevision",
+      "relation": "allocates_revision_with",
+      "context": "next draft revision is max existing reusable_block_id revision plus one",
+      "confidence": "INFERRED",
+      "confidence_score": 0.98,
+      "source_file": "src/lib/server/ReusableBlocksController.server.ts",
+      "source_location": "L333-L347"
+    },
+    {
+      "source": "server_reusableblockscontroller_server_publishreusableblock",
+      "target": "semantic_reusable_block_version_lifecycle",
+      "relation": "publishes_snapshot_and_resets_clean_draft",
+      "context": "archives prior published/draft, creates published snapshot from draft, then creates clean draft parented to published version",
+      "confidence": "INFERRED",
+      "confidence_score": 0.99,
+      "source_file": "src/lib/server/ReusableBlocksController.server.ts",
+      "source_location": "L360-L426"
+    },
+    {
+      "source": "server_reusableblockscontroller_server_publishreusableblock",
+      "target": "server_reusableblockscontroller_server_getnextreusableblockrevision",
+      "relation": "allocates_published_and_clean_draft_revisions_with",
+      "context": "published revision uses next number; clean draft uses following number",
+      "confidence": "INFERRED",
+      "confidence_score": 0.97,
+      "source_file": "src/lib/server/ReusableBlocksController.server.ts",
+      "source_location": "L385-L409"
+    },
+    {
+      "source": "server_reusableblockscontroller_server_deleteblockfolder",
+      "target": "semantic_reusable_block_soft_delete",
+      "relation": "checks_active_block_membership_before_delete",
+      "context": "folder deletion blocks when non-deleted reusable blocks have draft versions in folder",
+      "confidence": "INFERRED",
+      "confidence_score": 0.93,
+      "source_file": "src/lib/server/ReusableBlocksController.server.ts",
+      "source_location": "L214-L244"
+    },
+    {
+      "source": "src_lib_components_ui_sidebar_sidebar_provider_svelte",
+      "target": "semantic_sidebar_state_contract",
+      "relation": "provides",
+      "context": "sets sidebar context with open getter, setOpen mutator, shortcut handler, width CSS vars, and tooltip provider wrapper",
+      "confidence": "INFERRED",
+      "confidence_score": 0.98,
+      "source_file": "src/lib/components/ui/sidebar/sidebar-provider.svelte",
+      "source_location": "L1-L39"
+    },
+    {
+      "source": "src_lib_components_ui_sidebar_sidebar_provider_svelte",
+      "target": "src_lib_components_ui_sidebar_constants_ts",
+      "relation": "persists_state_using_constants",
+      "context": "writes sidebar:state cookie with configured max age and exposes configured expanded/icon widths as CSS variables",
+      "confidence": "INFERRED",
+      "confidence_score": 0.96,
+      "source_file": "src/lib/components/ui/sidebar/sidebar-provider.svelte",
+      "source_location": "L21-L34"
+    },
+    {
+      "source": "src_lib_components_ui_sidebar_sidebar_trigger_svelte",
+      "target": "semantic_sidebar_state_contract",
+      "relation": "toggles",
+      "context": "button invokes optional onclick then calls sidebar.toggle from context",
+      "confidence": "INFERRED",
+      "confidence_score": 0.99,
+      "source_file": "src/lib/components/ui/sidebar/sidebar-trigger.svelte",
+      "source_location": "L16-L33"
+    },
+    {
+      "source": "src_lib_components_ui_sidebar_sidebar_rail_svelte",
+      "target": "semantic_sidebar_state_contract",
+      "relation": "toggles",
+      "context": "rail button calls sidebar.toggle and presents resize cursors based on side/collapsed/offcanvas data attrs",
+      "confidence": "INFERRED",
+      "confidence_score": 0.98,
+      "source_file": "src/lib/components/ui/sidebar/sidebar-rail.svelte",
+      "source_location": "L13-L34"
+    },
+    {
+      "source": "src_lib_components_ui_sidebar_sidebar_menu_badge_svelte",
+      "target": "semantic_sidebar_state_contract",
+      "relation": "adapts_visibility_to_collapsed_icon_state",
+      "context": "badge hides under group-data-[collapsible=icon] and tracks menu button hover/active text color",
+      "confidence": "INFERRED",
+      "confidence_score": 0.91,
+      "source_file": "src/lib/components/ui/sidebar/sidebar-menu-badge.svelte",
+      "source_location": "L12-L22"
+    },
+    {
+      "source": "src_lib_components_ui_sidebar_sidebar_menu_action_svelte",
+      "target": "semantic_sidebar_state_contract",
+      "relation": "adapts_visibility_to_menu_state",
+      "context": "action hides in icon-collapsible state and optionally appears only on menu item hover/focus/open/active",
+      "confidence": "INFERRED",
+      "confidence_score": 0.92,
+      "source_file": "src/lib/components/ui/sidebar/sidebar-menu-action.svelte",
+      "source_location": "L18-L38"
+    },
+    {
+      "source": "src_lib_components_ui_sidebar_sidebar_group_label_svelte",
+      "target": "semantic_sidebar_state_contract",
+      "relation": "collapses_with_icon_mode",
+      "context": "label shifts margin and opacity to hide when sidebar collapsible mode is icon",
+      "confidence": "INFERRED",
+      "confidence_score": 0.9,
+      "source_file": "src/lib/components/ui/sidebar/sidebar-group-label.svelte",
+      "source_location": "L18-L33"
+    },
+    {
+      "source": "src_lib_components_ui_sidebar_sidebar_menu_sub_svelte",
+      "target": "semantic_sidebar_state_contract",
+      "relation": "hides_nested_navigation_in_icon_mode",
+      "context": "submenu uses group-data-[collapsible=icon]:hidden",
+      "confidence": "INFERRED",
+      "confidence_score": 0.91,
+      "source_file": "src/lib/components/ui/sidebar/sidebar-menu-sub.svelte",
+      "source_location": "L12-L19"
+    },
+    {
+      "source": "src_lib_components_ui_sidebar_sidebar_menu_sub_button_svelte",
+      "target": "semantic_sidebar_state_contract",
+      "relation": "hides_nested_link_in_icon_mode",
+      "context": "submenu anchor hides in icon mode and marks active state via data-active",
+      "confidence": "INFERRED",
+      "confidence_score": 0.91,
+      "source_file": "src/lib/components/ui/sidebar/sidebar-menu-sub-button.svelte",
+      "source_location": "L18-L40"
+    },
+    {
+      "source": "src_lib_components_ui_sidebar_sidebar_inset_svelte",
+      "target": "semantic_sidebar_state_contract",
+      "relation": "responds_to_inset_variant_peer_state",
+      "context": "main content gains margin, rounded corners, and shadow when sidebar peer variant is inset",
+      "confidence": "INFERRED",
+      "confidence_score": 0.9,
+      "source_file": "src/lib/components/ui/sidebar/sidebar-inset.svelte",
+      "source_location": "L11-L18"
+    },
+    {
+      "source": "src_lib_components_ui_tabs_tabs_svelte",
+      "target": "semantic_tabs_variant_contract",
+      "relation": "establishes_orientation_group_context",
+      "context": "root applies group/tabs and orientation data selectors consumed by list and trigger styles",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "src/lib/components/ui/tabs/tabs.svelte",
+      "source_location": "L11-L17"
+    },
+    {
+      "source": "src_lib_components_ui_tabs_tabs_list_svelte",
+      "target": "semantic_tabs_variant_contract",
+      "relation": "defines_variant_surface",
+      "context": "tabsListVariants maps default and line variants onto data-variant styling contract",
+      "confidence": "INFERRED",
+      "confidence_score": 0.98,
+      "source_file": "src/lib/components/ui/tabs/tabs-list.svelte",
+      "source_location": "L1-L34"
+    },
+    {
+      "source": "src_lib_components_ui_tabs_tabs_trigger_svelte",
+      "target": "semantic_tabs_variant_contract",
+      "relation": "consumes_variant_and_orientation_contract",
+      "context": "trigger classes branch on parent list variant and root orientation to render active backgrounds or line indicator",
+      "confidence": "INFERRED",
+      "confidence_score": 0.97,
+      "source_file": "src/lib/components/ui/tabs/tabs-trigger.svelte",
+      "source_location": "L11-L24"
+    },
+    {
+      "source": "src_lib_components_ui_tabs_index_ts",
+      "target": "semantic_tabs_variant_contract",
+      "relation": "publishes_component_api_for",
+      "context": "barrel exports Root/List/Trigger/Content plus Tabs aliases and variant type/helper",
+      "confidence": "INFERRED",
+      "confidence_score": 0.94,
+      "source_file": "src/lib/components/ui/tabs/index.ts",
+      "source_location": "L1-L16"
+    },
+    {
+      "source": "src_lib_components_ui_sidebar_sidebar_menu_skeleton_svelte",
+      "target": "semantic_sidebar_state_contract",
+      "relation": "uses_sidebar_loading_placeholder_contract",
+      "context": "menu skeleton renders optional icon placeholder and random text width inside menu row dimensions",
+      "confidence": "INFERRED",
+      "confidence_score": 0.86,
+      "source_file": "src/lib/components/ui/sidebar/sidebar-menu-skeleton.svelte",
+      "source_location": "L12-L29"
+    },
+    {
+      "source": "src_lib_components_ui_sidebar_sidebar_header_svelte",
+      "target": "semantic_sidebar_state_contract",
+      "relation": "marks_header_region_for",
+      "context": "sets data-sidebar=header and shared vertical spacing contract",
+      "confidence": "INFERRED",
+      "confidence_score": 0.88,
+      "source_file": "src/lib/components/ui/sidebar/sidebar-header.svelte",
+      "source_location": "L10-L18"
+    },
+    {
+      "source": "src_lib_components_ui_sidebar_sidebar_footer_svelte",
+      "target": "semantic_sidebar_state_contract",
+      "relation": "marks_footer_region_for",
+      "context": "sets data-sidebar=footer and shared vertical spacing contract",
+      "confidence": "INFERRED",
+      "confidence_score": 0.88,
+      "source_file": "src/lib/components/ui/sidebar/sidebar-footer.svelte",
+      "source_location": "L10-L18"
+    }
+  ],
+  "hyperedges": []
+}

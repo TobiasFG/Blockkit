@@ -1,0 +1,578 @@
+{
+  "nodes": [
+    {
+      "id": "sidebar_navigation_tree",
+      "label": "Sidebar navigation tree",
+      "file_type": "concept",
+      "source_file": "src/lib/Sidebar/SidebarTree.ts",
+      "source_location": "L3"
+    },
+    {
+      "id": "sidebar_page_ancestor_expansion",
+      "label": "Sidebar page ancestor expansion",
+      "file_type": "concept",
+      "source_file": "src/lib/Sidebar/SidebarTree.ts",
+      "source_location": "L31"
+    },
+    {
+      "id": "reusable_blocks_folder_tree",
+      "label": "Reusable blocks folder tree",
+      "file_type": "concept",
+      "source_file": "src/lib/Sidebar/ReusableBlocksTree.ts",
+      "source_location": "L3"
+    },
+    {
+      "id": "reusable_block_folder_ancestor_expansion",
+      "label": "Reusable block folder ancestor expansion",
+      "file_type": "concept",
+      "source_file": "src/lib/Sidebar/ReusableBlocksTree.ts",
+      "source_location": "L49"
+    },
+    {
+      "id": "sidebar_shell_state_orchestration",
+      "label": "Sidebar shell state orchestration",
+      "file_type": "concept",
+      "source_file": "src/lib/Sidebar/Sidebar.svelte",
+      "source_location": "L1"
+    },
+    {
+      "id": "sidebar_action_api_contract",
+      "label": "Sidebar action API contract",
+      "file_type": "concept",
+      "source_file": "src/lib/Sidebar/Sidebar.svelte",
+      "source_location": "L122"
+    },
+    {
+      "id": "reusable_block_insert_bus",
+      "label": "Reusable block insert event bus",
+      "file_type": "concept",
+      "source_file": "src/lib/Sidebar/ReusableBlockInsertion.ts",
+      "source_location": "L10"
+    },
+    {
+      "id": "reusable_block_drag_payload",
+      "label": "Reusable block drag payload",
+      "file_type": "concept",
+      "source_file": "src/lib/Sidebar/ReusableBlockInsertion.ts",
+      "source_location": "L10"
+    },
+    {
+      "id": "sidebar_desktop_focus_model",
+      "label": "Sidebar desktop focus model",
+      "file_type": "concept",
+      "source_file": "src/lib/Sidebar/Types.ts",
+      "source_location": "L7"
+    },
+    {
+      "id": "expanded_sidebar_content",
+      "label": "Expanded sidebar content",
+      "file_type": "concept",
+      "source_file": "src/lib/Sidebar/SidebarExpandedContent.svelte",
+      "source_location": "L1"
+    },
+    {
+      "id": "collapsed_sidebar_rail",
+      "label": "Collapsed sidebar rail",
+      "file_type": "concept",
+      "source_file": "src/lib/Sidebar/SidebarCollapsedContent.svelte",
+      "source_location": "L1"
+    },
+    {
+      "id": "page_tree_item_publish_indicators",
+      "label": "Page tree item publish indicators",
+      "file_type": "concept",
+      "source_file": "src/lib/Sidebar/SidebarPageTreeItem.svelte",
+      "source_location": "L34"
+    },
+    {
+      "id": "reusable_block_tree_folder_controls",
+      "label": "Reusable block tree folder controls",
+      "file_type": "concept",
+      "source_file": "src/lib/Sidebar/SidebarReusableBlocksTreeItem.svelte",
+      "source_location": "L44"
+    },
+    {
+      "id": "reusable_block_sidebar_row",
+      "label": "Reusable block sidebar row",
+      "file_type": "concept",
+      "source_file": "src/lib/Sidebar/SidebarReusableBlockRow.svelte",
+      "source_location": "L31"
+    },
+    {
+      "id": "toast_state_manager",
+      "label": "Toast state manager",
+      "file_type": "concept",
+      "source_file": "src/lib/Toasts/ToastState.svelte.ts",
+      "source_location": "L38"
+    },
+    {
+      "id": "toast_provider_context",
+      "label": "Toast provider context",
+      "file_type": "concept",
+      "source_file": "src/lib/Toasts/ToastProvider.svelte",
+      "source_location": "L7"
+    },
+    {
+      "id": "toast_viewport_renderer",
+      "label": "Toast viewport renderer",
+      "file_type": "concept",
+      "source_file": "src/lib/Toasts/ToastViewport.svelte",
+      "source_location": "L1"
+    },
+    {
+      "id": "auth_route_guard",
+      "label": "Authentication route guard",
+      "file_type": "concept",
+      "source_file": "src/lib/server/auth.ts",
+      "source_location": "L12"
+    },
+    {
+      "id": "auth_redirect_preservation",
+      "label": "Auth redirect preservation",
+      "file_type": "concept",
+      "source_file": "src/lib/server/auth.ts",
+      "source_location": "L5"
+    },
+    {
+      "id": "page_draft_publish_model",
+      "label": "Page draft/publish model",
+      "file_type": "concept",
+      "source_file": "src/lib/server/PagesController.server.ts",
+      "source_location": "L43"
+    },
+    {
+      "id": "page_path_derivation_model",
+      "label": "Page path derivation model",
+      "file_type": "concept",
+      "source_file": "src/lib/server/PagesController.server.ts",
+      "source_location": "L106"
+    },
+    {
+      "id": "page_trash_policy",
+      "label": "Page trash policy",
+      "file_type": "concept",
+      "source_file": "src/lib/server/PagesController.server.ts",
+      "source_location": "L236"
+    },
+    {
+      "id": "reusable_block_reference_index",
+      "label": "Reusable block reference index",
+      "file_type": "concept",
+      "source_file": "src/lib/server/PagesController.server.ts",
+      "source_location": "L306"
+    },
+    {
+      "id": "reusable_block_reference_cleanup",
+      "label": "Reusable block reference cleanup",
+      "file_type": "concept",
+      "source_file": "src/lib/server/PagesController.server.ts",
+      "source_location": "L375"
+    },
+    {
+      "id": "reusable_block_versioning_model",
+      "label": "Reusable block versioning model",
+      "file_type": "concept",
+      "source_file": "src/lib/server/ReusableBlocksController.server.ts",
+      "source_location": "L49"
+    },
+    {
+      "id": "reusable_block_content_validation",
+      "label": "Reusable block content validation",
+      "file_type": "concept",
+      "source_file": "src/lib/server/ReusableBlocksController.server.ts",
+      "source_location": "L32"
+    },
+    {
+      "id": "block_folder_empty_delete_rule",
+      "label": "Block folder empty delete rule",
+      "file_type": "concept",
+      "source_file": "src/lib/server/ReusableBlocksController.server.ts",
+      "source_location": "L169"
+    }
+  ],
+  "edges": [
+    {
+      "source": "sidebar_shell_state_orchestration",
+      "target": "sidebar_navigation_tree",
+      "relation": "DERIVES_UI_FROM",
+      "context": "Sidebar.svelte derives pageTree from currentPages using buildSidebarTree, so page navigation renders from hierarchical page data rather than flat page arrays.",
+      "confidence": "EXTRACTED",
+      "confidence_score": 0.98,
+      "source_file": "src/lib/Sidebar/Sidebar.svelte",
+      "source_location": "L104"
+    },
+    {
+      "source": "sidebar_shell_state_orchestration",
+      "target": "reusable_blocks_folder_tree",
+      "relation": "DERIVES_UI_FROM",
+      "context": "Sidebar.svelte derives reusableBlocksTree from folders and reusableBlocks so content library navigation mirrors folder/block hierarchy.",
+      "confidence": "EXTRACTED",
+      "confidence_score": 0.98,
+      "source_file": "src/lib/Sidebar/Sidebar.svelte",
+      "source_location": "L105"
+    },
+    {
+      "source": "sidebar_navigation_tree",
+      "target": "sidebar_page_ancestor_expansion",
+      "relation": "SUPPORTS_ACTIVE_ROUTE_DISCLOSURE",
+      "context": "collectAncestorPageIds walks SidebarTreeNode roots and returns the active page path, which Sidebar.svelte uses to reopen closed ancestors.",
+      "confidence": "EXTRACTED",
+      "confidence_score": 0.96,
+      "source_file": "src/lib/Sidebar/SidebarTree.ts",
+      "source_location": "L31"
+    },
+    {
+      "source": "reusable_blocks_folder_tree",
+      "target": "reusable_block_folder_ancestor_expansion",
+      "relation": "SUPPORTS_ACTIVE_ROUTE_DISCLOSURE",
+      "context": "collectReusableBlockFolderAncestors returns parent folder ids for a selected reusable block folder so Sidebar.svelte can reopen its tree path.",
+      "confidence": "EXTRACTED",
+      "confidence_score": 0.96,
+      "source_file": "src/lib/Sidebar/ReusableBlocksTree.ts",
+      "source_location": "L49"
+    },
+    {
+      "source": "sidebar_shell_state_orchestration",
+      "target": "sidebar_page_ancestor_expansion",
+      "relation": "APPLIES",
+      "context": "An effect in Sidebar.svelte iterates collectAncestorPageIds(pageTree, activePageId) and clears closedNodes for each ancestor id.",
+      "confidence": "EXTRACTED",
+      "confidence_score": 0.97,
+      "source_file": "src/lib/Sidebar/Sidebar.svelte",
+      "source_location": "L285"
+    },
+    {
+      "source": "sidebar_shell_state_orchestration",
+      "target": "reusable_block_folder_ancestor_expansion",
+      "relation": "APPLIES",
+      "context": "Sidebar.svelte derives active reusable block folder id then reopens folder ancestors returned by collectReusableBlockFolderAncestors.",
+      "confidence": "EXTRACTED",
+      "confidence_score": 0.97,
+      "source_file": "src/lib/Sidebar/Sidebar.svelte",
+      "source_location": "L298"
+    },
+    {
+      "source": "expanded_sidebar_content",
+      "target": "page_tree_item_publish_indicators",
+      "relation": "RENDERS_RECURSIVE_ITEMS",
+      "context": "Expanded content iterates pageTree roots and delegates each node to SidebarPageTreeItem, which renders nested pages and publish state dots.",
+      "confidence": "EXTRACTED",
+      "confidence_score": 0.97,
+      "source_file": "src/lib/Sidebar/SidebarExpandedContent.svelte",
+      "source_location": "L107"
+    },
+    {
+      "source": "expanded_sidebar_content",
+      "target": "reusable_block_tree_folder_controls",
+      "relation": "RENDERS_RECURSIVE_ITEMS",
+      "context": "Expanded content iterates reusableBlocksTree folders and delegates folder rows to SidebarReusableBlocksTreeItem.",
+      "confidence": "EXTRACTED",
+      "confidence_score": 0.97,
+      "source_file": "src/lib/Sidebar/SidebarExpandedContent.svelte",
+      "source_location": "L157"
+    },
+    {
+      "source": "expanded_sidebar_content",
+      "target": "reusable_block_sidebar_row",
+      "relation": "RENDERS_CONTENT_ITEMS",
+      "context": "Expanded content renders root-level reusableBlocksTree.blocks with SidebarReusableBlockRow.",
+      "confidence": "EXTRACTED",
+      "confidence_score": 0.97,
+      "source_file": "src/lib/Sidebar/SidebarExpandedContent.svelte",
+      "source_location": "L173"
+    },
+    {
+      "source": "reusable_block_tree_folder_controls",
+      "target": "reusable_block_sidebar_row",
+      "relation": "RENDERS_NESTED_CONTENT_ITEMS",
+      "context": "SidebarReusableBlocksTreeItem recursively renders child folders and renders each folder's blocks with SidebarReusableBlockRow.",
+      "confidence": "EXTRACTED",
+      "confidence_score": 0.98,
+      "source_file": "src/lib/Sidebar/SidebarReusableBlocksTreeItem.svelte",
+      "source_location": "L129"
+    },
+    {
+      "source": "collapsed_sidebar_rail",
+      "target": "sidebar_desktop_focus_model",
+      "relation": "USES_FOR_NAVIGATION_STATE",
+      "context": "Collapsed rail defines each rail item with a SidebarDesktopFocus value and calls onDesktopRailSelect for non-route focus items.",
+      "confidence": "EXTRACTED",
+      "confidence_score": 0.95,
+      "source_file": "src/lib/Sidebar/SidebarCollapsedContent.svelte",
+      "source_location": "L33"
+    },
+    {
+      "source": "sidebar_shell_state_orchestration",
+      "target": "sidebar_desktop_focus_model",
+      "relation": "SCROLLS_TO_FOCUS",
+      "context": "Sidebar.svelte watches desktopFocus, opens target folders when needed, then scrolls page/content sections into view.",
+      "confidence": "EXTRACTED",
+      "confidence_score": 0.95,
+      "source_file": "src/lib/Sidebar/Sidebar.svelte",
+      "source_location": "L311"
+    },
+    {
+      "source": "sidebar_action_api_contract",
+      "target": "sidebar_shell_state_orchestration",
+      "relation": "UPDATES_CLIENT_STORES",
+      "context": "runSidebarAction posts an intent payload, applies returned pages/blockFolders/reusableBlocks/reference maps, then shows a success or error notice.",
+      "confidence": "EXTRACTED",
+      "confidence_score": 0.98,
+      "source_file": "src/lib/Sidebar/Sidebar.svelte",
+      "source_location": "L122"
+    },
+    {
+      "source": "sidebar_action_api_contract",
+      "target": "page_trash_policy",
+      "relation": "SURFACES_DESTRUCTIVE_PAGE_ACTION",
+      "context": "Sidebar delete page modal sends intent deletePage, blocks child-page deletion in UI, and redirects away from deleted editor route.",
+      "confidence": "EXTRACTED",
+      "confidence_score": 0.9,
+      "source_file": "src/lib/Sidebar/Sidebar.svelte",
+      "source_location": "L403"
+    },
+    {
+      "source": "sidebar_action_api_contract",
+      "target": "block_folder_empty_delete_rule",
+      "relation": "SURFACES_DESTRUCTIVE_FOLDER_ACTION",
+      "context": "Sidebar delete folder modal tells user folder deletion only succeeds when no child folders or content items exist.",
+      "confidence": "EXTRACTED",
+      "confidence_score": 0.88,
+      "source_file": "src/lib/Sidebar/Sidebar.svelte",
+      "source_location": "L348"
+    },
+    {
+      "source": "sidebar_action_api_contract",
+      "target": "reusable_block_reference_cleanup",
+      "relation": "SURFACES_REFERENCE_CLEANUP_RISK",
+      "context": "Sidebar delete content modal lists pages referencing the block and warns references will be removed from published and draft pages.",
+      "confidence": "EXTRACTED",
+      "confidence_score": 0.91,
+      "source_file": "src/lib/Sidebar/Sidebar.svelte",
+      "source_location": "L356"
+    },
+    {
+      "source": "reusable_block_sidebar_row",
+      "target": "reusable_block_drag_payload",
+      "relation": "EMITS_DRAG_PAYLOAD",
+      "context": "SidebarReusableBlockRow enables dragging when insertion is allowed and calls setReusableBlockDragData with the block id on dragstart.",
+      "confidence": "EXTRACTED",
+      "confidence_score": 0.98,
+      "source_file": "src/lib/Sidebar/SidebarReusableBlockRow.svelte",
+      "source_location": "L55"
+    },
+    {
+      "source": "reusable_block_drag_payload",
+      "target": "reusable_block_insert_bus",
+      "relation": "SHARES_IDENTIFIER_FORMAT",
+      "context": "ReusableBlockInsertion serializes reusableBlockId for drag data and uses the same reusableBlockId shape for insert requests.",
+      "confidence": "EXTRACTED",
+      "confidence_score": 0.94,
+      "source_file": "src/lib/Sidebar/ReusableBlockInsertion.ts",
+      "source_location": "L12"
+    },
+    {
+      "source": "sidebar_shell_state_orchestration",
+      "target": "reusable_block_insert_bus",
+      "relation": "REQUESTS_PAGE_EDITOR_INSERTION",
+      "context": "insertBlockIntoCurrentPage calls requestReusableBlockInsert and reports success only when a page editor handler is registered.",
+      "confidence": "EXTRACTED",
+      "confidence_score": 0.98,
+      "source_file": "src/lib/Sidebar/Sidebar.svelte",
+      "source_location": "L197"
+    },
+    {
+      "source": "page_tree_item_publish_indicators",
+      "target": "page_draft_publish_model",
+      "relation": "VISUALIZES_STATUS",
+      "context": "SidebarPageTreeItem calls getPagePublishState and maps draft-changes/published/unpublished to status labels and dots.",
+      "confidence": "EXTRACTED",
+      "confidence_score": 0.9,
+      "source_file": "src/lib/Sidebar/SidebarPageTreeItem.svelte",
+      "source_location": "L34"
+    },
+    {
+      "source": "reusable_block_sidebar_row",
+      "target": "reusable_block_versioning_model",
+      "relation": "VISUALIZES_STATUS",
+      "context": "SidebarReusableBlockRow calls getReusableBlockPublishState and maps draft-changes/published/unpublished to row status dots.",
+      "confidence": "EXTRACTED",
+      "confidence_score": 0.9,
+      "source_file": "src/lib/Sidebar/SidebarReusableBlockRow.svelte",
+      "source_location": "L36"
+    },
+    {
+      "source": "toast_provider_context",
+      "target": "toast_state_manager",
+      "relation": "CREATES_CONTEXT_STATE",
+      "context": "ToastProvider calls setToastState once and renders children with ToastViewport bound to the created state.",
+      "confidence": "EXTRACTED",
+      "confidence_score": 0.98,
+      "source_file": "src/lib/Toasts/ToastProvider.svelte",
+      "source_location": "L7"
+    },
+    {
+      "source": "toast_viewport_renderer",
+      "target": "toast_state_manager",
+      "relation": "RENDERS_AND_DISMISSES",
+      "context": "ToastViewport reads toastState.toasts, renders each toast, computes progress from createdAt/durationMs, and removes toast on action or dismiss.",
+      "confidence": "EXTRACTED",
+      "confidence_score": 0.98,
+      "source_file": "src/lib/Toasts/ToastViewport.svelte",
+      "source_location": "L77"
+    },
+    {
+      "source": "toast_state_manager",
+      "target": "toast_viewport_renderer",
+      "relation": "DRIVES_AUTO_DISMISS_PROGRESS",
+      "context": "ToastState stores timeout handles per toast; ToastViewport separately ticks current time for progress display while state removes expired toasts.",
+      "confidence": "EXTRACTED",
+      "confidence_score": 0.94,
+      "source_file": "src/lib/Toasts/ToastState.svelte.ts",
+      "source_location": "L79"
+    },
+    {
+      "source": "auth_route_guard",
+      "target": "auth_redirect_preservation",
+      "relation": "USES_FOR_BROWSER_REDIRECTS",
+      "context": "requireAuthenticatedUser redirects unauthenticated page requests to buildAuthRedirectPath while API requests throw 401.",
+      "confidence": "EXTRACTED",
+      "confidence_score": 0.99,
+      "source_file": "src/lib/server/auth.ts",
+      "source_location": "L12"
+    },
+    {
+      "source": "auth_redirect_preservation",
+      "target": "auth_route_guard",
+      "relation": "HAS_REGRESSION_COVERAGE",
+      "context": "auth.spec.ts verifies root redirects to /auth and nested/query paths preserve redirectTo.",
+      "confidence": "EXTRACTED",
+      "confidence_score": 0.96,
+      "source_file": "src/lib/server/auth.spec.ts",
+      "source_location": "L5"
+    },
+    {
+      "source": "page_draft_publish_model",
+      "target": "page_path_derivation_model",
+      "relation": "MAINTAINS_DRAFT_AND_PUBLISHED_PATHS",
+      "context": "parsePage computes both draft path and live_path from separate draft/published path maps built from version parent/segment fields.",
+      "confidence": "EXTRACTED",
+      "confidence_score": 0.98,
+      "source_file": "src/lib/server/PagesController.server.ts",
+      "source_location": "L64"
+    },
+    {
+      "source": "page_path_derivation_model",
+      "target": "sidebar_navigation_tree",
+      "relation": "SUPPLIES_DISPLAY_PATHS",
+      "context": "Parsed Page objects include path and parent_page_id, which sidebar tree code uses for hierarchy and expanded content displays as page paths.",
+      "confidence": "INFERRED",
+      "confidence_score": 0.82,
+      "source_file": "src/lib/server/PagesController.server.ts",
+      "source_location": "L73"
+    },
+    {
+      "source": "page_trash_policy",
+      "target": "sidebar_navigation_tree",
+      "relation": "FILTERS_NORMAL_NAVIGATION",
+      "context": "getPages excludes deleted pages by default, so soft-deleted pages disappear from normal sidebar page lists.",
+      "confidence": "EXTRACTED",
+      "confidence_score": 0.95,
+      "source_file": "src/lib/server/PagesController.server.ts",
+      "source_location": "L250"
+    },
+    {
+      "source": "page_trash_policy",
+      "target": "page_draft_publish_model",
+      "relation": "PROTECTS_ROOT_PAGE",
+      "context": "softDeletePageById loads page metadata and throws when parent_page_id is null, preventing the root page from being moved to trash.",
+      "confidence": "EXTRACTED",
+      "confidence_score": 0.99,
+      "source_file": "src/lib/server/PagesController.server.ts",
+      "source_location": "L232"
+    },
+    {
+      "source": "reusable_block_reference_index",
+      "target": "page_draft_publish_model",
+      "relation": "SCANS_DRAFT_AND_PUBLISHED_VERSIONS",
+      "context": "Reference lookup loops through each page draft_version_id and published_version_id to detect reusable block references across both states.",
+      "confidence": "EXTRACTED",
+      "confidence_score": 0.99,
+      "source_file": "src/lib/server/PagesController.server.ts",
+      "source_location": "L314"
+    },
+    {
+      "source": "reusable_block_reference_cleanup",
+      "target": "reusable_block_reference_index",
+      "relation": "USES_TO_FIND_AFFECTED_PAGES",
+      "context": "removeReusableBlockReferencesFromPages first calls getPagesReferencingReusableBlock, then updates matching page versions.",
+      "confidence": "EXTRACTED",
+      "confidence_score": 0.99,
+      "source_file": "src/lib/server/PagesController.server.ts",
+      "source_location": "L375"
+    },
+    {
+      "source": "reusable_block_reference_cleanup",
+      "target": "page_draft_publish_model",
+      "relation": "MUTATES_VERSION_CONTENT",
+      "context": "Reference cleanup updates draft and published version content through updateDraftVersionContent after filtering reference blocks.",
+      "confidence": "EXTRACTED",
+      "confidence_score": 0.97,
+      "source_file": "src/lib/server/PagesController.server.ts",
+      "source_location": "L383"
+    },
+    {
+      "source": "reusable_block_versioning_model",
+      "target": "reusable_block_content_validation",
+      "relation": "VALIDATES_LOADED_CONTENT",
+      "context": "parseReusableBlock resolves draft/published version content and calls parseReusableBlockContent, which normalizes and validates block instances.",
+      "confidence": "EXTRACTED",
+      "confidence_score": 0.98,
+      "source_file": "src/lib/server/ReusableBlocksController.server.ts",
+      "source_location": "L64"
+    },
+    {
+      "source": "reusable_block_versioning_model",
+      "target": "reusable_blocks_folder_tree",
+      "relation": "SUPPLIES_FOLDER_MEMBERSHIP",
+      "context": "parseReusableBlock emits folder_id from the selected draft or published version, which reusable block tree construction groups under folders.",
+      "confidence": "EXTRACTED",
+      "confidence_score": 0.91,
+      "source_file": "src/lib/server/ReusableBlocksController.server.ts",
+      "source_location": "L82"
+    },
+    {
+      "source": "block_folder_empty_delete_rule",
+      "target": "reusable_blocks_folder_tree",
+      "relation": "PRESERVES_TREE_INTEGRITY",
+      "context": "deleteBlockFolder rejects folders with child folders or non-deleted reusable blocks before deleting the folder row.",
+      "confidence": "EXTRACTED",
+      "confidence_score": 0.99,
+      "source_file": "src/lib/server/ReusableBlocksController.server.ts",
+      "source_location": "L169"
+    },
+    {
+      "source": "reusable_block_versioning_model",
+      "target": "page_draft_publish_model",
+      "relation": "PARALLELS_VERSION_LIFECYCLE",
+      "context": "Reusable blocks and pages both archive old versions, create published snapshots, create or keep drafts, and compute unpublished-change flags by comparing draft and published data.",
+      "confidence": "INFERRED",
+      "confidence_score": 0.84,
+      "source_file": "src/lib/server/ReusableBlocksController.server.ts",
+      "source_location": "L49"
+    },
+    {
+      "source": "sidebar_action_api_contract",
+      "target": "reusable_block_reference_index",
+      "relation": "REFRESHES_REFERENCE_WARNINGS",
+      "context": "Sidebar.svelte accepts reusableBlockPageReferences from sidebar action responses and stores them for delete content modals.",
+      "confidence": "EXTRACTED",
+      "confidence_score": 0.95,
+      "source_file": "src/lib/Sidebar/Sidebar.svelte",
+      "source_location": "L134"
+    }
+  ],
+  "hyperedges": [],
+  "input_tokens": 0,
+  "output_tokens": 0
+}

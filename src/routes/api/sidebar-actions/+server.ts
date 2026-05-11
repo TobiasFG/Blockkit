@@ -1,16 +1,13 @@
 import { json } from '@sveltejs/kit';
 import { requireAuthenticatedUser } from '$lib/server/auth';
 import {
-	ensurePageCanBeDeleted,
 	getPages,
-	getReusableBlockPageReferences,
-	removeReusableBlockReferencesFromPages,
-	softDeletePageById
+	getReusableBlockPageReferences
 } from '$lib/server/PagesController.server';
+import { trashPage, trashReusableBlock } from '$lib/server/TrashController.server';
 import {
 	createBlockFolder,
 	deleteBlockFolder,
-	softDeleteReusableBlock,
 	getBlockFolders,
 	getReusableBlocks
 } from '$lib/server/ReusableBlocksController.server';
@@ -42,70 +39,68 @@ const getSidebarState = async () => ({
 });
 
 export const POST = async ({ request, locals }) => {
-		await requireAuthenticatedUser(locals, { api: true });
+	await requireAuthenticatedUser(locals, { api: true });
 
-		const payload = (await request.json()) as Partial<SidebarActionPayload>;
+	const payload = (await request.json()) as Partial<SidebarActionPayload>;
 
-		if (!payload.intent) {
-			return json({ error: 'Action intent is required' }, { status: 400 });
-		}
+	if (!payload.intent) {
+		return json({ error: 'Action intent is required' }, { status: 400 });
+	}
 
-		try {
-			switch (payload.intent) {
-				case 'createBlockFolder': {
-					const name = String(payload.name ?? '').trim();
-					const parentId = String(payload.parentId ?? '').trim() || null;
+	try {
+		switch (payload.intent) {
+			case 'createBlockFolder': {
+				const name = String(payload.name ?? '').trim();
+				const parentId = String(payload.parentId ?? '').trim() || null;
 
-					if (!name) {
-						return json({ error: 'Folder name is required' }, { status: 400 });
-					}
-
-					await createBlockFolder(name, parentId);
-					return json(await getSidebarState());
+				if (!name) {
+					return json({ error: 'Folder name is required' }, { status: 400 });
 				}
 
-				case 'deleteBlockFolder': {
-					const id = String(payload.id ?? '').trim();
-
-					if (!id) {
-						return json({ error: 'Folder id is required' }, { status: 400 });
-					}
-
-					await deleteBlockFolder(id);
-					return json(await getSidebarState());
-				}
-
-				case 'deleteReusableBlock': {
-					const id = String(payload.id ?? '').trim();
-
-					if (!id) {
-						return json({ error: 'Reusable block id is required' }, { status: 400 });
-					}
-
-					await removeReusableBlockReferencesFromPages(id);
-					await softDeleteReusableBlock(id);
-					return json(await getSidebarState());
-				}
-
-				case 'deletePage': {
-					const id = String(payload.id ?? '').trim();
-
-					if (!id) {
-						return json({ error: 'Page id is required' }, { status: 400 });
-					}
-
-					await ensurePageCanBeDeleted(id);
-					await softDeletePageById(id);
-					return json(await getSidebarState());
-				}
+				await createBlockFolder(name, parentId);
+				return json(await getSidebarState());
 			}
-		} catch (error) {
-			console.error('Error handling sidebar action:', error);
-			return json(
-				{ error: error instanceof Error ? error.message : 'Failed to complete sidebar action' },
-				{ status: 500 }
-			);
-		}
 
-		return json({ error: 'Unsupported action intent' }, { status: 400 });
+			case 'deleteBlockFolder': {
+				const id = String(payload.id ?? '').trim();
+
+				if (!id) {
+					return json({ error: 'Folder id is required' }, { status: 400 });
+				}
+
+				await deleteBlockFolder(id);
+				return json(await getSidebarState());
+			}
+
+			case 'deleteReusableBlock': {
+				const id = String(payload.id ?? '').trim();
+
+				if (!id) {
+					return json({ error: 'Reusable block id is required' }, { status: 400 });
+				}
+
+				await trashReusableBlock(id);
+				return json(await getSidebarState());
+			}
+
+			case 'deletePage': {
+				const id = String(payload.id ?? '').trim();
+
+				if (!id) {
+					return json({ error: 'Page id is required' }, { status: 400 });
+				}
+
+				await trashPage(id);
+				return json(await getSidebarState());
+			}
+		}
+	} catch (error) {
+		console.error('Error handling sidebar action:', error);
+		return json(
+			{ error: error instanceof Error ? error.message : 'Failed to complete sidebar action' },
+			{ status: 500 }
+		);
+	}
+
+	return json({ error: 'Unsupported action intent' }, { status: 400 });
 };

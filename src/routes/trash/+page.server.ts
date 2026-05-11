@@ -1,31 +1,13 @@
 import { fail, type Actions } from '@sveltejs/kit';
 import { requireAuthenticatedUser } from '$lib/server/auth';
 import {
-	getDeletedPages,
-	getPageById,
-	getPages,
-	restorePageById
-} from '$lib/server/PagesController.server';
-import {
-	getDeletedReusableBlocks,
-	getReusableBlocks,
-	restoreReusableBlock
-} from '$lib/server/ReusableBlocksController.server';
+	getTrashState,
+	restorePage,
+	restoreReusableBlockFromTrash
+} from '$lib/server/TrashController.server';
 import type { PageServerLoad } from './$types';
 
-export const load: PageServerLoad = async () => ({
-	deletedPages: await getDeletedPages(),
-	deletedReusableBlocks: await getDeletedReusableBlocks(),
-	pages: await getPages(),
-	reusableBlocks: await getReusableBlocks()
-});
-
-const getTrashState = async () => ({
-	deletedPages: await getDeletedPages(),
-	deletedReusableBlocks: await getDeletedReusableBlocks(),
-	pages: await getPages(),
-	reusableBlocks: await getReusableBlocks()
-});
+export const load: PageServerLoad = async () => getTrashState();
 
 export const actions = {
 	restorePage: async (event) => {
@@ -43,12 +25,7 @@ export const actions = {
 		}
 
 		try {
-			const page = await getPageById(pageId, { includeDeleted: true });
-			if (!page) {
-				return fail(404, { error: 'Page not found' });
-			}
-
-			await restorePageById(pageId, parentPageId);
+			await restorePage({ id: pageId, parentPageId });
 			return {
 				success: true,
 				restoredKind: 'page',
@@ -56,6 +33,10 @@ export const actions = {
 			};
 		} catch (error) {
 			console.error('Error restoring page:', error);
+			if (error instanceof Error && error.message === 'Page not found') {
+				return fail(404, { error: error.message });
+			}
+
 			return fail(500, {
 				error: error instanceof Error ? error.message : 'Failed to restore page'
 			});
@@ -76,7 +57,7 @@ export const actions = {
 		}
 
 		try {
-			await restoreReusableBlock(id);
+			await restoreReusableBlockFromTrash(id);
 			return {
 				success: true,
 				restoredKind: 'content',

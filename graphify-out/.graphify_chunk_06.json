@@ -1,0 +1,269 @@
+{
+  "chunk_index": 6,
+  "chunk_count": 13,
+  "deep_mode": false,
+  "source_files": [
+    "/Users/tfg/Documents/Blockkit/src/lib/components/ui/card/card-action.svelte",
+    "/Users/tfg/Documents/Blockkit/src/lib/components/ui/card/index.ts",
+    "/Users/tfg/Documents/Blockkit/src/lib/components/ui/card/card-content.svelte",
+    "/Users/tfg/Documents/Blockkit/src/lib/components/ui/card/card-footer.svelte",
+    "/Users/tfg/Documents/Blockkit/src/lib/components/ui/progress/progress.svelte",
+    "/Users/tfg/Documents/Blockkit/src/lib/components/ui/progress/index.ts",
+    "/Users/tfg/Documents/Blockkit/src/lib/components/ui/alert-dialog/alert-dialog-cancel.svelte",
+    "/Users/tfg/Documents/Blockkit/src/lib/components/ui/alert-dialog/alert-dialog-overlay.svelte",
+    "/Users/tfg/Documents/Blockkit/src/lib/components/ui/alert-dialog/alert-dialog.svelte",
+    "/Users/tfg/Documents/Blockkit/src/lib/components/ui/alert-dialog/alert-dialog-portal.svelte",
+    "/Users/tfg/Documents/Blockkit/src/lib/components/ui/alert-dialog/alert-dialog-footer.svelte",
+    "/Users/tfg/Documents/Blockkit/src/lib/components/ui/alert-dialog/alert-dialog-content.svelte",
+    "/Users/tfg/Documents/Blockkit/src/lib/components/ui/alert-dialog/alert-dialog-action.svelte",
+    "/Users/tfg/Documents/Blockkit/src/lib/components/ui/alert-dialog/alert-dialog-title.svelte",
+    "/Users/tfg/Documents/Blockkit/src/lib/components/ui/alert-dialog/index.ts",
+    "/Users/tfg/Documents/Blockkit/src/lib/components/ui/alert-dialog/alert-dialog-header.svelte",
+    "/Users/tfg/Documents/Blockkit/src/lib/components/ui/alert-dialog/alert-dialog-trigger.svelte",
+    "/Users/tfg/Documents/Blockkit/src/lib/components/ui/alert-dialog/alert-dialog-media.svelte",
+    "/Users/tfg/Documents/Blockkit/src/lib/components/ui/alert-dialog/alert-dialog-description.svelte",
+    "/Users/tfg/Documents/Blockkit/src/lib/components/ui/input/input.svelte",
+    "/Users/tfg/Documents/Blockkit/src/lib/components/ui/input/index.ts",
+    "/Users/tfg/Documents/Blockkit/src/lib/components/ui/alert/alert-description.svelte"
+  ],
+  "semantic_edges": [
+    {
+      "source": "src/lib/components/ui/card/index.ts",
+      "target": "src/lib/components/ui/card/card-action.svelte",
+      "type": "public_api_alias",
+      "summary": "Card barrel exposes Action and CardAction aliases for action-area slot component.",
+      "confidence_score": 0.99
+    },
+    {
+      "source": "src/lib/components/ui/card/index.ts",
+      "target": "src/lib/components/ui/card/card-content.svelte",
+      "type": "public_api_alias",
+      "summary": "Card barrel exposes Content and CardContent aliases for card body content.",
+      "confidence_score": 0.99
+    },
+    {
+      "source": "src/lib/components/ui/card/index.ts",
+      "target": "src/lib/components/ui/card/card-footer.svelte",
+      "type": "public_api_alias",
+      "summary": "Card barrel exposes Footer and CardFooter aliases for bottom action/content row.",
+      "confidence_score": 0.99
+    },
+    {
+      "source": "src/lib/components/ui/card/card-action.svelte",
+      "target": "card component layout contract",
+      "type": "participates_in_layout",
+      "summary": "CardAction positions itself in card grid column 2, row span 2, top-right aligned for header-level actions.",
+      "confidence_score": 0.95
+    },
+    {
+      "source": "src/lib/components/ui/card/card-content.svelte",
+      "target": "card component density contract",
+      "type": "adapts_to_parent_variant",
+      "summary": "CardContent changes horizontal padding when ancestor card has size=sm group data.",
+      "confidence_score": 0.94
+    },
+    {
+      "source": "src/lib/components/ui/card/card-footer.svelte",
+      "target": "card component density contract",
+      "type": "adapts_to_parent_variant",
+      "summary": "CardFooter changes padding when ancestor card has size=sm group data.",
+      "confidence_score": 0.94
+    },
+    {
+      "source": "src/lib/components/ui/card/card-footer.svelte",
+      "target": "card component visual structure",
+      "type": "defines_region_style",
+      "summary": "CardFooter creates muted rounded bottom region with top border and centered flex layout.",
+      "confidence_score": 0.96
+    },
+    {
+      "source": "src/lib/components/ui/progress/index.ts",
+      "target": "src/lib/components/ui/progress/progress.svelte",
+      "type": "public_api_alias",
+      "summary": "Progress barrel exposes Root and Progress aliases for progress primitive wrapper.",
+      "confidence_score": 0.99
+    },
+    {
+      "source": "src/lib/components/ui/progress/progress.svelte",
+      "target": "bits-ui Progress primitive",
+      "type": "wraps_accessible_primitive",
+      "summary": "Progress component delegates root behavior and ARIA semantics to bits-ui Progress.Root.",
+      "confidence_score": 0.98
+    },
+    {
+      "source": "src/lib/components/ui/progress/progress.svelte",
+      "target": "progress indicator transform",
+      "type": "computes_visual_state",
+      "summary": "Progress indicator translates on X axis from value/max, defaulting max to 100 and missing value to 0.",
+      "confidence_score": 0.98
+    },
+    {
+      "source": "src/lib/components/ui/alert-dialog/index.ts",
+      "target": "src/lib/components/ui/alert-dialog/alert-dialog.svelte",
+      "type": "public_api_alias",
+      "summary": "Alert dialog barrel exposes Root and AlertDialog aliases for dialog state root.",
+      "confidence_score": 0.99
+    },
+    {
+      "source": "src/lib/components/ui/alert-dialog/index.ts",
+      "target": "src/lib/components/ui/alert-dialog/alert-dialog-content.svelte",
+      "type": "public_api_alias",
+      "summary": "Alert dialog barrel exposes Content and AlertDialogContent aliases for modal panel.",
+      "confidence_score": 0.99
+    },
+    {
+      "source": "src/lib/components/ui/alert-dialog/index.ts",
+      "target": "src/lib/components/ui/alert-dialog/alert-dialog-action.svelte",
+      "type": "public_api_alias",
+      "summary": "Alert dialog barrel exposes Action and AlertDialogAction aliases for confirm action.",
+      "confidence_score": 0.99
+    },
+    {
+      "source": "src/lib/components/ui/alert-dialog/index.ts",
+      "target": "src/lib/components/ui/alert-dialog/alert-dialog-cancel.svelte",
+      "type": "public_api_alias",
+      "summary": "Alert dialog barrel exposes Cancel and AlertDialogCancel aliases for dismiss action.",
+      "confidence_score": 0.99
+    },
+    {
+      "source": "src/lib/components/ui/alert-dialog/index.ts",
+      "target": "src/lib/components/ui/alert-dialog/alert-dialog-header.svelte",
+      "type": "public_api_alias",
+      "summary": "Alert dialog barrel exposes Header and AlertDialogHeader aliases for title/description/media grouping.",
+      "confidence_score": 0.99
+    },
+    {
+      "source": "src/lib/components/ui/alert-dialog/index.ts",
+      "target": "src/lib/components/ui/alert-dialog/alert-dialog-footer.svelte",
+      "type": "public_api_alias",
+      "summary": "Alert dialog barrel exposes Footer and AlertDialogFooter aliases for action row.",
+      "confidence_score": 0.99
+    },
+    {
+      "source": "src/lib/components/ui/alert-dialog/index.ts",
+      "target": "src/lib/components/ui/alert-dialog/alert-dialog-media.svelte",
+      "type": "public_api_alias",
+      "summary": "Alert dialog barrel exposes Media and AlertDialogMedia aliases for icon/media slot.",
+      "confidence_score": 0.99
+    },
+    {
+      "source": "src/lib/components/ui/alert-dialog/alert-dialog.svelte",
+      "target": "bits-ui AlertDialog primitive",
+      "type": "wraps_accessible_primitive",
+      "summary": "AlertDialog root binds open state while delegating dialog behavior to bits-ui AlertDialog.Root.",
+      "confidence_score": 0.98
+    },
+    {
+      "source": "src/lib/components/ui/alert-dialog/alert-dialog-content.svelte",
+      "target": "src/lib/components/ui/alert-dialog/alert-dialog-portal.svelte",
+      "type": "composes_component",
+      "summary": "AlertDialogContent renders inside AlertDialogPortal, optionally forwarding portalProps.",
+      "confidence_score": 0.99
+    },
+    {
+      "source": "src/lib/components/ui/alert-dialog/alert-dialog-content.svelte",
+      "target": "src/lib/components/ui/alert-dialog/alert-dialog-overlay.svelte",
+      "type": "composes_component",
+      "summary": "AlertDialogContent always renders AlertDialogOverlay alongside modal content.",
+      "confidence_score": 0.99
+    },
+    {
+      "source": "src/lib/components/ui/alert-dialog/alert-dialog-content.svelte",
+      "target": "alert dialog size contract",
+      "type": "defines_variant_contract",
+      "summary": "AlertDialogContent accepts size default|sm and publishes data-size for descendant layout selectors.",
+      "confidence_score": 0.97
+    },
+    {
+      "source": "src/lib/components/ui/alert-dialog/alert-dialog-footer.svelte",
+      "target": "alert dialog size contract",
+      "type": "adapts_to_parent_variant",
+      "summary": "AlertDialogFooter switches to two-column grid under sm content and uses responsive row layout on wider screens.",
+      "confidence_score": 0.95
+    },
+    {
+      "source": "src/lib/components/ui/alert-dialog/alert-dialog-header.svelte",
+      "target": "src/lib/components/ui/alert-dialog/alert-dialog-media.svelte",
+      "type": "layout_depends_on_slot_presence",
+      "summary": "AlertDialogHeader changes grid rows/gaps when descendant media slot exists.",
+      "confidence_score": 0.95
+    },
+    {
+      "source": "src/lib/components/ui/alert-dialog/alert-dialog-title.svelte",
+      "target": "src/lib/components/ui/alert-dialog/alert-dialog-media.svelte",
+      "type": "layout_depends_on_slot_presence",
+      "summary": "AlertDialogTitle shifts to second grid column on default-size dialogs containing media.",
+      "confidence_score": 0.94
+    },
+    {
+      "source": "src/lib/components/ui/alert-dialog/alert-dialog-media.svelte",
+      "target": "alert dialog header composition",
+      "type": "defines_optional_visual_slot",
+      "summary": "AlertDialogMedia provides 40px muted rounded icon container and sizes nested SVGs.",
+      "confidence_score": 0.96
+    },
+    {
+      "source": "src/lib/components/ui/alert-dialog/alert-dialog-action.svelte",
+      "target": "src/lib/components/ui/button/index.ts",
+      "type": "uses_variant_system",
+      "summary": "AlertDialogAction applies shared buttonVariants with default variant and size props.",
+      "confidence_score": 0.98
+    },
+    {
+      "source": "src/lib/components/ui/alert-dialog/alert-dialog-cancel.svelte",
+      "target": "src/lib/components/ui/button/index.ts",
+      "type": "uses_variant_system",
+      "summary": "AlertDialogCancel applies shared buttonVariants with outline as default variant.",
+      "confidence_score": 0.98
+    },
+    {
+      "source": "src/lib/components/ui/alert-dialog/alert-dialog-description.svelte",
+      "target": "alert dialog readable body copy",
+      "type": "defines_text_semantics",
+      "summary": "AlertDialogDescription styles secondary balanced text and underlined inline links.",
+      "confidence_score": 0.96
+    },
+    {
+      "source": "src/lib/components/ui/alert-dialog/alert-dialog-overlay.svelte",
+      "target": "alert dialog modal backdrop",
+      "type": "defines_modal_layer",
+      "summary": "AlertDialogOverlay creates fixed z-50 translucent backdrop with open/closed fade animations.",
+      "confidence_score": 0.96
+    },
+    {
+      "source": "src/lib/components/ui/input/index.ts",
+      "target": "src/lib/components/ui/input/input.svelte",
+      "type": "public_api_alias",
+      "summary": "Input barrel exposes Root and Input aliases for form input wrapper.",
+      "confidence_score": 0.99
+    },
+    {
+      "source": "src/lib/components/ui/input/input.svelte",
+      "target": "file input binding contract",
+      "type": "defines_special_case",
+      "summary": "Input splits file inputs from other types so file mode can bind files and value safely.",
+      "confidence_score": 0.98
+    },
+    {
+      "source": "src/lib/components/ui/input/input.svelte",
+      "target": "form control visual system",
+      "type": "implements_shared_control_style",
+      "summary": "Input applies shared border, focus ring, invalid, disabled, placeholder, and file-button classes.",
+      "confidence_score": 0.97
+    },
+    {
+      "source": "src/lib/components/ui/input/input.svelte",
+      "target": "component slot metadata contract",
+      "type": "publishes_data_slot",
+      "summary": "Input defaults data-slot to input while allowing callers to override it.",
+      "confidence_score": 0.94
+    },
+    {
+      "source": "src/lib/components/ui/alert/alert-description.svelte",
+      "target": "alert readable body copy",
+      "type": "defines_text_semantics",
+      "summary": "AlertDescription styles secondary balanced text, paragraph spacing, and underlined inline links.",
+      "confidence_score": 0.96
+    }
+  ]
+}
