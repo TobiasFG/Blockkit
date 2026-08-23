@@ -20,6 +20,11 @@ model Page {
     published_version_id String?   @db.Uuid
     deleted_at           DateTime? @db.Timestamptz(6)
 
+    draft_version     PageVersion? @relation("PageDraftVersion", fields: [draft_version_id], references: [id], onDelete: SetNull)
+    published_version PageVersion? @relation("PagePublishedVersion", fields: [published_version_id], references: [id], onDelete: SetNull)
+    versions          PageVersion[] @relation("PageVersions")
+    child_versions    PageVersion[] @relation("PageVersionParentPage")
+
     @@map("pages")
 }
 
@@ -39,6 +44,15 @@ model PageVersion {
     updated_at     DateTime  @default(now()) @db.Timestamptz(6)
     published_at   DateTime? @db.Timestamptz(6)
 
+    page        Page  @relation("PageVersions", fields: [page_id], references: [id], onDelete: Cascade)
+    parent_page Page? @relation("PageVersionParentPage", fields: [parent_page_id], references: [id], onDelete: SetNull)
+
+    parent   PageVersion?  @relation("PageVersionLineage", fields: [parent_id], references: [id], onDelete: SetNull)
+    children PageVersion[] @relation("PageVersionLineage")
+
+    draft_of     Page[] @relation("PageDraftVersion")
+    published_of Page[] @relation("PagePublishedVersion")
+
     @@map("page_versions")
 }
 
@@ -50,6 +64,11 @@ model BlockFolder {
     created_at DateTime @default(now()) @db.Timestamptz(6)
     updated_at DateTime @default(now()) @db.Timestamptz(6)
 
+    parent   BlockFolder?  @relation("BlockFolderTree", fields: [parent_id], references: [id], onDelete: SetNull)
+    children BlockFolder[] @relation("BlockFolderTree")
+
+    block_versions ReusableBlockVersion[]
+
     @@map("block_folders")
 }
 
@@ -60,6 +79,10 @@ model ReusableBlock {
     created_at           DateTime  @default(now()) @db.Timestamptz(6)
     updated_at           DateTime  @default(now()) @db.Timestamptz(6)
     deleted_at           DateTime? @db.Timestamptz(6)
+
+    draft_version     ReusableBlockVersion? @relation("ReusableBlockDraftVersion", fields: [draft_version_id], references: [id], onDelete: SetNull)
+    published_version ReusableBlockVersion? @relation("ReusableBlockPublishedVersion", fields: [published_version_id], references: [id], onDelete: SetNull)
+    versions          ReusableBlockVersion[] @relation("ReusableBlockVersions")
 
     @@map("reusable_blocks")
 }
@@ -76,6 +99,15 @@ model ReusableBlockVersion {
     revision          Int
     created_at        DateTime  @default(now()) @db.Timestamptz(6)
     published_at      DateTime? @db.Timestamptz(6)
+
+    reusable_block ReusableBlock @relation("ReusableBlockVersions", fields: [reusable_block_id], references: [id], onDelete: Cascade)
+    folder         BlockFolder?  @relation(fields: [folder_id], references: [id], onDelete: SetNull)
+
+    parent   ReusableBlockVersion?  @relation("ReusableBlockVersionLineage", fields: [parent_id], references: [id], onDelete: SetNull)
+    children ReusableBlockVersion[] @relation("ReusableBlockVersionLineage")
+
+    draft_of     ReusableBlock[] @relation("ReusableBlockDraftVersion")
+    published_of ReusableBlock[] @relation("ReusableBlockPublishedVersion")
 
     @@map("reusable_block_versions")
 }

@@ -260,6 +260,12 @@ export type ReusableBlockVersionWhereInput = {
   revision?: Prisma.IntFilter<"ReusableBlockVersion"> | number
   created_at?: Prisma.DateTimeFilter<"ReusableBlockVersion"> | Date | string
   published_at?: Prisma.DateTimeNullableFilter<"ReusableBlockVersion"> | Date | string | null
+  reusable_block?: Prisma.XOR<Prisma.ReusableBlockScalarRelationFilter, Prisma.ReusableBlockWhereInput>
+  folder?: Prisma.XOR<Prisma.BlockFolderNullableScalarRelationFilter, Prisma.BlockFolderWhereInput> | null
+  parent?: Prisma.XOR<Prisma.ReusableBlockVersionNullableScalarRelationFilter, Prisma.ReusableBlockVersionWhereInput> | null
+  children?: Prisma.ReusableBlockVersionListRelationFilter
+  draft_of?: Prisma.ReusableBlockListRelationFilter
+  published_of?: Prisma.ReusableBlockListRelationFilter
 }
 
 export type ReusableBlockVersionOrderByWithRelationInput = {
@@ -274,6 +280,12 @@ export type ReusableBlockVersionOrderByWithRelationInput = {
   revision?: Prisma.SortOrder
   created_at?: Prisma.SortOrder
   published_at?: Prisma.SortOrderInput | Prisma.SortOrder
+  reusable_block?: Prisma.ReusableBlockOrderByWithRelationInput
+  folder?: Prisma.BlockFolderOrderByWithRelationInput
+  parent?: Prisma.ReusableBlockVersionOrderByWithRelationInput
+  children?: Prisma.ReusableBlockVersionOrderByRelationAggregateInput
+  draft_of?: Prisma.ReusableBlockOrderByRelationAggregateInput
+  published_of?: Prisma.ReusableBlockOrderByRelationAggregateInput
 }
 
 export type ReusableBlockVersionWhereUniqueInput = Prisma.AtLeast<{
@@ -291,6 +303,12 @@ export type ReusableBlockVersionWhereUniqueInput = Prisma.AtLeast<{
   revision?: Prisma.IntFilter<"ReusableBlockVersion"> | number
   created_at?: Prisma.DateTimeFilter<"ReusableBlockVersion"> | Date | string
   published_at?: Prisma.DateTimeNullableFilter<"ReusableBlockVersion"> | Date | string | null
+  reusable_block?: Prisma.XOR<Prisma.ReusableBlockScalarRelationFilter, Prisma.ReusableBlockWhereInput>
+  folder?: Prisma.XOR<Prisma.BlockFolderNullableScalarRelationFilter, Prisma.BlockFolderWhereInput> | null
+  parent?: Prisma.XOR<Prisma.ReusableBlockVersionNullableScalarRelationFilter, Prisma.ReusableBlockVersionWhereInput> | null
+  children?: Prisma.ReusableBlockVersionListRelationFilter
+  draft_of?: Prisma.ReusableBlockListRelationFilter
+  published_of?: Prisma.ReusableBlockListRelationFilter
 }, "id">
 
 export type ReusableBlockVersionOrderByWithAggregationInput = {
@@ -331,16 +349,19 @@ export type ReusableBlockVersionScalarWhereWithAggregatesInput = {
 
 export type ReusableBlockVersionCreateInput = {
   id?: string
-  reusable_block_id: string
   status: string
   name: string
-  folder_id?: string | null
   block_type: string
   content: Prisma.JsonNullValueInput | runtime.InputJsonValue
-  parent_id?: string | null
   revision: number
   created_at?: Date | string
   published_at?: Date | string | null
+  reusable_block: Prisma.ReusableBlockCreateNestedOneWithoutVersionsInput
+  folder?: Prisma.BlockFolderCreateNestedOneWithoutBlock_versionsInput
+  parent?: Prisma.ReusableBlockVersionCreateNestedOneWithoutChildrenInput
+  children?: Prisma.ReusableBlockVersionCreateNestedManyWithoutParentInput
+  draft_of?: Prisma.ReusableBlockCreateNestedManyWithoutDraft_versionInput
+  published_of?: Prisma.ReusableBlockCreateNestedManyWithoutPublished_versionInput
 }
 
 export type ReusableBlockVersionUncheckedCreateInput = {
@@ -355,20 +376,26 @@ export type ReusableBlockVersionUncheckedCreateInput = {
   revision: number
   created_at?: Date | string
   published_at?: Date | string | null
+  children?: Prisma.ReusableBlockVersionUncheckedCreateNestedManyWithoutParentInput
+  draft_of?: Prisma.ReusableBlockUncheckedCreateNestedManyWithoutDraft_versionInput
+  published_of?: Prisma.ReusableBlockUncheckedCreateNestedManyWithoutPublished_versionInput
 }
 
 export type ReusableBlockVersionUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  reusable_block_id?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  folder_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   block_type?: Prisma.StringFieldUpdateOperationsInput | string
   content?: Prisma.JsonNullValueInput | runtime.InputJsonValue
-  parent_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   revision?: Prisma.IntFieldUpdateOperationsInput | number
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   published_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reusable_block?: Prisma.ReusableBlockUpdateOneRequiredWithoutVersionsNestedInput
+  folder?: Prisma.BlockFolderUpdateOneWithoutBlock_versionsNestedInput
+  parent?: Prisma.ReusableBlockVersionUpdateOneWithoutChildrenNestedInput
+  children?: Prisma.ReusableBlockVersionUpdateManyWithoutParentNestedInput
+  draft_of?: Prisma.ReusableBlockUpdateManyWithoutDraft_versionNestedInput
+  published_of?: Prisma.ReusableBlockUpdateManyWithoutPublished_versionNestedInput
 }
 
 export type ReusableBlockVersionUncheckedUpdateInput = {
@@ -383,6 +410,9 @@ export type ReusableBlockVersionUncheckedUpdateInput = {
   revision?: Prisma.IntFieldUpdateOperationsInput | number
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   published_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  children?: Prisma.ReusableBlockVersionUncheckedUpdateManyWithoutParentNestedInput
+  draft_of?: Prisma.ReusableBlockUncheckedUpdateManyWithoutDraft_versionNestedInput
+  published_of?: Prisma.ReusableBlockUncheckedUpdateManyWithoutPublished_versionNestedInput
 }
 
 export type ReusableBlockVersionCreateManyInput = {
@@ -401,13 +431,10 @@ export type ReusableBlockVersionCreateManyInput = {
 
 export type ReusableBlockVersionUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  reusable_block_id?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  folder_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   block_type?: Prisma.StringFieldUpdateOperationsInput | string
   content?: Prisma.JsonNullValueInput | runtime.InputJsonValue
-  parent_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   revision?: Prisma.IntFieldUpdateOperationsInput | number
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   published_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -425,6 +452,21 @@ export type ReusableBlockVersionUncheckedUpdateManyInput = {
   revision?: Prisma.IntFieldUpdateOperationsInput | number
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   published_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+}
+
+export type ReusableBlockVersionListRelationFilter = {
+  every?: Prisma.ReusableBlockVersionWhereInput
+  some?: Prisma.ReusableBlockVersionWhereInput
+  none?: Prisma.ReusableBlockVersionWhereInput
+}
+
+export type ReusableBlockVersionOrderByRelationAggregateInput = {
+  _count?: Prisma.SortOrder
+}
+
+export type ReusableBlockVersionNullableScalarRelationFilter = {
+  is?: Prisma.ReusableBlockVersionWhereInput | null
+  isNot?: Prisma.ReusableBlockVersionWhereInput | null
 }
 
 export type ReusableBlockVersionCountOrderByAggregateInput = {
@@ -475,6 +517,832 @@ export type ReusableBlockVersionSumOrderByAggregateInput = {
   revision?: Prisma.SortOrder
 }
 
+export type ReusableBlockVersionCreateNestedManyWithoutFolderInput = {
+  create?: Prisma.XOR<Prisma.ReusableBlockVersionCreateWithoutFolderInput, Prisma.ReusableBlockVersionUncheckedCreateWithoutFolderInput> | Prisma.ReusableBlockVersionCreateWithoutFolderInput[] | Prisma.ReusableBlockVersionUncheckedCreateWithoutFolderInput[]
+  connectOrCreate?: Prisma.ReusableBlockVersionCreateOrConnectWithoutFolderInput | Prisma.ReusableBlockVersionCreateOrConnectWithoutFolderInput[]
+  createMany?: Prisma.ReusableBlockVersionCreateManyFolderInputEnvelope
+  connect?: Prisma.ReusableBlockVersionWhereUniqueInput | Prisma.ReusableBlockVersionWhereUniqueInput[]
+}
+
+export type ReusableBlockVersionUncheckedCreateNestedManyWithoutFolderInput = {
+  create?: Prisma.XOR<Prisma.ReusableBlockVersionCreateWithoutFolderInput, Prisma.ReusableBlockVersionUncheckedCreateWithoutFolderInput> | Prisma.ReusableBlockVersionCreateWithoutFolderInput[] | Prisma.ReusableBlockVersionUncheckedCreateWithoutFolderInput[]
+  connectOrCreate?: Prisma.ReusableBlockVersionCreateOrConnectWithoutFolderInput | Prisma.ReusableBlockVersionCreateOrConnectWithoutFolderInput[]
+  createMany?: Prisma.ReusableBlockVersionCreateManyFolderInputEnvelope
+  connect?: Prisma.ReusableBlockVersionWhereUniqueInput | Prisma.ReusableBlockVersionWhereUniqueInput[]
+}
+
+export type ReusableBlockVersionUpdateManyWithoutFolderNestedInput = {
+  create?: Prisma.XOR<Prisma.ReusableBlockVersionCreateWithoutFolderInput, Prisma.ReusableBlockVersionUncheckedCreateWithoutFolderInput> | Prisma.ReusableBlockVersionCreateWithoutFolderInput[] | Prisma.ReusableBlockVersionUncheckedCreateWithoutFolderInput[]
+  connectOrCreate?: Prisma.ReusableBlockVersionCreateOrConnectWithoutFolderInput | Prisma.ReusableBlockVersionCreateOrConnectWithoutFolderInput[]
+  upsert?: Prisma.ReusableBlockVersionUpsertWithWhereUniqueWithoutFolderInput | Prisma.ReusableBlockVersionUpsertWithWhereUniqueWithoutFolderInput[]
+  createMany?: Prisma.ReusableBlockVersionCreateManyFolderInputEnvelope
+  set?: Prisma.ReusableBlockVersionWhereUniqueInput | Prisma.ReusableBlockVersionWhereUniqueInput[]
+  disconnect?: Prisma.ReusableBlockVersionWhereUniqueInput | Prisma.ReusableBlockVersionWhereUniqueInput[]
+  delete?: Prisma.ReusableBlockVersionWhereUniqueInput | Prisma.ReusableBlockVersionWhereUniqueInput[]
+  connect?: Prisma.ReusableBlockVersionWhereUniqueInput | Prisma.ReusableBlockVersionWhereUniqueInput[]
+  update?: Prisma.ReusableBlockVersionUpdateWithWhereUniqueWithoutFolderInput | Prisma.ReusableBlockVersionUpdateWithWhereUniqueWithoutFolderInput[]
+  updateMany?: Prisma.ReusableBlockVersionUpdateManyWithWhereWithoutFolderInput | Prisma.ReusableBlockVersionUpdateManyWithWhereWithoutFolderInput[]
+  deleteMany?: Prisma.ReusableBlockVersionScalarWhereInput | Prisma.ReusableBlockVersionScalarWhereInput[]
+}
+
+export type ReusableBlockVersionUncheckedUpdateManyWithoutFolderNestedInput = {
+  create?: Prisma.XOR<Prisma.ReusableBlockVersionCreateWithoutFolderInput, Prisma.ReusableBlockVersionUncheckedCreateWithoutFolderInput> | Prisma.ReusableBlockVersionCreateWithoutFolderInput[] | Prisma.ReusableBlockVersionUncheckedCreateWithoutFolderInput[]
+  connectOrCreate?: Prisma.ReusableBlockVersionCreateOrConnectWithoutFolderInput | Prisma.ReusableBlockVersionCreateOrConnectWithoutFolderInput[]
+  upsert?: Prisma.ReusableBlockVersionUpsertWithWhereUniqueWithoutFolderInput | Prisma.ReusableBlockVersionUpsertWithWhereUniqueWithoutFolderInput[]
+  createMany?: Prisma.ReusableBlockVersionCreateManyFolderInputEnvelope
+  set?: Prisma.ReusableBlockVersionWhereUniqueInput | Prisma.ReusableBlockVersionWhereUniqueInput[]
+  disconnect?: Prisma.ReusableBlockVersionWhereUniqueInput | Prisma.ReusableBlockVersionWhereUniqueInput[]
+  delete?: Prisma.ReusableBlockVersionWhereUniqueInput | Prisma.ReusableBlockVersionWhereUniqueInput[]
+  connect?: Prisma.ReusableBlockVersionWhereUniqueInput | Prisma.ReusableBlockVersionWhereUniqueInput[]
+  update?: Prisma.ReusableBlockVersionUpdateWithWhereUniqueWithoutFolderInput | Prisma.ReusableBlockVersionUpdateWithWhereUniqueWithoutFolderInput[]
+  updateMany?: Prisma.ReusableBlockVersionUpdateManyWithWhereWithoutFolderInput | Prisma.ReusableBlockVersionUpdateManyWithWhereWithoutFolderInput[]
+  deleteMany?: Prisma.ReusableBlockVersionScalarWhereInput | Prisma.ReusableBlockVersionScalarWhereInput[]
+}
+
+export type ReusableBlockVersionCreateNestedOneWithoutDraft_ofInput = {
+  create?: Prisma.XOR<Prisma.ReusableBlockVersionCreateWithoutDraft_ofInput, Prisma.ReusableBlockVersionUncheckedCreateWithoutDraft_ofInput>
+  connectOrCreate?: Prisma.ReusableBlockVersionCreateOrConnectWithoutDraft_ofInput
+  connect?: Prisma.ReusableBlockVersionWhereUniqueInput
+}
+
+export type ReusableBlockVersionCreateNestedOneWithoutPublished_ofInput = {
+  create?: Prisma.XOR<Prisma.ReusableBlockVersionCreateWithoutPublished_ofInput, Prisma.ReusableBlockVersionUncheckedCreateWithoutPublished_ofInput>
+  connectOrCreate?: Prisma.ReusableBlockVersionCreateOrConnectWithoutPublished_ofInput
+  connect?: Prisma.ReusableBlockVersionWhereUniqueInput
+}
+
+export type ReusableBlockVersionCreateNestedManyWithoutReusable_blockInput = {
+  create?: Prisma.XOR<Prisma.ReusableBlockVersionCreateWithoutReusable_blockInput, Prisma.ReusableBlockVersionUncheckedCreateWithoutReusable_blockInput> | Prisma.ReusableBlockVersionCreateWithoutReusable_blockInput[] | Prisma.ReusableBlockVersionUncheckedCreateWithoutReusable_blockInput[]
+  connectOrCreate?: Prisma.ReusableBlockVersionCreateOrConnectWithoutReusable_blockInput | Prisma.ReusableBlockVersionCreateOrConnectWithoutReusable_blockInput[]
+  createMany?: Prisma.ReusableBlockVersionCreateManyReusable_blockInputEnvelope
+  connect?: Prisma.ReusableBlockVersionWhereUniqueInput | Prisma.ReusableBlockVersionWhereUniqueInput[]
+}
+
+export type ReusableBlockVersionUncheckedCreateNestedManyWithoutReusable_blockInput = {
+  create?: Prisma.XOR<Prisma.ReusableBlockVersionCreateWithoutReusable_blockInput, Prisma.ReusableBlockVersionUncheckedCreateWithoutReusable_blockInput> | Prisma.ReusableBlockVersionCreateWithoutReusable_blockInput[] | Prisma.ReusableBlockVersionUncheckedCreateWithoutReusable_blockInput[]
+  connectOrCreate?: Prisma.ReusableBlockVersionCreateOrConnectWithoutReusable_blockInput | Prisma.ReusableBlockVersionCreateOrConnectWithoutReusable_blockInput[]
+  createMany?: Prisma.ReusableBlockVersionCreateManyReusable_blockInputEnvelope
+  connect?: Prisma.ReusableBlockVersionWhereUniqueInput | Prisma.ReusableBlockVersionWhereUniqueInput[]
+}
+
+export type ReusableBlockVersionUpdateOneWithoutDraft_ofNestedInput = {
+  create?: Prisma.XOR<Prisma.ReusableBlockVersionCreateWithoutDraft_ofInput, Prisma.ReusableBlockVersionUncheckedCreateWithoutDraft_ofInput>
+  connectOrCreate?: Prisma.ReusableBlockVersionCreateOrConnectWithoutDraft_ofInput
+  upsert?: Prisma.ReusableBlockVersionUpsertWithoutDraft_ofInput
+  disconnect?: Prisma.ReusableBlockVersionWhereInput | boolean
+  delete?: Prisma.ReusableBlockVersionWhereInput | boolean
+  connect?: Prisma.ReusableBlockVersionWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ReusableBlockVersionUpdateToOneWithWhereWithoutDraft_ofInput, Prisma.ReusableBlockVersionUpdateWithoutDraft_ofInput>, Prisma.ReusableBlockVersionUncheckedUpdateWithoutDraft_ofInput>
+}
+
+export type ReusableBlockVersionUpdateOneWithoutPublished_ofNestedInput = {
+  create?: Prisma.XOR<Prisma.ReusableBlockVersionCreateWithoutPublished_ofInput, Prisma.ReusableBlockVersionUncheckedCreateWithoutPublished_ofInput>
+  connectOrCreate?: Prisma.ReusableBlockVersionCreateOrConnectWithoutPublished_ofInput
+  upsert?: Prisma.ReusableBlockVersionUpsertWithoutPublished_ofInput
+  disconnect?: Prisma.ReusableBlockVersionWhereInput | boolean
+  delete?: Prisma.ReusableBlockVersionWhereInput | boolean
+  connect?: Prisma.ReusableBlockVersionWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ReusableBlockVersionUpdateToOneWithWhereWithoutPublished_ofInput, Prisma.ReusableBlockVersionUpdateWithoutPublished_ofInput>, Prisma.ReusableBlockVersionUncheckedUpdateWithoutPublished_ofInput>
+}
+
+export type ReusableBlockVersionUpdateManyWithoutReusable_blockNestedInput = {
+  create?: Prisma.XOR<Prisma.ReusableBlockVersionCreateWithoutReusable_blockInput, Prisma.ReusableBlockVersionUncheckedCreateWithoutReusable_blockInput> | Prisma.ReusableBlockVersionCreateWithoutReusable_blockInput[] | Prisma.ReusableBlockVersionUncheckedCreateWithoutReusable_blockInput[]
+  connectOrCreate?: Prisma.ReusableBlockVersionCreateOrConnectWithoutReusable_blockInput | Prisma.ReusableBlockVersionCreateOrConnectWithoutReusable_blockInput[]
+  upsert?: Prisma.ReusableBlockVersionUpsertWithWhereUniqueWithoutReusable_blockInput | Prisma.ReusableBlockVersionUpsertWithWhereUniqueWithoutReusable_blockInput[]
+  createMany?: Prisma.ReusableBlockVersionCreateManyReusable_blockInputEnvelope
+  set?: Prisma.ReusableBlockVersionWhereUniqueInput | Prisma.ReusableBlockVersionWhereUniqueInput[]
+  disconnect?: Prisma.ReusableBlockVersionWhereUniqueInput | Prisma.ReusableBlockVersionWhereUniqueInput[]
+  delete?: Prisma.ReusableBlockVersionWhereUniqueInput | Prisma.ReusableBlockVersionWhereUniqueInput[]
+  connect?: Prisma.ReusableBlockVersionWhereUniqueInput | Prisma.ReusableBlockVersionWhereUniqueInput[]
+  update?: Prisma.ReusableBlockVersionUpdateWithWhereUniqueWithoutReusable_blockInput | Prisma.ReusableBlockVersionUpdateWithWhereUniqueWithoutReusable_blockInput[]
+  updateMany?: Prisma.ReusableBlockVersionUpdateManyWithWhereWithoutReusable_blockInput | Prisma.ReusableBlockVersionUpdateManyWithWhereWithoutReusable_blockInput[]
+  deleteMany?: Prisma.ReusableBlockVersionScalarWhereInput | Prisma.ReusableBlockVersionScalarWhereInput[]
+}
+
+export type ReusableBlockVersionUncheckedUpdateManyWithoutReusable_blockNestedInput = {
+  create?: Prisma.XOR<Prisma.ReusableBlockVersionCreateWithoutReusable_blockInput, Prisma.ReusableBlockVersionUncheckedCreateWithoutReusable_blockInput> | Prisma.ReusableBlockVersionCreateWithoutReusable_blockInput[] | Prisma.ReusableBlockVersionUncheckedCreateWithoutReusable_blockInput[]
+  connectOrCreate?: Prisma.ReusableBlockVersionCreateOrConnectWithoutReusable_blockInput | Prisma.ReusableBlockVersionCreateOrConnectWithoutReusable_blockInput[]
+  upsert?: Prisma.ReusableBlockVersionUpsertWithWhereUniqueWithoutReusable_blockInput | Prisma.ReusableBlockVersionUpsertWithWhereUniqueWithoutReusable_blockInput[]
+  createMany?: Prisma.ReusableBlockVersionCreateManyReusable_blockInputEnvelope
+  set?: Prisma.ReusableBlockVersionWhereUniqueInput | Prisma.ReusableBlockVersionWhereUniqueInput[]
+  disconnect?: Prisma.ReusableBlockVersionWhereUniqueInput | Prisma.ReusableBlockVersionWhereUniqueInput[]
+  delete?: Prisma.ReusableBlockVersionWhereUniqueInput | Prisma.ReusableBlockVersionWhereUniqueInput[]
+  connect?: Prisma.ReusableBlockVersionWhereUniqueInput | Prisma.ReusableBlockVersionWhereUniqueInput[]
+  update?: Prisma.ReusableBlockVersionUpdateWithWhereUniqueWithoutReusable_blockInput | Prisma.ReusableBlockVersionUpdateWithWhereUniqueWithoutReusable_blockInput[]
+  updateMany?: Prisma.ReusableBlockVersionUpdateManyWithWhereWithoutReusable_blockInput | Prisma.ReusableBlockVersionUpdateManyWithWhereWithoutReusable_blockInput[]
+  deleteMany?: Prisma.ReusableBlockVersionScalarWhereInput | Prisma.ReusableBlockVersionScalarWhereInput[]
+}
+
+export type ReusableBlockVersionCreateNestedOneWithoutChildrenInput = {
+  create?: Prisma.XOR<Prisma.ReusableBlockVersionCreateWithoutChildrenInput, Prisma.ReusableBlockVersionUncheckedCreateWithoutChildrenInput>
+  connectOrCreate?: Prisma.ReusableBlockVersionCreateOrConnectWithoutChildrenInput
+  connect?: Prisma.ReusableBlockVersionWhereUniqueInput
+}
+
+export type ReusableBlockVersionCreateNestedManyWithoutParentInput = {
+  create?: Prisma.XOR<Prisma.ReusableBlockVersionCreateWithoutParentInput, Prisma.ReusableBlockVersionUncheckedCreateWithoutParentInput> | Prisma.ReusableBlockVersionCreateWithoutParentInput[] | Prisma.ReusableBlockVersionUncheckedCreateWithoutParentInput[]
+  connectOrCreate?: Prisma.ReusableBlockVersionCreateOrConnectWithoutParentInput | Prisma.ReusableBlockVersionCreateOrConnectWithoutParentInput[]
+  createMany?: Prisma.ReusableBlockVersionCreateManyParentInputEnvelope
+  connect?: Prisma.ReusableBlockVersionWhereUniqueInput | Prisma.ReusableBlockVersionWhereUniqueInput[]
+}
+
+export type ReusableBlockVersionUncheckedCreateNestedManyWithoutParentInput = {
+  create?: Prisma.XOR<Prisma.ReusableBlockVersionCreateWithoutParentInput, Prisma.ReusableBlockVersionUncheckedCreateWithoutParentInput> | Prisma.ReusableBlockVersionCreateWithoutParentInput[] | Prisma.ReusableBlockVersionUncheckedCreateWithoutParentInput[]
+  connectOrCreate?: Prisma.ReusableBlockVersionCreateOrConnectWithoutParentInput | Prisma.ReusableBlockVersionCreateOrConnectWithoutParentInput[]
+  createMany?: Prisma.ReusableBlockVersionCreateManyParentInputEnvelope
+  connect?: Prisma.ReusableBlockVersionWhereUniqueInput | Prisma.ReusableBlockVersionWhereUniqueInput[]
+}
+
+export type ReusableBlockVersionUpdateOneWithoutChildrenNestedInput = {
+  create?: Prisma.XOR<Prisma.ReusableBlockVersionCreateWithoutChildrenInput, Prisma.ReusableBlockVersionUncheckedCreateWithoutChildrenInput>
+  connectOrCreate?: Prisma.ReusableBlockVersionCreateOrConnectWithoutChildrenInput
+  upsert?: Prisma.ReusableBlockVersionUpsertWithoutChildrenInput
+  disconnect?: Prisma.ReusableBlockVersionWhereInput | boolean
+  delete?: Prisma.ReusableBlockVersionWhereInput | boolean
+  connect?: Prisma.ReusableBlockVersionWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ReusableBlockVersionUpdateToOneWithWhereWithoutChildrenInput, Prisma.ReusableBlockVersionUpdateWithoutChildrenInput>, Prisma.ReusableBlockVersionUncheckedUpdateWithoutChildrenInput>
+}
+
+export type ReusableBlockVersionUpdateManyWithoutParentNestedInput = {
+  create?: Prisma.XOR<Prisma.ReusableBlockVersionCreateWithoutParentInput, Prisma.ReusableBlockVersionUncheckedCreateWithoutParentInput> | Prisma.ReusableBlockVersionCreateWithoutParentInput[] | Prisma.ReusableBlockVersionUncheckedCreateWithoutParentInput[]
+  connectOrCreate?: Prisma.ReusableBlockVersionCreateOrConnectWithoutParentInput | Prisma.ReusableBlockVersionCreateOrConnectWithoutParentInput[]
+  upsert?: Prisma.ReusableBlockVersionUpsertWithWhereUniqueWithoutParentInput | Prisma.ReusableBlockVersionUpsertWithWhereUniqueWithoutParentInput[]
+  createMany?: Prisma.ReusableBlockVersionCreateManyParentInputEnvelope
+  set?: Prisma.ReusableBlockVersionWhereUniqueInput | Prisma.ReusableBlockVersionWhereUniqueInput[]
+  disconnect?: Prisma.ReusableBlockVersionWhereUniqueInput | Prisma.ReusableBlockVersionWhereUniqueInput[]
+  delete?: Prisma.ReusableBlockVersionWhereUniqueInput | Prisma.ReusableBlockVersionWhereUniqueInput[]
+  connect?: Prisma.ReusableBlockVersionWhereUniqueInput | Prisma.ReusableBlockVersionWhereUniqueInput[]
+  update?: Prisma.ReusableBlockVersionUpdateWithWhereUniqueWithoutParentInput | Prisma.ReusableBlockVersionUpdateWithWhereUniqueWithoutParentInput[]
+  updateMany?: Prisma.ReusableBlockVersionUpdateManyWithWhereWithoutParentInput | Prisma.ReusableBlockVersionUpdateManyWithWhereWithoutParentInput[]
+  deleteMany?: Prisma.ReusableBlockVersionScalarWhereInput | Prisma.ReusableBlockVersionScalarWhereInput[]
+}
+
+export type ReusableBlockVersionUncheckedUpdateManyWithoutParentNestedInput = {
+  create?: Prisma.XOR<Prisma.ReusableBlockVersionCreateWithoutParentInput, Prisma.ReusableBlockVersionUncheckedCreateWithoutParentInput> | Prisma.ReusableBlockVersionCreateWithoutParentInput[] | Prisma.ReusableBlockVersionUncheckedCreateWithoutParentInput[]
+  connectOrCreate?: Prisma.ReusableBlockVersionCreateOrConnectWithoutParentInput | Prisma.ReusableBlockVersionCreateOrConnectWithoutParentInput[]
+  upsert?: Prisma.ReusableBlockVersionUpsertWithWhereUniqueWithoutParentInput | Prisma.ReusableBlockVersionUpsertWithWhereUniqueWithoutParentInput[]
+  createMany?: Prisma.ReusableBlockVersionCreateManyParentInputEnvelope
+  set?: Prisma.ReusableBlockVersionWhereUniqueInput | Prisma.ReusableBlockVersionWhereUniqueInput[]
+  disconnect?: Prisma.ReusableBlockVersionWhereUniqueInput | Prisma.ReusableBlockVersionWhereUniqueInput[]
+  delete?: Prisma.ReusableBlockVersionWhereUniqueInput | Prisma.ReusableBlockVersionWhereUniqueInput[]
+  connect?: Prisma.ReusableBlockVersionWhereUniqueInput | Prisma.ReusableBlockVersionWhereUniqueInput[]
+  update?: Prisma.ReusableBlockVersionUpdateWithWhereUniqueWithoutParentInput | Prisma.ReusableBlockVersionUpdateWithWhereUniqueWithoutParentInput[]
+  updateMany?: Prisma.ReusableBlockVersionUpdateManyWithWhereWithoutParentInput | Prisma.ReusableBlockVersionUpdateManyWithWhereWithoutParentInput[]
+  deleteMany?: Prisma.ReusableBlockVersionScalarWhereInput | Prisma.ReusableBlockVersionScalarWhereInput[]
+}
+
+export type ReusableBlockVersionCreateWithoutFolderInput = {
+  id?: string
+  status: string
+  name: string
+  block_type: string
+  content: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  revision: number
+  created_at?: Date | string
+  published_at?: Date | string | null
+  reusable_block: Prisma.ReusableBlockCreateNestedOneWithoutVersionsInput
+  parent?: Prisma.ReusableBlockVersionCreateNestedOneWithoutChildrenInput
+  children?: Prisma.ReusableBlockVersionCreateNestedManyWithoutParentInput
+  draft_of?: Prisma.ReusableBlockCreateNestedManyWithoutDraft_versionInput
+  published_of?: Prisma.ReusableBlockCreateNestedManyWithoutPublished_versionInput
+}
+
+export type ReusableBlockVersionUncheckedCreateWithoutFolderInput = {
+  id?: string
+  reusable_block_id: string
+  status: string
+  name: string
+  block_type: string
+  content: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  parent_id?: string | null
+  revision: number
+  created_at?: Date | string
+  published_at?: Date | string | null
+  children?: Prisma.ReusableBlockVersionUncheckedCreateNestedManyWithoutParentInput
+  draft_of?: Prisma.ReusableBlockUncheckedCreateNestedManyWithoutDraft_versionInput
+  published_of?: Prisma.ReusableBlockUncheckedCreateNestedManyWithoutPublished_versionInput
+}
+
+export type ReusableBlockVersionCreateOrConnectWithoutFolderInput = {
+  where: Prisma.ReusableBlockVersionWhereUniqueInput
+  create: Prisma.XOR<Prisma.ReusableBlockVersionCreateWithoutFolderInput, Prisma.ReusableBlockVersionUncheckedCreateWithoutFolderInput>
+}
+
+export type ReusableBlockVersionCreateManyFolderInputEnvelope = {
+  data: Prisma.ReusableBlockVersionCreateManyFolderInput | Prisma.ReusableBlockVersionCreateManyFolderInput[]
+  skipDuplicates?: boolean
+}
+
+export type ReusableBlockVersionUpsertWithWhereUniqueWithoutFolderInput = {
+  where: Prisma.ReusableBlockVersionWhereUniqueInput
+  update: Prisma.XOR<Prisma.ReusableBlockVersionUpdateWithoutFolderInput, Prisma.ReusableBlockVersionUncheckedUpdateWithoutFolderInput>
+  create: Prisma.XOR<Prisma.ReusableBlockVersionCreateWithoutFolderInput, Prisma.ReusableBlockVersionUncheckedCreateWithoutFolderInput>
+}
+
+export type ReusableBlockVersionUpdateWithWhereUniqueWithoutFolderInput = {
+  where: Prisma.ReusableBlockVersionWhereUniqueInput
+  data: Prisma.XOR<Prisma.ReusableBlockVersionUpdateWithoutFolderInput, Prisma.ReusableBlockVersionUncheckedUpdateWithoutFolderInput>
+}
+
+export type ReusableBlockVersionUpdateManyWithWhereWithoutFolderInput = {
+  where: Prisma.ReusableBlockVersionScalarWhereInput
+  data: Prisma.XOR<Prisma.ReusableBlockVersionUpdateManyMutationInput, Prisma.ReusableBlockVersionUncheckedUpdateManyWithoutFolderInput>
+}
+
+export type ReusableBlockVersionScalarWhereInput = {
+  AND?: Prisma.ReusableBlockVersionScalarWhereInput | Prisma.ReusableBlockVersionScalarWhereInput[]
+  OR?: Prisma.ReusableBlockVersionScalarWhereInput[]
+  NOT?: Prisma.ReusableBlockVersionScalarWhereInput | Prisma.ReusableBlockVersionScalarWhereInput[]
+  id?: Prisma.UuidFilter<"ReusableBlockVersion"> | string
+  reusable_block_id?: Prisma.UuidFilter<"ReusableBlockVersion"> | string
+  status?: Prisma.StringFilter<"ReusableBlockVersion"> | string
+  name?: Prisma.StringFilter<"ReusableBlockVersion"> | string
+  folder_id?: Prisma.UuidNullableFilter<"ReusableBlockVersion"> | string | null
+  block_type?: Prisma.StringFilter<"ReusableBlockVersion"> | string
+  content?: Prisma.JsonFilter<"ReusableBlockVersion">
+  parent_id?: Prisma.UuidNullableFilter<"ReusableBlockVersion"> | string | null
+  revision?: Prisma.IntFilter<"ReusableBlockVersion"> | number
+  created_at?: Prisma.DateTimeFilter<"ReusableBlockVersion"> | Date | string
+  published_at?: Prisma.DateTimeNullableFilter<"ReusableBlockVersion"> | Date | string | null
+}
+
+export type ReusableBlockVersionCreateWithoutDraft_ofInput = {
+  id?: string
+  status: string
+  name: string
+  block_type: string
+  content: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  revision: number
+  created_at?: Date | string
+  published_at?: Date | string | null
+  reusable_block: Prisma.ReusableBlockCreateNestedOneWithoutVersionsInput
+  folder?: Prisma.BlockFolderCreateNestedOneWithoutBlock_versionsInput
+  parent?: Prisma.ReusableBlockVersionCreateNestedOneWithoutChildrenInput
+  children?: Prisma.ReusableBlockVersionCreateNestedManyWithoutParentInput
+  published_of?: Prisma.ReusableBlockCreateNestedManyWithoutPublished_versionInput
+}
+
+export type ReusableBlockVersionUncheckedCreateWithoutDraft_ofInput = {
+  id?: string
+  reusable_block_id: string
+  status: string
+  name: string
+  folder_id?: string | null
+  block_type: string
+  content: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  parent_id?: string | null
+  revision: number
+  created_at?: Date | string
+  published_at?: Date | string | null
+  children?: Prisma.ReusableBlockVersionUncheckedCreateNestedManyWithoutParentInput
+  published_of?: Prisma.ReusableBlockUncheckedCreateNestedManyWithoutPublished_versionInput
+}
+
+export type ReusableBlockVersionCreateOrConnectWithoutDraft_ofInput = {
+  where: Prisma.ReusableBlockVersionWhereUniqueInput
+  create: Prisma.XOR<Prisma.ReusableBlockVersionCreateWithoutDraft_ofInput, Prisma.ReusableBlockVersionUncheckedCreateWithoutDraft_ofInput>
+}
+
+export type ReusableBlockVersionCreateWithoutPublished_ofInput = {
+  id?: string
+  status: string
+  name: string
+  block_type: string
+  content: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  revision: number
+  created_at?: Date | string
+  published_at?: Date | string | null
+  reusable_block: Prisma.ReusableBlockCreateNestedOneWithoutVersionsInput
+  folder?: Prisma.BlockFolderCreateNestedOneWithoutBlock_versionsInput
+  parent?: Prisma.ReusableBlockVersionCreateNestedOneWithoutChildrenInput
+  children?: Prisma.ReusableBlockVersionCreateNestedManyWithoutParentInput
+  draft_of?: Prisma.ReusableBlockCreateNestedManyWithoutDraft_versionInput
+}
+
+export type ReusableBlockVersionUncheckedCreateWithoutPublished_ofInput = {
+  id?: string
+  reusable_block_id: string
+  status: string
+  name: string
+  folder_id?: string | null
+  block_type: string
+  content: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  parent_id?: string | null
+  revision: number
+  created_at?: Date | string
+  published_at?: Date | string | null
+  children?: Prisma.ReusableBlockVersionUncheckedCreateNestedManyWithoutParentInput
+  draft_of?: Prisma.ReusableBlockUncheckedCreateNestedManyWithoutDraft_versionInput
+}
+
+export type ReusableBlockVersionCreateOrConnectWithoutPublished_ofInput = {
+  where: Prisma.ReusableBlockVersionWhereUniqueInput
+  create: Prisma.XOR<Prisma.ReusableBlockVersionCreateWithoutPublished_ofInput, Prisma.ReusableBlockVersionUncheckedCreateWithoutPublished_ofInput>
+}
+
+export type ReusableBlockVersionCreateWithoutReusable_blockInput = {
+  id?: string
+  status: string
+  name: string
+  block_type: string
+  content: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  revision: number
+  created_at?: Date | string
+  published_at?: Date | string | null
+  folder?: Prisma.BlockFolderCreateNestedOneWithoutBlock_versionsInput
+  parent?: Prisma.ReusableBlockVersionCreateNestedOneWithoutChildrenInput
+  children?: Prisma.ReusableBlockVersionCreateNestedManyWithoutParentInput
+  draft_of?: Prisma.ReusableBlockCreateNestedManyWithoutDraft_versionInput
+  published_of?: Prisma.ReusableBlockCreateNestedManyWithoutPublished_versionInput
+}
+
+export type ReusableBlockVersionUncheckedCreateWithoutReusable_blockInput = {
+  id?: string
+  status: string
+  name: string
+  folder_id?: string | null
+  block_type: string
+  content: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  parent_id?: string | null
+  revision: number
+  created_at?: Date | string
+  published_at?: Date | string | null
+  children?: Prisma.ReusableBlockVersionUncheckedCreateNestedManyWithoutParentInput
+  draft_of?: Prisma.ReusableBlockUncheckedCreateNestedManyWithoutDraft_versionInput
+  published_of?: Prisma.ReusableBlockUncheckedCreateNestedManyWithoutPublished_versionInput
+}
+
+export type ReusableBlockVersionCreateOrConnectWithoutReusable_blockInput = {
+  where: Prisma.ReusableBlockVersionWhereUniqueInput
+  create: Prisma.XOR<Prisma.ReusableBlockVersionCreateWithoutReusable_blockInput, Prisma.ReusableBlockVersionUncheckedCreateWithoutReusable_blockInput>
+}
+
+export type ReusableBlockVersionCreateManyReusable_blockInputEnvelope = {
+  data: Prisma.ReusableBlockVersionCreateManyReusable_blockInput | Prisma.ReusableBlockVersionCreateManyReusable_blockInput[]
+  skipDuplicates?: boolean
+}
+
+export type ReusableBlockVersionUpsertWithoutDraft_ofInput = {
+  update: Prisma.XOR<Prisma.ReusableBlockVersionUpdateWithoutDraft_ofInput, Prisma.ReusableBlockVersionUncheckedUpdateWithoutDraft_ofInput>
+  create: Prisma.XOR<Prisma.ReusableBlockVersionCreateWithoutDraft_ofInput, Prisma.ReusableBlockVersionUncheckedCreateWithoutDraft_ofInput>
+  where?: Prisma.ReusableBlockVersionWhereInput
+}
+
+export type ReusableBlockVersionUpdateToOneWithWhereWithoutDraft_ofInput = {
+  where?: Prisma.ReusableBlockVersionWhereInput
+  data: Prisma.XOR<Prisma.ReusableBlockVersionUpdateWithoutDraft_ofInput, Prisma.ReusableBlockVersionUncheckedUpdateWithoutDraft_ofInput>
+}
+
+export type ReusableBlockVersionUpdateWithoutDraft_ofInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  block_type?: Prisma.StringFieldUpdateOperationsInput | string
+  content?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  revision?: Prisma.IntFieldUpdateOperationsInput | number
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  published_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reusable_block?: Prisma.ReusableBlockUpdateOneRequiredWithoutVersionsNestedInput
+  folder?: Prisma.BlockFolderUpdateOneWithoutBlock_versionsNestedInput
+  parent?: Prisma.ReusableBlockVersionUpdateOneWithoutChildrenNestedInput
+  children?: Prisma.ReusableBlockVersionUpdateManyWithoutParentNestedInput
+  published_of?: Prisma.ReusableBlockUpdateManyWithoutPublished_versionNestedInput
+}
+
+export type ReusableBlockVersionUncheckedUpdateWithoutDraft_ofInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  reusable_block_id?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  folder_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  block_type?: Prisma.StringFieldUpdateOperationsInput | string
+  content?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  parent_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  revision?: Prisma.IntFieldUpdateOperationsInput | number
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  published_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  children?: Prisma.ReusableBlockVersionUncheckedUpdateManyWithoutParentNestedInput
+  published_of?: Prisma.ReusableBlockUncheckedUpdateManyWithoutPublished_versionNestedInput
+}
+
+export type ReusableBlockVersionUpsertWithoutPublished_ofInput = {
+  update: Prisma.XOR<Prisma.ReusableBlockVersionUpdateWithoutPublished_ofInput, Prisma.ReusableBlockVersionUncheckedUpdateWithoutPublished_ofInput>
+  create: Prisma.XOR<Prisma.ReusableBlockVersionCreateWithoutPublished_ofInput, Prisma.ReusableBlockVersionUncheckedCreateWithoutPublished_ofInput>
+  where?: Prisma.ReusableBlockVersionWhereInput
+}
+
+export type ReusableBlockVersionUpdateToOneWithWhereWithoutPublished_ofInput = {
+  where?: Prisma.ReusableBlockVersionWhereInput
+  data: Prisma.XOR<Prisma.ReusableBlockVersionUpdateWithoutPublished_ofInput, Prisma.ReusableBlockVersionUncheckedUpdateWithoutPublished_ofInput>
+}
+
+export type ReusableBlockVersionUpdateWithoutPublished_ofInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  block_type?: Prisma.StringFieldUpdateOperationsInput | string
+  content?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  revision?: Prisma.IntFieldUpdateOperationsInput | number
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  published_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reusable_block?: Prisma.ReusableBlockUpdateOneRequiredWithoutVersionsNestedInput
+  folder?: Prisma.BlockFolderUpdateOneWithoutBlock_versionsNestedInput
+  parent?: Prisma.ReusableBlockVersionUpdateOneWithoutChildrenNestedInput
+  children?: Prisma.ReusableBlockVersionUpdateManyWithoutParentNestedInput
+  draft_of?: Prisma.ReusableBlockUpdateManyWithoutDraft_versionNestedInput
+}
+
+export type ReusableBlockVersionUncheckedUpdateWithoutPublished_ofInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  reusable_block_id?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  folder_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  block_type?: Prisma.StringFieldUpdateOperationsInput | string
+  content?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  parent_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  revision?: Prisma.IntFieldUpdateOperationsInput | number
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  published_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  children?: Prisma.ReusableBlockVersionUncheckedUpdateManyWithoutParentNestedInput
+  draft_of?: Prisma.ReusableBlockUncheckedUpdateManyWithoutDraft_versionNestedInput
+}
+
+export type ReusableBlockVersionUpsertWithWhereUniqueWithoutReusable_blockInput = {
+  where: Prisma.ReusableBlockVersionWhereUniqueInput
+  update: Prisma.XOR<Prisma.ReusableBlockVersionUpdateWithoutReusable_blockInput, Prisma.ReusableBlockVersionUncheckedUpdateWithoutReusable_blockInput>
+  create: Prisma.XOR<Prisma.ReusableBlockVersionCreateWithoutReusable_blockInput, Prisma.ReusableBlockVersionUncheckedCreateWithoutReusable_blockInput>
+}
+
+export type ReusableBlockVersionUpdateWithWhereUniqueWithoutReusable_blockInput = {
+  where: Prisma.ReusableBlockVersionWhereUniqueInput
+  data: Prisma.XOR<Prisma.ReusableBlockVersionUpdateWithoutReusable_blockInput, Prisma.ReusableBlockVersionUncheckedUpdateWithoutReusable_blockInput>
+}
+
+export type ReusableBlockVersionUpdateManyWithWhereWithoutReusable_blockInput = {
+  where: Prisma.ReusableBlockVersionScalarWhereInput
+  data: Prisma.XOR<Prisma.ReusableBlockVersionUpdateManyMutationInput, Prisma.ReusableBlockVersionUncheckedUpdateManyWithoutReusable_blockInput>
+}
+
+export type ReusableBlockVersionCreateWithoutChildrenInput = {
+  id?: string
+  status: string
+  name: string
+  block_type: string
+  content: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  revision: number
+  created_at?: Date | string
+  published_at?: Date | string | null
+  reusable_block: Prisma.ReusableBlockCreateNestedOneWithoutVersionsInput
+  folder?: Prisma.BlockFolderCreateNestedOneWithoutBlock_versionsInput
+  parent?: Prisma.ReusableBlockVersionCreateNestedOneWithoutChildrenInput
+  draft_of?: Prisma.ReusableBlockCreateNestedManyWithoutDraft_versionInput
+  published_of?: Prisma.ReusableBlockCreateNestedManyWithoutPublished_versionInput
+}
+
+export type ReusableBlockVersionUncheckedCreateWithoutChildrenInput = {
+  id?: string
+  reusable_block_id: string
+  status: string
+  name: string
+  folder_id?: string | null
+  block_type: string
+  content: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  parent_id?: string | null
+  revision: number
+  created_at?: Date | string
+  published_at?: Date | string | null
+  draft_of?: Prisma.ReusableBlockUncheckedCreateNestedManyWithoutDraft_versionInput
+  published_of?: Prisma.ReusableBlockUncheckedCreateNestedManyWithoutPublished_versionInput
+}
+
+export type ReusableBlockVersionCreateOrConnectWithoutChildrenInput = {
+  where: Prisma.ReusableBlockVersionWhereUniqueInput
+  create: Prisma.XOR<Prisma.ReusableBlockVersionCreateWithoutChildrenInput, Prisma.ReusableBlockVersionUncheckedCreateWithoutChildrenInput>
+}
+
+export type ReusableBlockVersionCreateWithoutParentInput = {
+  id?: string
+  status: string
+  name: string
+  block_type: string
+  content: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  revision: number
+  created_at?: Date | string
+  published_at?: Date | string | null
+  reusable_block: Prisma.ReusableBlockCreateNestedOneWithoutVersionsInput
+  folder?: Prisma.BlockFolderCreateNestedOneWithoutBlock_versionsInput
+  children?: Prisma.ReusableBlockVersionCreateNestedManyWithoutParentInput
+  draft_of?: Prisma.ReusableBlockCreateNestedManyWithoutDraft_versionInput
+  published_of?: Prisma.ReusableBlockCreateNestedManyWithoutPublished_versionInput
+}
+
+export type ReusableBlockVersionUncheckedCreateWithoutParentInput = {
+  id?: string
+  reusable_block_id: string
+  status: string
+  name: string
+  folder_id?: string | null
+  block_type: string
+  content: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  revision: number
+  created_at?: Date | string
+  published_at?: Date | string | null
+  children?: Prisma.ReusableBlockVersionUncheckedCreateNestedManyWithoutParentInput
+  draft_of?: Prisma.ReusableBlockUncheckedCreateNestedManyWithoutDraft_versionInput
+  published_of?: Prisma.ReusableBlockUncheckedCreateNestedManyWithoutPublished_versionInput
+}
+
+export type ReusableBlockVersionCreateOrConnectWithoutParentInput = {
+  where: Prisma.ReusableBlockVersionWhereUniqueInput
+  create: Prisma.XOR<Prisma.ReusableBlockVersionCreateWithoutParentInput, Prisma.ReusableBlockVersionUncheckedCreateWithoutParentInput>
+}
+
+export type ReusableBlockVersionCreateManyParentInputEnvelope = {
+  data: Prisma.ReusableBlockVersionCreateManyParentInput | Prisma.ReusableBlockVersionCreateManyParentInput[]
+  skipDuplicates?: boolean
+}
+
+export type ReusableBlockVersionUpsertWithoutChildrenInput = {
+  update: Prisma.XOR<Prisma.ReusableBlockVersionUpdateWithoutChildrenInput, Prisma.ReusableBlockVersionUncheckedUpdateWithoutChildrenInput>
+  create: Prisma.XOR<Prisma.ReusableBlockVersionCreateWithoutChildrenInput, Prisma.ReusableBlockVersionUncheckedCreateWithoutChildrenInput>
+  where?: Prisma.ReusableBlockVersionWhereInput
+}
+
+export type ReusableBlockVersionUpdateToOneWithWhereWithoutChildrenInput = {
+  where?: Prisma.ReusableBlockVersionWhereInput
+  data: Prisma.XOR<Prisma.ReusableBlockVersionUpdateWithoutChildrenInput, Prisma.ReusableBlockVersionUncheckedUpdateWithoutChildrenInput>
+}
+
+export type ReusableBlockVersionUpdateWithoutChildrenInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  block_type?: Prisma.StringFieldUpdateOperationsInput | string
+  content?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  revision?: Prisma.IntFieldUpdateOperationsInput | number
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  published_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reusable_block?: Prisma.ReusableBlockUpdateOneRequiredWithoutVersionsNestedInput
+  folder?: Prisma.BlockFolderUpdateOneWithoutBlock_versionsNestedInput
+  parent?: Prisma.ReusableBlockVersionUpdateOneWithoutChildrenNestedInput
+  draft_of?: Prisma.ReusableBlockUpdateManyWithoutDraft_versionNestedInput
+  published_of?: Prisma.ReusableBlockUpdateManyWithoutPublished_versionNestedInput
+}
+
+export type ReusableBlockVersionUncheckedUpdateWithoutChildrenInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  reusable_block_id?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  folder_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  block_type?: Prisma.StringFieldUpdateOperationsInput | string
+  content?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  parent_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  revision?: Prisma.IntFieldUpdateOperationsInput | number
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  published_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  draft_of?: Prisma.ReusableBlockUncheckedUpdateManyWithoutDraft_versionNestedInput
+  published_of?: Prisma.ReusableBlockUncheckedUpdateManyWithoutPublished_versionNestedInput
+}
+
+export type ReusableBlockVersionUpsertWithWhereUniqueWithoutParentInput = {
+  where: Prisma.ReusableBlockVersionWhereUniqueInput
+  update: Prisma.XOR<Prisma.ReusableBlockVersionUpdateWithoutParentInput, Prisma.ReusableBlockVersionUncheckedUpdateWithoutParentInput>
+  create: Prisma.XOR<Prisma.ReusableBlockVersionCreateWithoutParentInput, Prisma.ReusableBlockVersionUncheckedCreateWithoutParentInput>
+}
+
+export type ReusableBlockVersionUpdateWithWhereUniqueWithoutParentInput = {
+  where: Prisma.ReusableBlockVersionWhereUniqueInput
+  data: Prisma.XOR<Prisma.ReusableBlockVersionUpdateWithoutParentInput, Prisma.ReusableBlockVersionUncheckedUpdateWithoutParentInput>
+}
+
+export type ReusableBlockVersionUpdateManyWithWhereWithoutParentInput = {
+  where: Prisma.ReusableBlockVersionScalarWhereInput
+  data: Prisma.XOR<Prisma.ReusableBlockVersionUpdateManyMutationInput, Prisma.ReusableBlockVersionUncheckedUpdateManyWithoutParentInput>
+}
+
+export type ReusableBlockVersionCreateManyFolderInput = {
+  id?: string
+  reusable_block_id: string
+  status: string
+  name: string
+  block_type: string
+  content: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  parent_id?: string | null
+  revision: number
+  created_at?: Date | string
+  published_at?: Date | string | null
+}
+
+export type ReusableBlockVersionUpdateWithoutFolderInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  block_type?: Prisma.StringFieldUpdateOperationsInput | string
+  content?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  revision?: Prisma.IntFieldUpdateOperationsInput | number
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  published_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reusable_block?: Prisma.ReusableBlockUpdateOneRequiredWithoutVersionsNestedInput
+  parent?: Prisma.ReusableBlockVersionUpdateOneWithoutChildrenNestedInput
+  children?: Prisma.ReusableBlockVersionUpdateManyWithoutParentNestedInput
+  draft_of?: Prisma.ReusableBlockUpdateManyWithoutDraft_versionNestedInput
+  published_of?: Prisma.ReusableBlockUpdateManyWithoutPublished_versionNestedInput
+}
+
+export type ReusableBlockVersionUncheckedUpdateWithoutFolderInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  reusable_block_id?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  block_type?: Prisma.StringFieldUpdateOperationsInput | string
+  content?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  parent_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  revision?: Prisma.IntFieldUpdateOperationsInput | number
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  published_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  children?: Prisma.ReusableBlockVersionUncheckedUpdateManyWithoutParentNestedInput
+  draft_of?: Prisma.ReusableBlockUncheckedUpdateManyWithoutDraft_versionNestedInput
+  published_of?: Prisma.ReusableBlockUncheckedUpdateManyWithoutPublished_versionNestedInput
+}
+
+export type ReusableBlockVersionUncheckedUpdateManyWithoutFolderInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  reusable_block_id?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  block_type?: Prisma.StringFieldUpdateOperationsInput | string
+  content?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  parent_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  revision?: Prisma.IntFieldUpdateOperationsInput | number
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  published_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+}
+
+export type ReusableBlockVersionCreateManyReusable_blockInput = {
+  id?: string
+  status: string
+  name: string
+  folder_id?: string | null
+  block_type: string
+  content: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  parent_id?: string | null
+  revision: number
+  created_at?: Date | string
+  published_at?: Date | string | null
+}
+
+export type ReusableBlockVersionUpdateWithoutReusable_blockInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  block_type?: Prisma.StringFieldUpdateOperationsInput | string
+  content?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  revision?: Prisma.IntFieldUpdateOperationsInput | number
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  published_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  folder?: Prisma.BlockFolderUpdateOneWithoutBlock_versionsNestedInput
+  parent?: Prisma.ReusableBlockVersionUpdateOneWithoutChildrenNestedInput
+  children?: Prisma.ReusableBlockVersionUpdateManyWithoutParentNestedInput
+  draft_of?: Prisma.ReusableBlockUpdateManyWithoutDraft_versionNestedInput
+  published_of?: Prisma.ReusableBlockUpdateManyWithoutPublished_versionNestedInput
+}
+
+export type ReusableBlockVersionUncheckedUpdateWithoutReusable_blockInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  folder_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  block_type?: Prisma.StringFieldUpdateOperationsInput | string
+  content?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  parent_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  revision?: Prisma.IntFieldUpdateOperationsInput | number
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  published_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  children?: Prisma.ReusableBlockVersionUncheckedUpdateManyWithoutParentNestedInput
+  draft_of?: Prisma.ReusableBlockUncheckedUpdateManyWithoutDraft_versionNestedInput
+  published_of?: Prisma.ReusableBlockUncheckedUpdateManyWithoutPublished_versionNestedInput
+}
+
+export type ReusableBlockVersionUncheckedUpdateManyWithoutReusable_blockInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  folder_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  block_type?: Prisma.StringFieldUpdateOperationsInput | string
+  content?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  parent_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  revision?: Prisma.IntFieldUpdateOperationsInput | number
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  published_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+}
+
+export type ReusableBlockVersionCreateManyParentInput = {
+  id?: string
+  reusable_block_id: string
+  status: string
+  name: string
+  folder_id?: string | null
+  block_type: string
+  content: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  revision: number
+  created_at?: Date | string
+  published_at?: Date | string | null
+}
+
+export type ReusableBlockVersionUpdateWithoutParentInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  block_type?: Prisma.StringFieldUpdateOperationsInput | string
+  content?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  revision?: Prisma.IntFieldUpdateOperationsInput | number
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  published_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reusable_block?: Prisma.ReusableBlockUpdateOneRequiredWithoutVersionsNestedInput
+  folder?: Prisma.BlockFolderUpdateOneWithoutBlock_versionsNestedInput
+  children?: Prisma.ReusableBlockVersionUpdateManyWithoutParentNestedInput
+  draft_of?: Prisma.ReusableBlockUpdateManyWithoutDraft_versionNestedInput
+  published_of?: Prisma.ReusableBlockUpdateManyWithoutPublished_versionNestedInput
+}
+
+export type ReusableBlockVersionUncheckedUpdateWithoutParentInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  reusable_block_id?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  folder_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  block_type?: Prisma.StringFieldUpdateOperationsInput | string
+  content?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  revision?: Prisma.IntFieldUpdateOperationsInput | number
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  published_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  children?: Prisma.ReusableBlockVersionUncheckedUpdateManyWithoutParentNestedInput
+  draft_of?: Prisma.ReusableBlockUncheckedUpdateManyWithoutDraft_versionNestedInput
+  published_of?: Prisma.ReusableBlockUncheckedUpdateManyWithoutPublished_versionNestedInput
+}
+
+export type ReusableBlockVersionUncheckedUpdateManyWithoutParentInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  reusable_block_id?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  folder_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  block_type?: Prisma.StringFieldUpdateOperationsInput | string
+  content?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  revision?: Prisma.IntFieldUpdateOperationsInput | number
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  published_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+}
+
+
+/**
+ * Count Type ReusableBlockVersionCountOutputType
+ */
+
+export type ReusableBlockVersionCountOutputType = {
+  children: number
+  draft_of: number
+  published_of: number
+}
+
+export type ReusableBlockVersionCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  children?: boolean | ReusableBlockVersionCountOutputTypeCountChildrenArgs
+  draft_of?: boolean | ReusableBlockVersionCountOutputTypeCountDraft_ofArgs
+  published_of?: boolean | ReusableBlockVersionCountOutputTypeCountPublished_ofArgs
+}
+
+/**
+ * ReusableBlockVersionCountOutputType without action
+ */
+export type ReusableBlockVersionCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ReusableBlockVersionCountOutputType
+   */
+  select?: Prisma.ReusableBlockVersionCountOutputTypeSelect<ExtArgs> | null
+}
+
+/**
+ * ReusableBlockVersionCountOutputType without action
+ */
+export type ReusableBlockVersionCountOutputTypeCountChildrenArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ReusableBlockVersionWhereInput
+}
+
+/**
+ * ReusableBlockVersionCountOutputType without action
+ */
+export type ReusableBlockVersionCountOutputTypeCountDraft_ofArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ReusableBlockWhereInput
+}
+
+/**
+ * ReusableBlockVersionCountOutputType without action
+ */
+export type ReusableBlockVersionCountOutputTypeCountPublished_ofArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ReusableBlockWhereInput
+}
 
 
 export type ReusableBlockVersionSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -489,6 +1357,13 @@ export type ReusableBlockVersionSelect<ExtArgs extends runtime.Types.Extensions.
   revision?: boolean
   created_at?: boolean
   published_at?: boolean
+  reusable_block?: boolean | Prisma.ReusableBlockDefaultArgs<ExtArgs>
+  folder?: boolean | Prisma.ReusableBlockVersion$folderArgs<ExtArgs>
+  parent?: boolean | Prisma.ReusableBlockVersion$parentArgs<ExtArgs>
+  children?: boolean | Prisma.ReusableBlockVersion$childrenArgs<ExtArgs>
+  draft_of?: boolean | Prisma.ReusableBlockVersion$draft_ofArgs<ExtArgs>
+  published_of?: boolean | Prisma.ReusableBlockVersion$published_ofArgs<ExtArgs>
+  _count?: boolean | Prisma.ReusableBlockVersionCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["reusableBlockVersion"]>
 
 export type ReusableBlockVersionSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -503,6 +1378,9 @@ export type ReusableBlockVersionSelectCreateManyAndReturn<ExtArgs extends runtim
   revision?: boolean
   created_at?: boolean
   published_at?: boolean
+  reusable_block?: boolean | Prisma.ReusableBlockDefaultArgs<ExtArgs>
+  folder?: boolean | Prisma.ReusableBlockVersion$folderArgs<ExtArgs>
+  parent?: boolean | Prisma.ReusableBlockVersion$parentArgs<ExtArgs>
 }, ExtArgs["result"]["reusableBlockVersion"]>
 
 export type ReusableBlockVersionSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -517,6 +1395,9 @@ export type ReusableBlockVersionSelectUpdateManyAndReturn<ExtArgs extends runtim
   revision?: boolean
   created_at?: boolean
   published_at?: boolean
+  reusable_block?: boolean | Prisma.ReusableBlockDefaultArgs<ExtArgs>
+  folder?: boolean | Prisma.ReusableBlockVersion$folderArgs<ExtArgs>
+  parent?: boolean | Prisma.ReusableBlockVersion$parentArgs<ExtArgs>
 }, ExtArgs["result"]["reusableBlockVersion"]>
 
 export type ReusableBlockVersionSelectScalar = {
@@ -534,10 +1415,36 @@ export type ReusableBlockVersionSelectScalar = {
 }
 
 export type ReusableBlockVersionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "reusable_block_id" | "status" | "name" | "folder_id" | "block_type" | "content" | "parent_id" | "revision" | "created_at" | "published_at", ExtArgs["result"]["reusableBlockVersion"]>
+export type ReusableBlockVersionInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  reusable_block?: boolean | Prisma.ReusableBlockDefaultArgs<ExtArgs>
+  folder?: boolean | Prisma.ReusableBlockVersion$folderArgs<ExtArgs>
+  parent?: boolean | Prisma.ReusableBlockVersion$parentArgs<ExtArgs>
+  children?: boolean | Prisma.ReusableBlockVersion$childrenArgs<ExtArgs>
+  draft_of?: boolean | Prisma.ReusableBlockVersion$draft_ofArgs<ExtArgs>
+  published_of?: boolean | Prisma.ReusableBlockVersion$published_ofArgs<ExtArgs>
+  _count?: boolean | Prisma.ReusableBlockVersionCountOutputTypeDefaultArgs<ExtArgs>
+}
+export type ReusableBlockVersionIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  reusable_block?: boolean | Prisma.ReusableBlockDefaultArgs<ExtArgs>
+  folder?: boolean | Prisma.ReusableBlockVersion$folderArgs<ExtArgs>
+  parent?: boolean | Prisma.ReusableBlockVersion$parentArgs<ExtArgs>
+}
+export type ReusableBlockVersionIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  reusable_block?: boolean | Prisma.ReusableBlockDefaultArgs<ExtArgs>
+  folder?: boolean | Prisma.ReusableBlockVersion$folderArgs<ExtArgs>
+  parent?: boolean | Prisma.ReusableBlockVersion$parentArgs<ExtArgs>
+}
 
 export type $ReusableBlockVersionPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "ReusableBlockVersion"
-  objects: {}
+  objects: {
+    reusable_block: Prisma.$ReusableBlockPayload<ExtArgs>
+    folder: Prisma.$BlockFolderPayload<ExtArgs> | null
+    parent: Prisma.$ReusableBlockVersionPayload<ExtArgs> | null
+    children: Prisma.$ReusableBlockVersionPayload<ExtArgs>[]
+    draft_of: Prisma.$ReusableBlockPayload<ExtArgs>[]
+    published_of: Prisma.$ReusableBlockPayload<ExtArgs>[]
+  }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     reusable_block_id: string
@@ -944,6 +1851,12 @@ readonly fields: ReusableBlockVersionFieldRefs;
  */
 export interface Prisma__ReusableBlockVersionClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
+  reusable_block<T extends Prisma.ReusableBlockDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ReusableBlockDefaultArgs<ExtArgs>>): Prisma.Prisma__ReusableBlockClient<runtime.Types.Result.GetResult<Prisma.$ReusableBlockPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  folder<T extends Prisma.ReusableBlockVersion$folderArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ReusableBlockVersion$folderArgs<ExtArgs>>): Prisma.Prisma__BlockFolderClient<runtime.Types.Result.GetResult<Prisma.$BlockFolderPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  parent<T extends Prisma.ReusableBlockVersion$parentArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ReusableBlockVersion$parentArgs<ExtArgs>>): Prisma.Prisma__ReusableBlockVersionClient<runtime.Types.Result.GetResult<Prisma.$ReusableBlockVersionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  children<T extends Prisma.ReusableBlockVersion$childrenArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ReusableBlockVersion$childrenArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ReusableBlockVersionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  draft_of<T extends Prisma.ReusableBlockVersion$draft_ofArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ReusableBlockVersion$draft_ofArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ReusableBlockPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  published_of<T extends Prisma.ReusableBlockVersion$published_ofArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ReusableBlockVersion$published_ofArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ReusableBlockPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1001,6 +1914,10 @@ export type ReusableBlockVersionFindUniqueArgs<ExtArgs extends runtime.Types.Ext
    */
   omit?: Prisma.ReusableBlockVersionOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ReusableBlockVersionInclude<ExtArgs> | null
+  /**
    * Filter, which ReusableBlockVersion to fetch.
    */
   where: Prisma.ReusableBlockVersionWhereUniqueInput
@@ -1019,6 +1936,10 @@ export type ReusableBlockVersionFindUniqueOrThrowArgs<ExtArgs extends runtime.Ty
    */
   omit?: Prisma.ReusableBlockVersionOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ReusableBlockVersionInclude<ExtArgs> | null
+  /**
    * Filter, which ReusableBlockVersion to fetch.
    */
   where: Prisma.ReusableBlockVersionWhereUniqueInput
@@ -1036,6 +1957,10 @@ export type ReusableBlockVersionFindFirstArgs<ExtArgs extends runtime.Types.Exte
    * Omit specific fields from the ReusableBlockVersion
    */
   omit?: Prisma.ReusableBlockVersionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ReusableBlockVersionInclude<ExtArgs> | null
   /**
    * Filter, which ReusableBlockVersion to fetch.
    */
@@ -1085,6 +2010,10 @@ export type ReusableBlockVersionFindFirstOrThrowArgs<ExtArgs extends runtime.Typ
    */
   omit?: Prisma.ReusableBlockVersionOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ReusableBlockVersionInclude<ExtArgs> | null
+  /**
    * Filter, which ReusableBlockVersion to fetch.
    */
   where?: Prisma.ReusableBlockVersionWhereInput
@@ -1132,6 +2061,10 @@ export type ReusableBlockVersionFindManyArgs<ExtArgs extends runtime.Types.Exten
    * Omit specific fields from the ReusableBlockVersion
    */
   omit?: Prisma.ReusableBlockVersionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ReusableBlockVersionInclude<ExtArgs> | null
   /**
    * Filter, which ReusableBlockVersions to fetch.
    */
@@ -1181,6 +2114,10 @@ export type ReusableBlockVersionCreateArgs<ExtArgs extends runtime.Types.Extensi
    */
   omit?: Prisma.ReusableBlockVersionOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ReusableBlockVersionInclude<ExtArgs> | null
+  /**
    * The data needed to create a ReusableBlockVersion.
    */
   data: Prisma.XOR<Prisma.ReusableBlockVersionCreateInput, Prisma.ReusableBlockVersionUncheckedCreateInput>
@@ -1214,6 +2151,10 @@ export type ReusableBlockVersionCreateManyAndReturnArgs<ExtArgs extends runtime.
    */
   data: Prisma.ReusableBlockVersionCreateManyInput | Prisma.ReusableBlockVersionCreateManyInput[]
   skipDuplicates?: boolean
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ReusableBlockVersionIncludeCreateManyAndReturn<ExtArgs> | null
 }
 
 /**
@@ -1228,6 +2169,10 @@ export type ReusableBlockVersionUpdateArgs<ExtArgs extends runtime.Types.Extensi
    * Omit specific fields from the ReusableBlockVersion
    */
   omit?: Prisma.ReusableBlockVersionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ReusableBlockVersionInclude<ExtArgs> | null
   /**
    * The data needed to update a ReusableBlockVersion.
    */
@@ -1280,6 +2225,10 @@ export type ReusableBlockVersionUpdateManyAndReturnArgs<ExtArgs extends runtime.
    * Limit how many ReusableBlockVersions to update.
    */
   limit?: number
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ReusableBlockVersionIncludeUpdateManyAndReturn<ExtArgs> | null
 }
 
 /**
@@ -1294,6 +2243,10 @@ export type ReusableBlockVersionUpsertArgs<ExtArgs extends runtime.Types.Extensi
    * Omit specific fields from the ReusableBlockVersion
    */
   omit?: Prisma.ReusableBlockVersionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ReusableBlockVersionInclude<ExtArgs> | null
   /**
    * The filter to search for the ReusableBlockVersion to update in case it exists.
    */
@@ -1321,6 +2274,10 @@ export type ReusableBlockVersionDeleteArgs<ExtArgs extends runtime.Types.Extensi
    */
   omit?: Prisma.ReusableBlockVersionOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ReusableBlockVersionInclude<ExtArgs> | null
+  /**
    * Filter which ReusableBlockVersion to delete.
    */
   where: Prisma.ReusableBlockVersionWhereUniqueInput
@@ -1341,6 +2298,116 @@ export type ReusableBlockVersionDeleteManyArgs<ExtArgs extends runtime.Types.Ext
 }
 
 /**
+ * ReusableBlockVersion.folder
+ */
+export type ReusableBlockVersion$folderArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the BlockFolder
+   */
+  select?: Prisma.BlockFolderSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the BlockFolder
+   */
+  omit?: Prisma.BlockFolderOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.BlockFolderInclude<ExtArgs> | null
+  where?: Prisma.BlockFolderWhereInput
+}
+
+/**
+ * ReusableBlockVersion.parent
+ */
+export type ReusableBlockVersion$parentArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ReusableBlockVersion
+   */
+  select?: Prisma.ReusableBlockVersionSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ReusableBlockVersion
+   */
+  omit?: Prisma.ReusableBlockVersionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ReusableBlockVersionInclude<ExtArgs> | null
+  where?: Prisma.ReusableBlockVersionWhereInput
+}
+
+/**
+ * ReusableBlockVersion.children
+ */
+export type ReusableBlockVersion$childrenArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ReusableBlockVersion
+   */
+  select?: Prisma.ReusableBlockVersionSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ReusableBlockVersion
+   */
+  omit?: Prisma.ReusableBlockVersionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ReusableBlockVersionInclude<ExtArgs> | null
+  where?: Prisma.ReusableBlockVersionWhereInput
+  orderBy?: Prisma.ReusableBlockVersionOrderByWithRelationInput | Prisma.ReusableBlockVersionOrderByWithRelationInput[]
+  cursor?: Prisma.ReusableBlockVersionWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ReusableBlockVersionScalarFieldEnum | Prisma.ReusableBlockVersionScalarFieldEnum[]
+}
+
+/**
+ * ReusableBlockVersion.draft_of
+ */
+export type ReusableBlockVersion$draft_ofArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ReusableBlock
+   */
+  select?: Prisma.ReusableBlockSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ReusableBlock
+   */
+  omit?: Prisma.ReusableBlockOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ReusableBlockInclude<ExtArgs> | null
+  where?: Prisma.ReusableBlockWhereInput
+  orderBy?: Prisma.ReusableBlockOrderByWithRelationInput | Prisma.ReusableBlockOrderByWithRelationInput[]
+  cursor?: Prisma.ReusableBlockWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ReusableBlockScalarFieldEnum | Prisma.ReusableBlockScalarFieldEnum[]
+}
+
+/**
+ * ReusableBlockVersion.published_of
+ */
+export type ReusableBlockVersion$published_ofArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ReusableBlock
+   */
+  select?: Prisma.ReusableBlockSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ReusableBlock
+   */
+  omit?: Prisma.ReusableBlockOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ReusableBlockInclude<ExtArgs> | null
+  where?: Prisma.ReusableBlockWhereInput
+  orderBy?: Prisma.ReusableBlockOrderByWithRelationInput | Prisma.ReusableBlockOrderByWithRelationInput[]
+  cursor?: Prisma.ReusableBlockWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ReusableBlockScalarFieldEnum | Prisma.ReusableBlockScalarFieldEnum[]
+}
+
+/**
  * ReusableBlockVersion without action
  */
 export type ReusableBlockVersionDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1352,4 +2419,8 @@ export type ReusableBlockVersionDefaultArgs<ExtArgs extends runtime.Types.Extens
    * Omit specific fields from the ReusableBlockVersion
    */
   omit?: Prisma.ReusableBlockVersionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ReusableBlockVersionInclude<ExtArgs> | null
 }

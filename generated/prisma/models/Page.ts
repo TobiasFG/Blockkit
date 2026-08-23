@@ -190,6 +190,10 @@ export type PageWhereInput = {
   draft_version_id?: Prisma.UuidNullableFilter<"Page"> | string | null
   published_version_id?: Prisma.UuidNullableFilter<"Page"> | string | null
   deleted_at?: Prisma.DateTimeNullableFilter<"Page"> | Date | string | null
+  draft_version?: Prisma.XOR<Prisma.PageVersionNullableScalarRelationFilter, Prisma.PageVersionWhereInput> | null
+  published_version?: Prisma.XOR<Prisma.PageVersionNullableScalarRelationFilter, Prisma.PageVersionWhereInput> | null
+  versions?: Prisma.PageVersionListRelationFilter
+  child_versions?: Prisma.PageVersionListRelationFilter
 }
 
 export type PageOrderByWithRelationInput = {
@@ -199,6 +203,10 @@ export type PageOrderByWithRelationInput = {
   draft_version_id?: Prisma.SortOrderInput | Prisma.SortOrder
   published_version_id?: Prisma.SortOrderInput | Prisma.SortOrder
   deleted_at?: Prisma.SortOrderInput | Prisma.SortOrder
+  draft_version?: Prisma.PageVersionOrderByWithRelationInput
+  published_version?: Prisma.PageVersionOrderByWithRelationInput
+  versions?: Prisma.PageVersionOrderByRelationAggregateInput
+  child_versions?: Prisma.PageVersionOrderByRelationAggregateInput
 }
 
 export type PageWhereUniqueInput = Prisma.AtLeast<{
@@ -211,6 +219,10 @@ export type PageWhereUniqueInput = Prisma.AtLeast<{
   draft_version_id?: Prisma.UuidNullableFilter<"Page"> | string | null
   published_version_id?: Prisma.UuidNullableFilter<"Page"> | string | null
   deleted_at?: Prisma.DateTimeNullableFilter<"Page"> | Date | string | null
+  draft_version?: Prisma.XOR<Prisma.PageVersionNullableScalarRelationFilter, Prisma.PageVersionWhereInput> | null
+  published_version?: Prisma.XOR<Prisma.PageVersionNullableScalarRelationFilter, Prisma.PageVersionWhereInput> | null
+  versions?: Prisma.PageVersionListRelationFilter
+  child_versions?: Prisma.PageVersionListRelationFilter
 }, "id">
 
 export type PageOrderByWithAggregationInput = {
@@ -241,9 +253,11 @@ export type PageCreateInput = {
   id?: string
   created_at?: Date | string
   updated_at?: Date | string
-  draft_version_id?: string | null
-  published_version_id?: string | null
   deleted_at?: Date | string | null
+  draft_version?: Prisma.PageVersionCreateNestedOneWithoutDraft_ofInput
+  published_version?: Prisma.PageVersionCreateNestedOneWithoutPublished_ofInput
+  versions?: Prisma.PageVersionCreateNestedManyWithoutPageInput
+  child_versions?: Prisma.PageVersionCreateNestedManyWithoutParent_pageInput
 }
 
 export type PageUncheckedCreateInput = {
@@ -253,15 +267,19 @@ export type PageUncheckedCreateInput = {
   draft_version_id?: string | null
   published_version_id?: string | null
   deleted_at?: Date | string | null
+  versions?: Prisma.PageVersionUncheckedCreateNestedManyWithoutPageInput
+  child_versions?: Prisma.PageVersionUncheckedCreateNestedManyWithoutParent_pageInput
 }
 
 export type PageUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  draft_version_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  published_version_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deleted_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  draft_version?: Prisma.PageVersionUpdateOneWithoutDraft_ofNestedInput
+  published_version?: Prisma.PageVersionUpdateOneWithoutPublished_ofNestedInput
+  versions?: Prisma.PageVersionUpdateManyWithoutPageNestedInput
+  child_versions?: Prisma.PageVersionUpdateManyWithoutParent_pageNestedInput
 }
 
 export type PageUncheckedUpdateInput = {
@@ -271,6 +289,8 @@ export type PageUncheckedUpdateInput = {
   draft_version_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   published_version_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deleted_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  versions?: Prisma.PageVersionUncheckedUpdateManyWithoutPageNestedInput
+  child_versions?: Prisma.PageVersionUncheckedUpdateManyWithoutParent_pageNestedInput
 }
 
 export type PageCreateManyInput = {
@@ -286,8 +306,6 @@ export type PageUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  draft_version_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  published_version_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deleted_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
@@ -327,6 +345,26 @@ export type PageMinOrderByAggregateInput = {
   deleted_at?: Prisma.SortOrder
 }
 
+export type PageScalarRelationFilter = {
+  is?: Prisma.PageWhereInput
+  isNot?: Prisma.PageWhereInput
+}
+
+export type PageNullableScalarRelationFilter = {
+  is?: Prisma.PageWhereInput | null
+  isNot?: Prisma.PageWhereInput | null
+}
+
+export type PageListRelationFilter = {
+  every?: Prisma.PageWhereInput
+  some?: Prisma.PageWhereInput
+  none?: Prisma.PageWhereInput
+}
+
+export type PageOrderByRelationAggregateInput = {
+  _count?: Prisma.SortOrder
+}
+
 export type StringFieldUpdateOperationsInput = {
   set?: string
 }
@@ -335,14 +373,454 @@ export type DateTimeFieldUpdateOperationsInput = {
   set?: Date | string
 }
 
-export type NullableStringFieldUpdateOperationsInput = {
-  set?: string | null
-}
-
 export type NullableDateTimeFieldUpdateOperationsInput = {
   set?: Date | string | null
 }
 
+export type NullableStringFieldUpdateOperationsInput = {
+  set?: string | null
+}
+
+export type PageCreateNestedOneWithoutVersionsInput = {
+  create?: Prisma.XOR<Prisma.PageCreateWithoutVersionsInput, Prisma.PageUncheckedCreateWithoutVersionsInput>
+  connectOrCreate?: Prisma.PageCreateOrConnectWithoutVersionsInput
+  connect?: Prisma.PageWhereUniqueInput
+}
+
+export type PageCreateNestedOneWithoutChild_versionsInput = {
+  create?: Prisma.XOR<Prisma.PageCreateWithoutChild_versionsInput, Prisma.PageUncheckedCreateWithoutChild_versionsInput>
+  connectOrCreate?: Prisma.PageCreateOrConnectWithoutChild_versionsInput
+  connect?: Prisma.PageWhereUniqueInput
+}
+
+export type PageCreateNestedManyWithoutDraft_versionInput = {
+  create?: Prisma.XOR<Prisma.PageCreateWithoutDraft_versionInput, Prisma.PageUncheckedCreateWithoutDraft_versionInput> | Prisma.PageCreateWithoutDraft_versionInput[] | Prisma.PageUncheckedCreateWithoutDraft_versionInput[]
+  connectOrCreate?: Prisma.PageCreateOrConnectWithoutDraft_versionInput | Prisma.PageCreateOrConnectWithoutDraft_versionInput[]
+  createMany?: Prisma.PageCreateManyDraft_versionInputEnvelope
+  connect?: Prisma.PageWhereUniqueInput | Prisma.PageWhereUniqueInput[]
+}
+
+export type PageCreateNestedManyWithoutPublished_versionInput = {
+  create?: Prisma.XOR<Prisma.PageCreateWithoutPublished_versionInput, Prisma.PageUncheckedCreateWithoutPublished_versionInput> | Prisma.PageCreateWithoutPublished_versionInput[] | Prisma.PageUncheckedCreateWithoutPublished_versionInput[]
+  connectOrCreate?: Prisma.PageCreateOrConnectWithoutPublished_versionInput | Prisma.PageCreateOrConnectWithoutPublished_versionInput[]
+  createMany?: Prisma.PageCreateManyPublished_versionInputEnvelope
+  connect?: Prisma.PageWhereUniqueInput | Prisma.PageWhereUniqueInput[]
+}
+
+export type PageUncheckedCreateNestedManyWithoutDraft_versionInput = {
+  create?: Prisma.XOR<Prisma.PageCreateWithoutDraft_versionInput, Prisma.PageUncheckedCreateWithoutDraft_versionInput> | Prisma.PageCreateWithoutDraft_versionInput[] | Prisma.PageUncheckedCreateWithoutDraft_versionInput[]
+  connectOrCreate?: Prisma.PageCreateOrConnectWithoutDraft_versionInput | Prisma.PageCreateOrConnectWithoutDraft_versionInput[]
+  createMany?: Prisma.PageCreateManyDraft_versionInputEnvelope
+  connect?: Prisma.PageWhereUniqueInput | Prisma.PageWhereUniqueInput[]
+}
+
+export type PageUncheckedCreateNestedManyWithoutPublished_versionInput = {
+  create?: Prisma.XOR<Prisma.PageCreateWithoutPublished_versionInput, Prisma.PageUncheckedCreateWithoutPublished_versionInput> | Prisma.PageCreateWithoutPublished_versionInput[] | Prisma.PageUncheckedCreateWithoutPublished_versionInput[]
+  connectOrCreate?: Prisma.PageCreateOrConnectWithoutPublished_versionInput | Prisma.PageCreateOrConnectWithoutPublished_versionInput[]
+  createMany?: Prisma.PageCreateManyPublished_versionInputEnvelope
+  connect?: Prisma.PageWhereUniqueInput | Prisma.PageWhereUniqueInput[]
+}
+
+export type PageUpdateOneRequiredWithoutVersionsNestedInput = {
+  create?: Prisma.XOR<Prisma.PageCreateWithoutVersionsInput, Prisma.PageUncheckedCreateWithoutVersionsInput>
+  connectOrCreate?: Prisma.PageCreateOrConnectWithoutVersionsInput
+  upsert?: Prisma.PageUpsertWithoutVersionsInput
+  connect?: Prisma.PageWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.PageUpdateToOneWithWhereWithoutVersionsInput, Prisma.PageUpdateWithoutVersionsInput>, Prisma.PageUncheckedUpdateWithoutVersionsInput>
+}
+
+export type PageUpdateOneWithoutChild_versionsNestedInput = {
+  create?: Prisma.XOR<Prisma.PageCreateWithoutChild_versionsInput, Prisma.PageUncheckedCreateWithoutChild_versionsInput>
+  connectOrCreate?: Prisma.PageCreateOrConnectWithoutChild_versionsInput
+  upsert?: Prisma.PageUpsertWithoutChild_versionsInput
+  disconnect?: Prisma.PageWhereInput | boolean
+  delete?: Prisma.PageWhereInput | boolean
+  connect?: Prisma.PageWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.PageUpdateToOneWithWhereWithoutChild_versionsInput, Prisma.PageUpdateWithoutChild_versionsInput>, Prisma.PageUncheckedUpdateWithoutChild_versionsInput>
+}
+
+export type PageUpdateManyWithoutDraft_versionNestedInput = {
+  create?: Prisma.XOR<Prisma.PageCreateWithoutDraft_versionInput, Prisma.PageUncheckedCreateWithoutDraft_versionInput> | Prisma.PageCreateWithoutDraft_versionInput[] | Prisma.PageUncheckedCreateWithoutDraft_versionInput[]
+  connectOrCreate?: Prisma.PageCreateOrConnectWithoutDraft_versionInput | Prisma.PageCreateOrConnectWithoutDraft_versionInput[]
+  upsert?: Prisma.PageUpsertWithWhereUniqueWithoutDraft_versionInput | Prisma.PageUpsertWithWhereUniqueWithoutDraft_versionInput[]
+  createMany?: Prisma.PageCreateManyDraft_versionInputEnvelope
+  set?: Prisma.PageWhereUniqueInput | Prisma.PageWhereUniqueInput[]
+  disconnect?: Prisma.PageWhereUniqueInput | Prisma.PageWhereUniqueInput[]
+  delete?: Prisma.PageWhereUniqueInput | Prisma.PageWhereUniqueInput[]
+  connect?: Prisma.PageWhereUniqueInput | Prisma.PageWhereUniqueInput[]
+  update?: Prisma.PageUpdateWithWhereUniqueWithoutDraft_versionInput | Prisma.PageUpdateWithWhereUniqueWithoutDraft_versionInput[]
+  updateMany?: Prisma.PageUpdateManyWithWhereWithoutDraft_versionInput | Prisma.PageUpdateManyWithWhereWithoutDraft_versionInput[]
+  deleteMany?: Prisma.PageScalarWhereInput | Prisma.PageScalarWhereInput[]
+}
+
+export type PageUpdateManyWithoutPublished_versionNestedInput = {
+  create?: Prisma.XOR<Prisma.PageCreateWithoutPublished_versionInput, Prisma.PageUncheckedCreateWithoutPublished_versionInput> | Prisma.PageCreateWithoutPublished_versionInput[] | Prisma.PageUncheckedCreateWithoutPublished_versionInput[]
+  connectOrCreate?: Prisma.PageCreateOrConnectWithoutPublished_versionInput | Prisma.PageCreateOrConnectWithoutPublished_versionInput[]
+  upsert?: Prisma.PageUpsertWithWhereUniqueWithoutPublished_versionInput | Prisma.PageUpsertWithWhereUniqueWithoutPublished_versionInput[]
+  createMany?: Prisma.PageCreateManyPublished_versionInputEnvelope
+  set?: Prisma.PageWhereUniqueInput | Prisma.PageWhereUniqueInput[]
+  disconnect?: Prisma.PageWhereUniqueInput | Prisma.PageWhereUniqueInput[]
+  delete?: Prisma.PageWhereUniqueInput | Prisma.PageWhereUniqueInput[]
+  connect?: Prisma.PageWhereUniqueInput | Prisma.PageWhereUniqueInput[]
+  update?: Prisma.PageUpdateWithWhereUniqueWithoutPublished_versionInput | Prisma.PageUpdateWithWhereUniqueWithoutPublished_versionInput[]
+  updateMany?: Prisma.PageUpdateManyWithWhereWithoutPublished_versionInput | Prisma.PageUpdateManyWithWhereWithoutPublished_versionInput[]
+  deleteMany?: Prisma.PageScalarWhereInput | Prisma.PageScalarWhereInput[]
+}
+
+export type PageUncheckedUpdateManyWithoutDraft_versionNestedInput = {
+  create?: Prisma.XOR<Prisma.PageCreateWithoutDraft_versionInput, Prisma.PageUncheckedCreateWithoutDraft_versionInput> | Prisma.PageCreateWithoutDraft_versionInput[] | Prisma.PageUncheckedCreateWithoutDraft_versionInput[]
+  connectOrCreate?: Prisma.PageCreateOrConnectWithoutDraft_versionInput | Prisma.PageCreateOrConnectWithoutDraft_versionInput[]
+  upsert?: Prisma.PageUpsertWithWhereUniqueWithoutDraft_versionInput | Prisma.PageUpsertWithWhereUniqueWithoutDraft_versionInput[]
+  createMany?: Prisma.PageCreateManyDraft_versionInputEnvelope
+  set?: Prisma.PageWhereUniqueInput | Prisma.PageWhereUniqueInput[]
+  disconnect?: Prisma.PageWhereUniqueInput | Prisma.PageWhereUniqueInput[]
+  delete?: Prisma.PageWhereUniqueInput | Prisma.PageWhereUniqueInput[]
+  connect?: Prisma.PageWhereUniqueInput | Prisma.PageWhereUniqueInput[]
+  update?: Prisma.PageUpdateWithWhereUniqueWithoutDraft_versionInput | Prisma.PageUpdateWithWhereUniqueWithoutDraft_versionInput[]
+  updateMany?: Prisma.PageUpdateManyWithWhereWithoutDraft_versionInput | Prisma.PageUpdateManyWithWhereWithoutDraft_versionInput[]
+  deleteMany?: Prisma.PageScalarWhereInput | Prisma.PageScalarWhereInput[]
+}
+
+export type PageUncheckedUpdateManyWithoutPublished_versionNestedInput = {
+  create?: Prisma.XOR<Prisma.PageCreateWithoutPublished_versionInput, Prisma.PageUncheckedCreateWithoutPublished_versionInput> | Prisma.PageCreateWithoutPublished_versionInput[] | Prisma.PageUncheckedCreateWithoutPublished_versionInput[]
+  connectOrCreate?: Prisma.PageCreateOrConnectWithoutPublished_versionInput | Prisma.PageCreateOrConnectWithoutPublished_versionInput[]
+  upsert?: Prisma.PageUpsertWithWhereUniqueWithoutPublished_versionInput | Prisma.PageUpsertWithWhereUniqueWithoutPublished_versionInput[]
+  createMany?: Prisma.PageCreateManyPublished_versionInputEnvelope
+  set?: Prisma.PageWhereUniqueInput | Prisma.PageWhereUniqueInput[]
+  disconnect?: Prisma.PageWhereUniqueInput | Prisma.PageWhereUniqueInput[]
+  delete?: Prisma.PageWhereUniqueInput | Prisma.PageWhereUniqueInput[]
+  connect?: Prisma.PageWhereUniqueInput | Prisma.PageWhereUniqueInput[]
+  update?: Prisma.PageUpdateWithWhereUniqueWithoutPublished_versionInput | Prisma.PageUpdateWithWhereUniqueWithoutPublished_versionInput[]
+  updateMany?: Prisma.PageUpdateManyWithWhereWithoutPublished_versionInput | Prisma.PageUpdateManyWithWhereWithoutPublished_versionInput[]
+  deleteMany?: Prisma.PageScalarWhereInput | Prisma.PageScalarWhereInput[]
+}
+
+export type PageCreateWithoutVersionsInput = {
+  id?: string
+  created_at?: Date | string
+  updated_at?: Date | string
+  deleted_at?: Date | string | null
+  draft_version?: Prisma.PageVersionCreateNestedOneWithoutDraft_ofInput
+  published_version?: Prisma.PageVersionCreateNestedOneWithoutPublished_ofInput
+  child_versions?: Prisma.PageVersionCreateNestedManyWithoutParent_pageInput
+}
+
+export type PageUncheckedCreateWithoutVersionsInput = {
+  id?: string
+  created_at?: Date | string
+  updated_at?: Date | string
+  draft_version_id?: string | null
+  published_version_id?: string | null
+  deleted_at?: Date | string | null
+  child_versions?: Prisma.PageVersionUncheckedCreateNestedManyWithoutParent_pageInput
+}
+
+export type PageCreateOrConnectWithoutVersionsInput = {
+  where: Prisma.PageWhereUniqueInput
+  create: Prisma.XOR<Prisma.PageCreateWithoutVersionsInput, Prisma.PageUncheckedCreateWithoutVersionsInput>
+}
+
+export type PageCreateWithoutChild_versionsInput = {
+  id?: string
+  created_at?: Date | string
+  updated_at?: Date | string
+  deleted_at?: Date | string | null
+  draft_version?: Prisma.PageVersionCreateNestedOneWithoutDraft_ofInput
+  published_version?: Prisma.PageVersionCreateNestedOneWithoutPublished_ofInput
+  versions?: Prisma.PageVersionCreateNestedManyWithoutPageInput
+}
+
+export type PageUncheckedCreateWithoutChild_versionsInput = {
+  id?: string
+  created_at?: Date | string
+  updated_at?: Date | string
+  draft_version_id?: string | null
+  published_version_id?: string | null
+  deleted_at?: Date | string | null
+  versions?: Prisma.PageVersionUncheckedCreateNestedManyWithoutPageInput
+}
+
+export type PageCreateOrConnectWithoutChild_versionsInput = {
+  where: Prisma.PageWhereUniqueInput
+  create: Prisma.XOR<Prisma.PageCreateWithoutChild_versionsInput, Prisma.PageUncheckedCreateWithoutChild_versionsInput>
+}
+
+export type PageCreateWithoutDraft_versionInput = {
+  id?: string
+  created_at?: Date | string
+  updated_at?: Date | string
+  deleted_at?: Date | string | null
+  published_version?: Prisma.PageVersionCreateNestedOneWithoutPublished_ofInput
+  versions?: Prisma.PageVersionCreateNestedManyWithoutPageInput
+  child_versions?: Prisma.PageVersionCreateNestedManyWithoutParent_pageInput
+}
+
+export type PageUncheckedCreateWithoutDraft_versionInput = {
+  id?: string
+  created_at?: Date | string
+  updated_at?: Date | string
+  published_version_id?: string | null
+  deleted_at?: Date | string | null
+  versions?: Prisma.PageVersionUncheckedCreateNestedManyWithoutPageInput
+  child_versions?: Prisma.PageVersionUncheckedCreateNestedManyWithoutParent_pageInput
+}
+
+export type PageCreateOrConnectWithoutDraft_versionInput = {
+  where: Prisma.PageWhereUniqueInput
+  create: Prisma.XOR<Prisma.PageCreateWithoutDraft_versionInput, Prisma.PageUncheckedCreateWithoutDraft_versionInput>
+}
+
+export type PageCreateManyDraft_versionInputEnvelope = {
+  data: Prisma.PageCreateManyDraft_versionInput | Prisma.PageCreateManyDraft_versionInput[]
+  skipDuplicates?: boolean
+}
+
+export type PageCreateWithoutPublished_versionInput = {
+  id?: string
+  created_at?: Date | string
+  updated_at?: Date | string
+  deleted_at?: Date | string | null
+  draft_version?: Prisma.PageVersionCreateNestedOneWithoutDraft_ofInput
+  versions?: Prisma.PageVersionCreateNestedManyWithoutPageInput
+  child_versions?: Prisma.PageVersionCreateNestedManyWithoutParent_pageInput
+}
+
+export type PageUncheckedCreateWithoutPublished_versionInput = {
+  id?: string
+  created_at?: Date | string
+  updated_at?: Date | string
+  draft_version_id?: string | null
+  deleted_at?: Date | string | null
+  versions?: Prisma.PageVersionUncheckedCreateNestedManyWithoutPageInput
+  child_versions?: Prisma.PageVersionUncheckedCreateNestedManyWithoutParent_pageInput
+}
+
+export type PageCreateOrConnectWithoutPublished_versionInput = {
+  where: Prisma.PageWhereUniqueInput
+  create: Prisma.XOR<Prisma.PageCreateWithoutPublished_versionInput, Prisma.PageUncheckedCreateWithoutPublished_versionInput>
+}
+
+export type PageCreateManyPublished_versionInputEnvelope = {
+  data: Prisma.PageCreateManyPublished_versionInput | Prisma.PageCreateManyPublished_versionInput[]
+  skipDuplicates?: boolean
+}
+
+export type PageUpsertWithoutVersionsInput = {
+  update: Prisma.XOR<Prisma.PageUpdateWithoutVersionsInput, Prisma.PageUncheckedUpdateWithoutVersionsInput>
+  create: Prisma.XOR<Prisma.PageCreateWithoutVersionsInput, Prisma.PageUncheckedCreateWithoutVersionsInput>
+  where?: Prisma.PageWhereInput
+}
+
+export type PageUpdateToOneWithWhereWithoutVersionsInput = {
+  where?: Prisma.PageWhereInput
+  data: Prisma.XOR<Prisma.PageUpdateWithoutVersionsInput, Prisma.PageUncheckedUpdateWithoutVersionsInput>
+}
+
+export type PageUpdateWithoutVersionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deleted_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  draft_version?: Prisma.PageVersionUpdateOneWithoutDraft_ofNestedInput
+  published_version?: Prisma.PageVersionUpdateOneWithoutPublished_ofNestedInput
+  child_versions?: Prisma.PageVersionUpdateManyWithoutParent_pageNestedInput
+}
+
+export type PageUncheckedUpdateWithoutVersionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  draft_version_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  published_version_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deleted_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  child_versions?: Prisma.PageVersionUncheckedUpdateManyWithoutParent_pageNestedInput
+}
+
+export type PageUpsertWithoutChild_versionsInput = {
+  update: Prisma.XOR<Prisma.PageUpdateWithoutChild_versionsInput, Prisma.PageUncheckedUpdateWithoutChild_versionsInput>
+  create: Prisma.XOR<Prisma.PageCreateWithoutChild_versionsInput, Prisma.PageUncheckedCreateWithoutChild_versionsInput>
+  where?: Prisma.PageWhereInput
+}
+
+export type PageUpdateToOneWithWhereWithoutChild_versionsInput = {
+  where?: Prisma.PageWhereInput
+  data: Prisma.XOR<Prisma.PageUpdateWithoutChild_versionsInput, Prisma.PageUncheckedUpdateWithoutChild_versionsInput>
+}
+
+export type PageUpdateWithoutChild_versionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deleted_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  draft_version?: Prisma.PageVersionUpdateOneWithoutDraft_ofNestedInput
+  published_version?: Prisma.PageVersionUpdateOneWithoutPublished_ofNestedInput
+  versions?: Prisma.PageVersionUpdateManyWithoutPageNestedInput
+}
+
+export type PageUncheckedUpdateWithoutChild_versionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  draft_version_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  published_version_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deleted_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  versions?: Prisma.PageVersionUncheckedUpdateManyWithoutPageNestedInput
+}
+
+export type PageUpsertWithWhereUniqueWithoutDraft_versionInput = {
+  where: Prisma.PageWhereUniqueInput
+  update: Prisma.XOR<Prisma.PageUpdateWithoutDraft_versionInput, Prisma.PageUncheckedUpdateWithoutDraft_versionInput>
+  create: Prisma.XOR<Prisma.PageCreateWithoutDraft_versionInput, Prisma.PageUncheckedCreateWithoutDraft_versionInput>
+}
+
+export type PageUpdateWithWhereUniqueWithoutDraft_versionInput = {
+  where: Prisma.PageWhereUniqueInput
+  data: Prisma.XOR<Prisma.PageUpdateWithoutDraft_versionInput, Prisma.PageUncheckedUpdateWithoutDraft_versionInput>
+}
+
+export type PageUpdateManyWithWhereWithoutDraft_versionInput = {
+  where: Prisma.PageScalarWhereInput
+  data: Prisma.XOR<Prisma.PageUpdateManyMutationInput, Prisma.PageUncheckedUpdateManyWithoutDraft_versionInput>
+}
+
+export type PageScalarWhereInput = {
+  AND?: Prisma.PageScalarWhereInput | Prisma.PageScalarWhereInput[]
+  OR?: Prisma.PageScalarWhereInput[]
+  NOT?: Prisma.PageScalarWhereInput | Prisma.PageScalarWhereInput[]
+  id?: Prisma.UuidFilter<"Page"> | string
+  created_at?: Prisma.DateTimeFilter<"Page"> | Date | string
+  updated_at?: Prisma.DateTimeFilter<"Page"> | Date | string
+  draft_version_id?: Prisma.UuidNullableFilter<"Page"> | string | null
+  published_version_id?: Prisma.UuidNullableFilter<"Page"> | string | null
+  deleted_at?: Prisma.DateTimeNullableFilter<"Page"> | Date | string | null
+}
+
+export type PageUpsertWithWhereUniqueWithoutPublished_versionInput = {
+  where: Prisma.PageWhereUniqueInput
+  update: Prisma.XOR<Prisma.PageUpdateWithoutPublished_versionInput, Prisma.PageUncheckedUpdateWithoutPublished_versionInput>
+  create: Prisma.XOR<Prisma.PageCreateWithoutPublished_versionInput, Prisma.PageUncheckedCreateWithoutPublished_versionInput>
+}
+
+export type PageUpdateWithWhereUniqueWithoutPublished_versionInput = {
+  where: Prisma.PageWhereUniqueInput
+  data: Prisma.XOR<Prisma.PageUpdateWithoutPublished_versionInput, Prisma.PageUncheckedUpdateWithoutPublished_versionInput>
+}
+
+export type PageUpdateManyWithWhereWithoutPublished_versionInput = {
+  where: Prisma.PageScalarWhereInput
+  data: Prisma.XOR<Prisma.PageUpdateManyMutationInput, Prisma.PageUncheckedUpdateManyWithoutPublished_versionInput>
+}
+
+export type PageCreateManyDraft_versionInput = {
+  id?: string
+  created_at?: Date | string
+  updated_at?: Date | string
+  published_version_id?: string | null
+  deleted_at?: Date | string | null
+}
+
+export type PageCreateManyPublished_versionInput = {
+  id?: string
+  created_at?: Date | string
+  updated_at?: Date | string
+  draft_version_id?: string | null
+  deleted_at?: Date | string | null
+}
+
+export type PageUpdateWithoutDraft_versionInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deleted_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  published_version?: Prisma.PageVersionUpdateOneWithoutPublished_ofNestedInput
+  versions?: Prisma.PageVersionUpdateManyWithoutPageNestedInput
+  child_versions?: Prisma.PageVersionUpdateManyWithoutParent_pageNestedInput
+}
+
+export type PageUncheckedUpdateWithoutDraft_versionInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  published_version_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deleted_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  versions?: Prisma.PageVersionUncheckedUpdateManyWithoutPageNestedInput
+  child_versions?: Prisma.PageVersionUncheckedUpdateManyWithoutParent_pageNestedInput
+}
+
+export type PageUncheckedUpdateManyWithoutDraft_versionInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  published_version_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deleted_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+}
+
+export type PageUpdateWithoutPublished_versionInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deleted_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  draft_version?: Prisma.PageVersionUpdateOneWithoutDraft_ofNestedInput
+  versions?: Prisma.PageVersionUpdateManyWithoutPageNestedInput
+  child_versions?: Prisma.PageVersionUpdateManyWithoutParent_pageNestedInput
+}
+
+export type PageUncheckedUpdateWithoutPublished_versionInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  draft_version_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deleted_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  versions?: Prisma.PageVersionUncheckedUpdateManyWithoutPageNestedInput
+  child_versions?: Prisma.PageVersionUncheckedUpdateManyWithoutParent_pageNestedInput
+}
+
+export type PageUncheckedUpdateManyWithoutPublished_versionInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  draft_version_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deleted_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+}
+
+
+/**
+ * Count Type PageCountOutputType
+ */
+
+export type PageCountOutputType = {
+  versions: number
+  child_versions: number
+}
+
+export type PageCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  versions?: boolean | PageCountOutputTypeCountVersionsArgs
+  child_versions?: boolean | PageCountOutputTypeCountChild_versionsArgs
+}
+
+/**
+ * PageCountOutputType without action
+ */
+export type PageCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the PageCountOutputType
+   */
+  select?: Prisma.PageCountOutputTypeSelect<ExtArgs> | null
+}
+
+/**
+ * PageCountOutputType without action
+ */
+export type PageCountOutputTypeCountVersionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.PageVersionWhereInput
+}
+
+/**
+ * PageCountOutputType without action
+ */
+export type PageCountOutputTypeCountChild_versionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.PageVersionWhereInput
+}
 
 
 export type PageSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -352,6 +830,11 @@ export type PageSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   draft_version_id?: boolean
   published_version_id?: boolean
   deleted_at?: boolean
+  draft_version?: boolean | Prisma.Page$draft_versionArgs<ExtArgs>
+  published_version?: boolean | Prisma.Page$published_versionArgs<ExtArgs>
+  versions?: boolean | Prisma.Page$versionsArgs<ExtArgs>
+  child_versions?: boolean | Prisma.Page$child_versionsArgs<ExtArgs>
+  _count?: boolean | Prisma.PageCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["page"]>
 
 export type PageSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -361,6 +844,8 @@ export type PageSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   draft_version_id?: boolean
   published_version_id?: boolean
   deleted_at?: boolean
+  draft_version?: boolean | Prisma.Page$draft_versionArgs<ExtArgs>
+  published_version?: boolean | Prisma.Page$published_versionArgs<ExtArgs>
 }, ExtArgs["result"]["page"]>
 
 export type PageSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -370,6 +855,8 @@ export type PageSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   draft_version_id?: boolean
   published_version_id?: boolean
   deleted_at?: boolean
+  draft_version?: boolean | Prisma.Page$draft_versionArgs<ExtArgs>
+  published_version?: boolean | Prisma.Page$published_versionArgs<ExtArgs>
 }, ExtArgs["result"]["page"]>
 
 export type PageSelectScalar = {
@@ -382,10 +869,30 @@ export type PageSelectScalar = {
 }
 
 export type PageOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "created_at" | "updated_at" | "draft_version_id" | "published_version_id" | "deleted_at", ExtArgs["result"]["page"]>
+export type PageInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  draft_version?: boolean | Prisma.Page$draft_versionArgs<ExtArgs>
+  published_version?: boolean | Prisma.Page$published_versionArgs<ExtArgs>
+  versions?: boolean | Prisma.Page$versionsArgs<ExtArgs>
+  child_versions?: boolean | Prisma.Page$child_versionsArgs<ExtArgs>
+  _count?: boolean | Prisma.PageCountOutputTypeDefaultArgs<ExtArgs>
+}
+export type PageIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  draft_version?: boolean | Prisma.Page$draft_versionArgs<ExtArgs>
+  published_version?: boolean | Prisma.Page$published_versionArgs<ExtArgs>
+}
+export type PageIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  draft_version?: boolean | Prisma.Page$draft_versionArgs<ExtArgs>
+  published_version?: boolean | Prisma.Page$published_versionArgs<ExtArgs>
+}
 
 export type $PagePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Page"
-  objects: {}
+  objects: {
+    draft_version: Prisma.$PageVersionPayload<ExtArgs> | null
+    published_version: Prisma.$PageVersionPayload<ExtArgs> | null
+    versions: Prisma.$PageVersionPayload<ExtArgs>[]
+    child_versions: Prisma.$PageVersionPayload<ExtArgs>[]
+  }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     created_at: Date
@@ -787,6 +1294,10 @@ readonly fields: PageFieldRefs;
  */
 export interface Prisma__PageClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
+  draft_version<T extends Prisma.Page$draft_versionArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Page$draft_versionArgs<ExtArgs>>): Prisma.Prisma__PageVersionClient<runtime.Types.Result.GetResult<Prisma.$PageVersionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  published_version<T extends Prisma.Page$published_versionArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Page$published_versionArgs<ExtArgs>>): Prisma.Prisma__PageVersionClient<runtime.Types.Result.GetResult<Prisma.$PageVersionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  versions<T extends Prisma.Page$versionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Page$versionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PageVersionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  child_versions<T extends Prisma.Page$child_versionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Page$child_versionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PageVersionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -839,6 +1350,10 @@ export type PageFindUniqueArgs<ExtArgs extends runtime.Types.Extensions.Internal
    */
   omit?: Prisma.PageOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PageInclude<ExtArgs> | null
+  /**
    * Filter, which Page to fetch.
    */
   where: Prisma.PageWhereUniqueInput
@@ -857,6 +1372,10 @@ export type PageFindUniqueOrThrowArgs<ExtArgs extends runtime.Types.Extensions.I
    */
   omit?: Prisma.PageOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PageInclude<ExtArgs> | null
+  /**
    * Filter, which Page to fetch.
    */
   where: Prisma.PageWhereUniqueInput
@@ -874,6 +1393,10 @@ export type PageFindFirstArgs<ExtArgs extends runtime.Types.Extensions.InternalA
    * Omit specific fields from the Page
    */
   omit?: Prisma.PageOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PageInclude<ExtArgs> | null
   /**
    * Filter, which Page to fetch.
    */
@@ -923,6 +1446,10 @@ export type PageFindFirstOrThrowArgs<ExtArgs extends runtime.Types.Extensions.In
    */
   omit?: Prisma.PageOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PageInclude<ExtArgs> | null
+  /**
    * Filter, which Page to fetch.
    */
   where?: Prisma.PageWhereInput
@@ -970,6 +1497,10 @@ export type PageFindManyArgs<ExtArgs extends runtime.Types.Extensions.InternalAr
    * Omit specific fields from the Page
    */
   omit?: Prisma.PageOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PageInclude<ExtArgs> | null
   /**
    * Filter, which Pages to fetch.
    */
@@ -1019,6 +1550,10 @@ export type PageCreateArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs
    */
   omit?: Prisma.PageOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PageInclude<ExtArgs> | null
+  /**
    * The data needed to create a Page.
    */
   data?: Prisma.XOR<Prisma.PageCreateInput, Prisma.PageUncheckedCreateInput>
@@ -1052,6 +1587,10 @@ export type PageCreateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions
    */
   data: Prisma.PageCreateManyInput | Prisma.PageCreateManyInput[]
   skipDuplicates?: boolean
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PageIncludeCreateManyAndReturn<ExtArgs> | null
 }
 
 /**
@@ -1066,6 +1605,10 @@ export type PageUpdateArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs
    * Omit specific fields from the Page
    */
   omit?: Prisma.PageOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PageInclude<ExtArgs> | null
   /**
    * The data needed to update a Page.
    */
@@ -1118,6 +1661,10 @@ export type PageUpdateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions
    * Limit how many Pages to update.
    */
   limit?: number
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PageIncludeUpdateManyAndReturn<ExtArgs> | null
 }
 
 /**
@@ -1132,6 +1679,10 @@ export type PageUpsertArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs
    * Omit specific fields from the Page
    */
   omit?: Prisma.PageOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PageInclude<ExtArgs> | null
   /**
    * The filter to search for the Page to update in case it exists.
    */
@@ -1159,6 +1710,10 @@ export type PageDeleteArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs
    */
   omit?: Prisma.PageOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PageInclude<ExtArgs> | null
+  /**
    * Filter which Page to delete.
    */
   where: Prisma.PageWhereUniqueInput
@@ -1179,6 +1734,92 @@ export type PageDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Internal
 }
 
 /**
+ * Page.draft_version
+ */
+export type Page$draft_versionArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the PageVersion
+   */
+  select?: Prisma.PageVersionSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the PageVersion
+   */
+  omit?: Prisma.PageVersionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PageVersionInclude<ExtArgs> | null
+  where?: Prisma.PageVersionWhereInput
+}
+
+/**
+ * Page.published_version
+ */
+export type Page$published_versionArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the PageVersion
+   */
+  select?: Prisma.PageVersionSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the PageVersion
+   */
+  omit?: Prisma.PageVersionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PageVersionInclude<ExtArgs> | null
+  where?: Prisma.PageVersionWhereInput
+}
+
+/**
+ * Page.versions
+ */
+export type Page$versionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the PageVersion
+   */
+  select?: Prisma.PageVersionSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the PageVersion
+   */
+  omit?: Prisma.PageVersionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PageVersionInclude<ExtArgs> | null
+  where?: Prisma.PageVersionWhereInput
+  orderBy?: Prisma.PageVersionOrderByWithRelationInput | Prisma.PageVersionOrderByWithRelationInput[]
+  cursor?: Prisma.PageVersionWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.PageVersionScalarFieldEnum | Prisma.PageVersionScalarFieldEnum[]
+}
+
+/**
+ * Page.child_versions
+ */
+export type Page$child_versionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the PageVersion
+   */
+  select?: Prisma.PageVersionSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the PageVersion
+   */
+  omit?: Prisma.PageVersionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PageVersionInclude<ExtArgs> | null
+  where?: Prisma.PageVersionWhereInput
+  orderBy?: Prisma.PageVersionOrderByWithRelationInput | Prisma.PageVersionOrderByWithRelationInput[]
+  cursor?: Prisma.PageVersionWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.PageVersionScalarFieldEnum | Prisma.PageVersionScalarFieldEnum[]
+}
+
+/**
  * Page without action
  */
 export type PageDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1190,4 +1831,8 @@ export type PageDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArg
    * Omit specific fields from the Page
    */
   omit?: Prisma.PageOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PageInclude<ExtArgs> | null
 }

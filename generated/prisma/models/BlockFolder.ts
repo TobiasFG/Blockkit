@@ -224,6 +224,9 @@ export type BlockFolderWhereInput = {
   sort_order?: Prisma.IntFilter<"BlockFolder"> | number
   created_at?: Prisma.DateTimeFilter<"BlockFolder"> | Date | string
   updated_at?: Prisma.DateTimeFilter<"BlockFolder"> | Date | string
+  parent?: Prisma.XOR<Prisma.BlockFolderNullableScalarRelationFilter, Prisma.BlockFolderWhereInput> | null
+  children?: Prisma.BlockFolderListRelationFilter
+  block_versions?: Prisma.ReusableBlockVersionListRelationFilter
 }
 
 export type BlockFolderOrderByWithRelationInput = {
@@ -233,6 +236,9 @@ export type BlockFolderOrderByWithRelationInput = {
   sort_order?: Prisma.SortOrder
   created_at?: Prisma.SortOrder
   updated_at?: Prisma.SortOrder
+  parent?: Prisma.BlockFolderOrderByWithRelationInput
+  children?: Prisma.BlockFolderOrderByRelationAggregateInput
+  block_versions?: Prisma.ReusableBlockVersionOrderByRelationAggregateInput
 }
 
 export type BlockFolderWhereUniqueInput = Prisma.AtLeast<{
@@ -245,6 +251,9 @@ export type BlockFolderWhereUniqueInput = Prisma.AtLeast<{
   sort_order?: Prisma.IntFilter<"BlockFolder"> | number
   created_at?: Prisma.DateTimeFilter<"BlockFolder"> | Date | string
   updated_at?: Prisma.DateTimeFilter<"BlockFolder"> | Date | string
+  parent?: Prisma.XOR<Prisma.BlockFolderNullableScalarRelationFilter, Prisma.BlockFolderWhereInput> | null
+  children?: Prisma.BlockFolderListRelationFilter
+  block_versions?: Prisma.ReusableBlockVersionListRelationFilter
 }, "id">
 
 export type BlockFolderOrderByWithAggregationInput = {
@@ -276,10 +285,12 @@ export type BlockFolderScalarWhereWithAggregatesInput = {
 export type BlockFolderCreateInput = {
   id?: string
   name: string
-  parent_id?: string | null
   sort_order?: number
   created_at?: Date | string
   updated_at?: Date | string
+  parent?: Prisma.BlockFolderCreateNestedOneWithoutChildrenInput
+  children?: Prisma.BlockFolderCreateNestedManyWithoutParentInput
+  block_versions?: Prisma.ReusableBlockVersionCreateNestedManyWithoutFolderInput
 }
 
 export type BlockFolderUncheckedCreateInput = {
@@ -289,15 +300,19 @@ export type BlockFolderUncheckedCreateInput = {
   sort_order?: number
   created_at?: Date | string
   updated_at?: Date | string
+  children?: Prisma.BlockFolderUncheckedCreateNestedManyWithoutParentInput
+  block_versions?: Prisma.ReusableBlockVersionUncheckedCreateNestedManyWithoutFolderInput
 }
 
 export type BlockFolderUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  parent_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sort_order?: Prisma.IntFieldUpdateOperationsInput | number
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  parent?: Prisma.BlockFolderUpdateOneWithoutChildrenNestedInput
+  children?: Prisma.BlockFolderUpdateManyWithoutParentNestedInput
+  block_versions?: Prisma.ReusableBlockVersionUpdateManyWithoutFolderNestedInput
 }
 
 export type BlockFolderUncheckedUpdateInput = {
@@ -307,6 +322,8 @@ export type BlockFolderUncheckedUpdateInput = {
   sort_order?: Prisma.IntFieldUpdateOperationsInput | number
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  children?: Prisma.BlockFolderUncheckedUpdateManyWithoutParentNestedInput
+  block_versions?: Prisma.ReusableBlockVersionUncheckedUpdateManyWithoutFolderNestedInput
 }
 
 export type BlockFolderCreateManyInput = {
@@ -321,7 +338,6 @@ export type BlockFolderCreateManyInput = {
 export type BlockFolderUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  parent_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sort_order?: Prisma.IntFieldUpdateOperationsInput | number
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -334,6 +350,21 @@ export type BlockFolderUncheckedUpdateManyInput = {
   sort_order?: Prisma.IntFieldUpdateOperationsInput | number
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type BlockFolderNullableScalarRelationFilter = {
+  is?: Prisma.BlockFolderWhereInput | null
+  isNot?: Prisma.BlockFolderWhereInput | null
+}
+
+export type BlockFolderListRelationFilter = {
+  every?: Prisma.BlockFolderWhereInput
+  some?: Prisma.BlockFolderWhereInput
+  none?: Prisma.BlockFolderWhereInput
+}
+
+export type BlockFolderOrderByRelationAggregateInput = {
+  _count?: Prisma.SortOrder
 }
 
 export type BlockFolderCountOrderByAggregateInput = {
@@ -371,6 +402,26 @@ export type BlockFolderSumOrderByAggregateInput = {
   sort_order?: Prisma.SortOrder
 }
 
+export type BlockFolderCreateNestedOneWithoutChildrenInput = {
+  create?: Prisma.XOR<Prisma.BlockFolderCreateWithoutChildrenInput, Prisma.BlockFolderUncheckedCreateWithoutChildrenInput>
+  connectOrCreate?: Prisma.BlockFolderCreateOrConnectWithoutChildrenInput
+  connect?: Prisma.BlockFolderWhereUniqueInput
+}
+
+export type BlockFolderCreateNestedManyWithoutParentInput = {
+  create?: Prisma.XOR<Prisma.BlockFolderCreateWithoutParentInput, Prisma.BlockFolderUncheckedCreateWithoutParentInput> | Prisma.BlockFolderCreateWithoutParentInput[] | Prisma.BlockFolderUncheckedCreateWithoutParentInput[]
+  connectOrCreate?: Prisma.BlockFolderCreateOrConnectWithoutParentInput | Prisma.BlockFolderCreateOrConnectWithoutParentInput[]
+  createMany?: Prisma.BlockFolderCreateManyParentInputEnvelope
+  connect?: Prisma.BlockFolderWhereUniqueInput | Prisma.BlockFolderWhereUniqueInput[]
+}
+
+export type BlockFolderUncheckedCreateNestedManyWithoutParentInput = {
+  create?: Prisma.XOR<Prisma.BlockFolderCreateWithoutParentInput, Prisma.BlockFolderUncheckedCreateWithoutParentInput> | Prisma.BlockFolderCreateWithoutParentInput[] | Prisma.BlockFolderUncheckedCreateWithoutParentInput[]
+  connectOrCreate?: Prisma.BlockFolderCreateOrConnectWithoutParentInput | Prisma.BlockFolderCreateOrConnectWithoutParentInput[]
+  createMany?: Prisma.BlockFolderCreateManyParentInputEnvelope
+  connect?: Prisma.BlockFolderWhereUniqueInput | Prisma.BlockFolderWhereUniqueInput[]
+}
+
 export type IntFieldUpdateOperationsInput = {
   set?: number
   increment?: number
@@ -379,6 +430,304 @@ export type IntFieldUpdateOperationsInput = {
   divide?: number
 }
 
+export type BlockFolderUpdateOneWithoutChildrenNestedInput = {
+  create?: Prisma.XOR<Prisma.BlockFolderCreateWithoutChildrenInput, Prisma.BlockFolderUncheckedCreateWithoutChildrenInput>
+  connectOrCreate?: Prisma.BlockFolderCreateOrConnectWithoutChildrenInput
+  upsert?: Prisma.BlockFolderUpsertWithoutChildrenInput
+  disconnect?: Prisma.BlockFolderWhereInput | boolean
+  delete?: Prisma.BlockFolderWhereInput | boolean
+  connect?: Prisma.BlockFolderWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.BlockFolderUpdateToOneWithWhereWithoutChildrenInput, Prisma.BlockFolderUpdateWithoutChildrenInput>, Prisma.BlockFolderUncheckedUpdateWithoutChildrenInput>
+}
+
+export type BlockFolderUpdateManyWithoutParentNestedInput = {
+  create?: Prisma.XOR<Prisma.BlockFolderCreateWithoutParentInput, Prisma.BlockFolderUncheckedCreateWithoutParentInput> | Prisma.BlockFolderCreateWithoutParentInput[] | Prisma.BlockFolderUncheckedCreateWithoutParentInput[]
+  connectOrCreate?: Prisma.BlockFolderCreateOrConnectWithoutParentInput | Prisma.BlockFolderCreateOrConnectWithoutParentInput[]
+  upsert?: Prisma.BlockFolderUpsertWithWhereUniqueWithoutParentInput | Prisma.BlockFolderUpsertWithWhereUniqueWithoutParentInput[]
+  createMany?: Prisma.BlockFolderCreateManyParentInputEnvelope
+  set?: Prisma.BlockFolderWhereUniqueInput | Prisma.BlockFolderWhereUniqueInput[]
+  disconnect?: Prisma.BlockFolderWhereUniqueInput | Prisma.BlockFolderWhereUniqueInput[]
+  delete?: Prisma.BlockFolderWhereUniqueInput | Prisma.BlockFolderWhereUniqueInput[]
+  connect?: Prisma.BlockFolderWhereUniqueInput | Prisma.BlockFolderWhereUniqueInput[]
+  update?: Prisma.BlockFolderUpdateWithWhereUniqueWithoutParentInput | Prisma.BlockFolderUpdateWithWhereUniqueWithoutParentInput[]
+  updateMany?: Prisma.BlockFolderUpdateManyWithWhereWithoutParentInput | Prisma.BlockFolderUpdateManyWithWhereWithoutParentInput[]
+  deleteMany?: Prisma.BlockFolderScalarWhereInput | Prisma.BlockFolderScalarWhereInput[]
+}
+
+export type BlockFolderUncheckedUpdateManyWithoutParentNestedInput = {
+  create?: Prisma.XOR<Prisma.BlockFolderCreateWithoutParentInput, Prisma.BlockFolderUncheckedCreateWithoutParentInput> | Prisma.BlockFolderCreateWithoutParentInput[] | Prisma.BlockFolderUncheckedCreateWithoutParentInput[]
+  connectOrCreate?: Prisma.BlockFolderCreateOrConnectWithoutParentInput | Prisma.BlockFolderCreateOrConnectWithoutParentInput[]
+  upsert?: Prisma.BlockFolderUpsertWithWhereUniqueWithoutParentInput | Prisma.BlockFolderUpsertWithWhereUniqueWithoutParentInput[]
+  createMany?: Prisma.BlockFolderCreateManyParentInputEnvelope
+  set?: Prisma.BlockFolderWhereUniqueInput | Prisma.BlockFolderWhereUniqueInput[]
+  disconnect?: Prisma.BlockFolderWhereUniqueInput | Prisma.BlockFolderWhereUniqueInput[]
+  delete?: Prisma.BlockFolderWhereUniqueInput | Prisma.BlockFolderWhereUniqueInput[]
+  connect?: Prisma.BlockFolderWhereUniqueInput | Prisma.BlockFolderWhereUniqueInput[]
+  update?: Prisma.BlockFolderUpdateWithWhereUniqueWithoutParentInput | Prisma.BlockFolderUpdateWithWhereUniqueWithoutParentInput[]
+  updateMany?: Prisma.BlockFolderUpdateManyWithWhereWithoutParentInput | Prisma.BlockFolderUpdateManyWithWhereWithoutParentInput[]
+  deleteMany?: Prisma.BlockFolderScalarWhereInput | Prisma.BlockFolderScalarWhereInput[]
+}
+
+export type BlockFolderCreateNestedOneWithoutBlock_versionsInput = {
+  create?: Prisma.XOR<Prisma.BlockFolderCreateWithoutBlock_versionsInput, Prisma.BlockFolderUncheckedCreateWithoutBlock_versionsInput>
+  connectOrCreate?: Prisma.BlockFolderCreateOrConnectWithoutBlock_versionsInput
+  connect?: Prisma.BlockFolderWhereUniqueInput
+}
+
+export type BlockFolderUpdateOneWithoutBlock_versionsNestedInput = {
+  create?: Prisma.XOR<Prisma.BlockFolderCreateWithoutBlock_versionsInput, Prisma.BlockFolderUncheckedCreateWithoutBlock_versionsInput>
+  connectOrCreate?: Prisma.BlockFolderCreateOrConnectWithoutBlock_versionsInput
+  upsert?: Prisma.BlockFolderUpsertWithoutBlock_versionsInput
+  disconnect?: Prisma.BlockFolderWhereInput | boolean
+  delete?: Prisma.BlockFolderWhereInput | boolean
+  connect?: Prisma.BlockFolderWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.BlockFolderUpdateToOneWithWhereWithoutBlock_versionsInput, Prisma.BlockFolderUpdateWithoutBlock_versionsInput>, Prisma.BlockFolderUncheckedUpdateWithoutBlock_versionsInput>
+}
+
+export type BlockFolderCreateWithoutChildrenInput = {
+  id?: string
+  name: string
+  sort_order?: number
+  created_at?: Date | string
+  updated_at?: Date | string
+  parent?: Prisma.BlockFolderCreateNestedOneWithoutChildrenInput
+  block_versions?: Prisma.ReusableBlockVersionCreateNestedManyWithoutFolderInput
+}
+
+export type BlockFolderUncheckedCreateWithoutChildrenInput = {
+  id?: string
+  name: string
+  parent_id?: string | null
+  sort_order?: number
+  created_at?: Date | string
+  updated_at?: Date | string
+  block_versions?: Prisma.ReusableBlockVersionUncheckedCreateNestedManyWithoutFolderInput
+}
+
+export type BlockFolderCreateOrConnectWithoutChildrenInput = {
+  where: Prisma.BlockFolderWhereUniqueInput
+  create: Prisma.XOR<Prisma.BlockFolderCreateWithoutChildrenInput, Prisma.BlockFolderUncheckedCreateWithoutChildrenInput>
+}
+
+export type BlockFolderCreateWithoutParentInput = {
+  id?: string
+  name: string
+  sort_order?: number
+  created_at?: Date | string
+  updated_at?: Date | string
+  children?: Prisma.BlockFolderCreateNestedManyWithoutParentInput
+  block_versions?: Prisma.ReusableBlockVersionCreateNestedManyWithoutFolderInput
+}
+
+export type BlockFolderUncheckedCreateWithoutParentInput = {
+  id?: string
+  name: string
+  sort_order?: number
+  created_at?: Date | string
+  updated_at?: Date | string
+  children?: Prisma.BlockFolderUncheckedCreateNestedManyWithoutParentInput
+  block_versions?: Prisma.ReusableBlockVersionUncheckedCreateNestedManyWithoutFolderInput
+}
+
+export type BlockFolderCreateOrConnectWithoutParentInput = {
+  where: Prisma.BlockFolderWhereUniqueInput
+  create: Prisma.XOR<Prisma.BlockFolderCreateWithoutParentInput, Prisma.BlockFolderUncheckedCreateWithoutParentInput>
+}
+
+export type BlockFolderCreateManyParentInputEnvelope = {
+  data: Prisma.BlockFolderCreateManyParentInput | Prisma.BlockFolderCreateManyParentInput[]
+  skipDuplicates?: boolean
+}
+
+export type BlockFolderUpsertWithoutChildrenInput = {
+  update: Prisma.XOR<Prisma.BlockFolderUpdateWithoutChildrenInput, Prisma.BlockFolderUncheckedUpdateWithoutChildrenInput>
+  create: Prisma.XOR<Prisma.BlockFolderCreateWithoutChildrenInput, Prisma.BlockFolderUncheckedCreateWithoutChildrenInput>
+  where?: Prisma.BlockFolderWhereInput
+}
+
+export type BlockFolderUpdateToOneWithWhereWithoutChildrenInput = {
+  where?: Prisma.BlockFolderWhereInput
+  data: Prisma.XOR<Prisma.BlockFolderUpdateWithoutChildrenInput, Prisma.BlockFolderUncheckedUpdateWithoutChildrenInput>
+}
+
+export type BlockFolderUpdateWithoutChildrenInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  sort_order?: Prisma.IntFieldUpdateOperationsInput | number
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  parent?: Prisma.BlockFolderUpdateOneWithoutChildrenNestedInput
+  block_versions?: Prisma.ReusableBlockVersionUpdateManyWithoutFolderNestedInput
+}
+
+export type BlockFolderUncheckedUpdateWithoutChildrenInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  parent_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sort_order?: Prisma.IntFieldUpdateOperationsInput | number
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  block_versions?: Prisma.ReusableBlockVersionUncheckedUpdateManyWithoutFolderNestedInput
+}
+
+export type BlockFolderUpsertWithWhereUniqueWithoutParentInput = {
+  where: Prisma.BlockFolderWhereUniqueInput
+  update: Prisma.XOR<Prisma.BlockFolderUpdateWithoutParentInput, Prisma.BlockFolderUncheckedUpdateWithoutParentInput>
+  create: Prisma.XOR<Prisma.BlockFolderCreateWithoutParentInput, Prisma.BlockFolderUncheckedCreateWithoutParentInput>
+}
+
+export type BlockFolderUpdateWithWhereUniqueWithoutParentInput = {
+  where: Prisma.BlockFolderWhereUniqueInput
+  data: Prisma.XOR<Prisma.BlockFolderUpdateWithoutParentInput, Prisma.BlockFolderUncheckedUpdateWithoutParentInput>
+}
+
+export type BlockFolderUpdateManyWithWhereWithoutParentInput = {
+  where: Prisma.BlockFolderScalarWhereInput
+  data: Prisma.XOR<Prisma.BlockFolderUpdateManyMutationInput, Prisma.BlockFolderUncheckedUpdateManyWithoutParentInput>
+}
+
+export type BlockFolderScalarWhereInput = {
+  AND?: Prisma.BlockFolderScalarWhereInput | Prisma.BlockFolderScalarWhereInput[]
+  OR?: Prisma.BlockFolderScalarWhereInput[]
+  NOT?: Prisma.BlockFolderScalarWhereInput | Prisma.BlockFolderScalarWhereInput[]
+  id?: Prisma.UuidFilter<"BlockFolder"> | string
+  name?: Prisma.StringFilter<"BlockFolder"> | string
+  parent_id?: Prisma.UuidNullableFilter<"BlockFolder"> | string | null
+  sort_order?: Prisma.IntFilter<"BlockFolder"> | number
+  created_at?: Prisma.DateTimeFilter<"BlockFolder"> | Date | string
+  updated_at?: Prisma.DateTimeFilter<"BlockFolder"> | Date | string
+}
+
+export type BlockFolderCreateWithoutBlock_versionsInput = {
+  id?: string
+  name: string
+  sort_order?: number
+  created_at?: Date | string
+  updated_at?: Date | string
+  parent?: Prisma.BlockFolderCreateNestedOneWithoutChildrenInput
+  children?: Prisma.BlockFolderCreateNestedManyWithoutParentInput
+}
+
+export type BlockFolderUncheckedCreateWithoutBlock_versionsInput = {
+  id?: string
+  name: string
+  parent_id?: string | null
+  sort_order?: number
+  created_at?: Date | string
+  updated_at?: Date | string
+  children?: Prisma.BlockFolderUncheckedCreateNestedManyWithoutParentInput
+}
+
+export type BlockFolderCreateOrConnectWithoutBlock_versionsInput = {
+  where: Prisma.BlockFolderWhereUniqueInput
+  create: Prisma.XOR<Prisma.BlockFolderCreateWithoutBlock_versionsInput, Prisma.BlockFolderUncheckedCreateWithoutBlock_versionsInput>
+}
+
+export type BlockFolderUpsertWithoutBlock_versionsInput = {
+  update: Prisma.XOR<Prisma.BlockFolderUpdateWithoutBlock_versionsInput, Prisma.BlockFolderUncheckedUpdateWithoutBlock_versionsInput>
+  create: Prisma.XOR<Prisma.BlockFolderCreateWithoutBlock_versionsInput, Prisma.BlockFolderUncheckedCreateWithoutBlock_versionsInput>
+  where?: Prisma.BlockFolderWhereInput
+}
+
+export type BlockFolderUpdateToOneWithWhereWithoutBlock_versionsInput = {
+  where?: Prisma.BlockFolderWhereInput
+  data: Prisma.XOR<Prisma.BlockFolderUpdateWithoutBlock_versionsInput, Prisma.BlockFolderUncheckedUpdateWithoutBlock_versionsInput>
+}
+
+export type BlockFolderUpdateWithoutBlock_versionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  sort_order?: Prisma.IntFieldUpdateOperationsInput | number
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  parent?: Prisma.BlockFolderUpdateOneWithoutChildrenNestedInput
+  children?: Prisma.BlockFolderUpdateManyWithoutParentNestedInput
+}
+
+export type BlockFolderUncheckedUpdateWithoutBlock_versionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  parent_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sort_order?: Prisma.IntFieldUpdateOperationsInput | number
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  children?: Prisma.BlockFolderUncheckedUpdateManyWithoutParentNestedInput
+}
+
+export type BlockFolderCreateManyParentInput = {
+  id?: string
+  name: string
+  sort_order?: number
+  created_at?: Date | string
+  updated_at?: Date | string
+}
+
+export type BlockFolderUpdateWithoutParentInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  sort_order?: Prisma.IntFieldUpdateOperationsInput | number
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  children?: Prisma.BlockFolderUpdateManyWithoutParentNestedInput
+  block_versions?: Prisma.ReusableBlockVersionUpdateManyWithoutFolderNestedInput
+}
+
+export type BlockFolderUncheckedUpdateWithoutParentInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  sort_order?: Prisma.IntFieldUpdateOperationsInput | number
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  children?: Prisma.BlockFolderUncheckedUpdateManyWithoutParentNestedInput
+  block_versions?: Prisma.ReusableBlockVersionUncheckedUpdateManyWithoutFolderNestedInput
+}
+
+export type BlockFolderUncheckedUpdateManyWithoutParentInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  sort_order?: Prisma.IntFieldUpdateOperationsInput | number
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+
+/**
+ * Count Type BlockFolderCountOutputType
+ */
+
+export type BlockFolderCountOutputType = {
+  children: number
+  block_versions: number
+}
+
+export type BlockFolderCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  children?: boolean | BlockFolderCountOutputTypeCountChildrenArgs
+  block_versions?: boolean | BlockFolderCountOutputTypeCountBlock_versionsArgs
+}
+
+/**
+ * BlockFolderCountOutputType without action
+ */
+export type BlockFolderCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the BlockFolderCountOutputType
+   */
+  select?: Prisma.BlockFolderCountOutputTypeSelect<ExtArgs> | null
+}
+
+/**
+ * BlockFolderCountOutputType without action
+ */
+export type BlockFolderCountOutputTypeCountChildrenArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.BlockFolderWhereInput
+}
+
+/**
+ * BlockFolderCountOutputType without action
+ */
+export type BlockFolderCountOutputTypeCountBlock_versionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ReusableBlockVersionWhereInput
+}
 
 
 export type BlockFolderSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -388,6 +737,10 @@ export type BlockFolderSelect<ExtArgs extends runtime.Types.Extensions.InternalA
   sort_order?: boolean
   created_at?: boolean
   updated_at?: boolean
+  parent?: boolean | Prisma.BlockFolder$parentArgs<ExtArgs>
+  children?: boolean | Prisma.BlockFolder$childrenArgs<ExtArgs>
+  block_versions?: boolean | Prisma.BlockFolder$block_versionsArgs<ExtArgs>
+  _count?: boolean | Prisma.BlockFolderCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["blockFolder"]>
 
 export type BlockFolderSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -397,6 +750,7 @@ export type BlockFolderSelectCreateManyAndReturn<ExtArgs extends runtime.Types.E
   sort_order?: boolean
   created_at?: boolean
   updated_at?: boolean
+  parent?: boolean | Prisma.BlockFolder$parentArgs<ExtArgs>
 }, ExtArgs["result"]["blockFolder"]>
 
 export type BlockFolderSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -406,6 +760,7 @@ export type BlockFolderSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.E
   sort_order?: boolean
   created_at?: boolean
   updated_at?: boolean
+  parent?: boolean | Prisma.BlockFolder$parentArgs<ExtArgs>
 }, ExtArgs["result"]["blockFolder"]>
 
 export type BlockFolderSelectScalar = {
@@ -418,10 +773,26 @@ export type BlockFolderSelectScalar = {
 }
 
 export type BlockFolderOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "parent_id" | "sort_order" | "created_at" | "updated_at", ExtArgs["result"]["blockFolder"]>
+export type BlockFolderInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  parent?: boolean | Prisma.BlockFolder$parentArgs<ExtArgs>
+  children?: boolean | Prisma.BlockFolder$childrenArgs<ExtArgs>
+  block_versions?: boolean | Prisma.BlockFolder$block_versionsArgs<ExtArgs>
+  _count?: boolean | Prisma.BlockFolderCountOutputTypeDefaultArgs<ExtArgs>
+}
+export type BlockFolderIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  parent?: boolean | Prisma.BlockFolder$parentArgs<ExtArgs>
+}
+export type BlockFolderIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  parent?: boolean | Prisma.BlockFolder$parentArgs<ExtArgs>
+}
 
 export type $BlockFolderPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "BlockFolder"
-  objects: {}
+  objects: {
+    parent: Prisma.$BlockFolderPayload<ExtArgs> | null
+    children: Prisma.$BlockFolderPayload<ExtArgs>[]
+    block_versions: Prisma.$ReusableBlockVersionPayload<ExtArgs>[]
+  }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     name: string
@@ -823,6 +1194,9 @@ readonly fields: BlockFolderFieldRefs;
  */
 export interface Prisma__BlockFolderClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
+  parent<T extends Prisma.BlockFolder$parentArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.BlockFolder$parentArgs<ExtArgs>>): Prisma.Prisma__BlockFolderClient<runtime.Types.Result.GetResult<Prisma.$BlockFolderPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  children<T extends Prisma.BlockFolder$childrenArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.BlockFolder$childrenArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$BlockFolderPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  block_versions<T extends Prisma.BlockFolder$block_versionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.BlockFolder$block_versionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ReusableBlockVersionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -875,6 +1249,10 @@ export type BlockFolderFindUniqueArgs<ExtArgs extends runtime.Types.Extensions.I
    */
   omit?: Prisma.BlockFolderOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.BlockFolderInclude<ExtArgs> | null
+  /**
    * Filter, which BlockFolder to fetch.
    */
   where: Prisma.BlockFolderWhereUniqueInput
@@ -893,6 +1271,10 @@ export type BlockFolderFindUniqueOrThrowArgs<ExtArgs extends runtime.Types.Exten
    */
   omit?: Prisma.BlockFolderOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.BlockFolderInclude<ExtArgs> | null
+  /**
    * Filter, which BlockFolder to fetch.
    */
   where: Prisma.BlockFolderWhereUniqueInput
@@ -910,6 +1292,10 @@ export type BlockFolderFindFirstArgs<ExtArgs extends runtime.Types.Extensions.In
    * Omit specific fields from the BlockFolder
    */
   omit?: Prisma.BlockFolderOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.BlockFolderInclude<ExtArgs> | null
   /**
    * Filter, which BlockFolder to fetch.
    */
@@ -959,6 +1345,10 @@ export type BlockFolderFindFirstOrThrowArgs<ExtArgs extends runtime.Types.Extens
    */
   omit?: Prisma.BlockFolderOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.BlockFolderInclude<ExtArgs> | null
+  /**
    * Filter, which BlockFolder to fetch.
    */
   where?: Prisma.BlockFolderWhereInput
@@ -1006,6 +1396,10 @@ export type BlockFolderFindManyArgs<ExtArgs extends runtime.Types.Extensions.Int
    * Omit specific fields from the BlockFolder
    */
   omit?: Prisma.BlockFolderOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.BlockFolderInclude<ExtArgs> | null
   /**
    * Filter, which BlockFolders to fetch.
    */
@@ -1055,6 +1449,10 @@ export type BlockFolderCreateArgs<ExtArgs extends runtime.Types.Extensions.Inter
    */
   omit?: Prisma.BlockFolderOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.BlockFolderInclude<ExtArgs> | null
+  /**
    * The data needed to create a BlockFolder.
    */
   data: Prisma.XOR<Prisma.BlockFolderCreateInput, Prisma.BlockFolderUncheckedCreateInput>
@@ -1088,6 +1486,10 @@ export type BlockFolderCreateManyAndReturnArgs<ExtArgs extends runtime.Types.Ext
    */
   data: Prisma.BlockFolderCreateManyInput | Prisma.BlockFolderCreateManyInput[]
   skipDuplicates?: boolean
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.BlockFolderIncludeCreateManyAndReturn<ExtArgs> | null
 }
 
 /**
@@ -1102,6 +1504,10 @@ export type BlockFolderUpdateArgs<ExtArgs extends runtime.Types.Extensions.Inter
    * Omit specific fields from the BlockFolder
    */
   omit?: Prisma.BlockFolderOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.BlockFolderInclude<ExtArgs> | null
   /**
    * The data needed to update a BlockFolder.
    */
@@ -1154,6 +1560,10 @@ export type BlockFolderUpdateManyAndReturnArgs<ExtArgs extends runtime.Types.Ext
    * Limit how many BlockFolders to update.
    */
   limit?: number
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.BlockFolderIncludeUpdateManyAndReturn<ExtArgs> | null
 }
 
 /**
@@ -1168,6 +1578,10 @@ export type BlockFolderUpsertArgs<ExtArgs extends runtime.Types.Extensions.Inter
    * Omit specific fields from the BlockFolder
    */
   omit?: Prisma.BlockFolderOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.BlockFolderInclude<ExtArgs> | null
   /**
    * The filter to search for the BlockFolder to update in case it exists.
    */
@@ -1195,6 +1609,10 @@ export type BlockFolderDeleteArgs<ExtArgs extends runtime.Types.Extensions.Inter
    */
   omit?: Prisma.BlockFolderOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.BlockFolderInclude<ExtArgs> | null
+  /**
    * Filter which BlockFolder to delete.
    */
   where: Prisma.BlockFolderWhereUniqueInput
@@ -1215,6 +1633,73 @@ export type BlockFolderDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.I
 }
 
 /**
+ * BlockFolder.parent
+ */
+export type BlockFolder$parentArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the BlockFolder
+   */
+  select?: Prisma.BlockFolderSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the BlockFolder
+   */
+  omit?: Prisma.BlockFolderOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.BlockFolderInclude<ExtArgs> | null
+  where?: Prisma.BlockFolderWhereInput
+}
+
+/**
+ * BlockFolder.children
+ */
+export type BlockFolder$childrenArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the BlockFolder
+   */
+  select?: Prisma.BlockFolderSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the BlockFolder
+   */
+  omit?: Prisma.BlockFolderOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.BlockFolderInclude<ExtArgs> | null
+  where?: Prisma.BlockFolderWhereInput
+  orderBy?: Prisma.BlockFolderOrderByWithRelationInput | Prisma.BlockFolderOrderByWithRelationInput[]
+  cursor?: Prisma.BlockFolderWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.BlockFolderScalarFieldEnum | Prisma.BlockFolderScalarFieldEnum[]
+}
+
+/**
+ * BlockFolder.block_versions
+ */
+export type BlockFolder$block_versionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ReusableBlockVersion
+   */
+  select?: Prisma.ReusableBlockVersionSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ReusableBlockVersion
+   */
+  omit?: Prisma.ReusableBlockVersionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ReusableBlockVersionInclude<ExtArgs> | null
+  where?: Prisma.ReusableBlockVersionWhereInput
+  orderBy?: Prisma.ReusableBlockVersionOrderByWithRelationInput | Prisma.ReusableBlockVersionOrderByWithRelationInput[]
+  cursor?: Prisma.ReusableBlockVersionWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ReusableBlockVersionScalarFieldEnum | Prisma.ReusableBlockVersionScalarFieldEnum[]
+}
+
+/**
  * BlockFolder without action
  */
 export type BlockFolderDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1226,4 +1711,8 @@ export type BlockFolderDefaultArgs<ExtArgs extends runtime.Types.Extensions.Inte
    * Omit specific fields from the BlockFolder
    */
   omit?: Prisma.BlockFolderOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.BlockFolderInclude<ExtArgs> | null
 }
