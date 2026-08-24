@@ -1,14 +1,17 @@
 import {
 	getBlockDefinition,
+	isBlockType,
 	type BlockDefinition,
-	type BlockFieldDefinition
+	type BlockFieldDefinition,
+	type BlockType
 } from '$lib/blocks/registry';
-import type { BlockInstance, BlockValue } from '$lib/pageContent';
+import type { BlockInstance, BlockValue, ReusableBlockReference } from '$lib/pageContent';
+import { isReusableBlockReference } from '$lib/pageContent';
 
 export type ReusableBlockDraft = {
 	name: string;
 	folder_id: string | null;
-	block_type: string;
+	block_type: BlockType;
 	content: BlockInstance;
 };
 
@@ -32,9 +35,7 @@ const isBlockValueOfType = (value: unknown, field: BlockFieldDefinition): value 
 			return typeof value === 'boolean';
 		case 'blocks':
 			if (!Array.isArray(value)) return false;
-			return value.every((item) =>
-				isValidBlockInstance(item, field.blocks?.allowedTypes ? new Set(field.blocks.allowedTypes) : null)
-			);
+			return value.every((item) => isReusableBlockReference(item));
 	}
 };
 
@@ -61,8 +62,8 @@ const normalizeFieldValue = (
 		case 'blocks':
 			if (!Array.isArray(value)) return undefined;
 			return value
-				.map((item) => normalizeBlockInstance(item, field.blocks?.allowedTypes ?? null))
-				.filter((item): item is BlockInstance => Boolean(item));
+				.filter((item): item is ReusableBlockReference => isReusableBlockReference(item))
+				.map((item) => ({ id: item.id, type: 'reusable' as const, reusableBlockId: item.reusableBlockId }));
 	}
 };
 
@@ -99,14 +100,10 @@ export const areValidBlockFields = (
 	return true;
 };
 
-export const isValidBlockInstance = (
-	value: unknown,
-	allowedTypes: Set<string> | null = null
-): value is BlockInstance => {
+export const isValidBlockInstance = (value: unknown): value is BlockInstance => {
 	if (!isObject(value)) return false;
 	if (typeof value.id !== 'string' || !value.id.trim()) return false;
-	if (typeof value.type !== 'string' || !value.type.trim()) return false;
-	if (allowedTypes && !allowedTypes.has(value.type)) return false;
+	if (typeof value.type !== 'string' || !isBlockType(value.type)) return false;
 	if (!isObject(value.fields)) return false;
 
 	const definition = getBlockDefinition(value.type);
@@ -115,14 +112,10 @@ export const isValidBlockInstance = (
 	return areValidBlockFields(value.fields, definition);
 };
 
-export const normalizeBlockInstance = (
-	value: unknown,
-	allowedTypes: string[] | null = null
-): BlockInstance | null => {
+export const normalizeBlockInstance = (value: unknown): BlockInstance | null => {
 	if (!isObject(value)) return null;
 	if (typeof value.id !== 'string' || !value.id.trim()) return null;
-	if (typeof value.type !== 'string' || !value.type.trim()) return null;
-	if (allowedTypes && !allowedTypes.includes(value.type)) return null;
+	if (typeof value.type !== 'string' || !isBlockType(value.type)) return null;
 	if (!isObject(value.fields)) return null;
 
 	const definition = getBlockDefinition(value.type);
@@ -181,7 +174,7 @@ export const createDefaultBlockInstance = (type: string, id: string): BlockInsta
 
 	return {
 		id,
-		type,
+		type: definition.type,
 		fields
 	};
 };
@@ -190,7 +183,7 @@ export const isReusableBlockDraft = (value: unknown): value is ReusableBlockDraf
 	if (!isObject(value)) return false;
 	if (typeof value.name !== 'string') return false;
 	if (!(typeof value.folder_id === 'string' || value.folder_id === null)) return false;
-	if (typeof value.block_type !== 'string' || !value.block_type.trim()) return false;
+	if (typeof value.block_type !== 'string' || !isBlockType(value.block_type)) return false;
 	if (!isValidBlockInstance(value.content)) return false;
 	if (value.content.type !== value.block_type) return false;
 	return true;

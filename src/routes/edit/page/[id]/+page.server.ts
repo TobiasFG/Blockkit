@@ -112,8 +112,7 @@ export const actions = {
 		}
 
 		const reusableBlocks = await getReusableBlocks();
-		const reusableBlockIds = new Set(reusableBlocks.map((block) => block.id));
-		const contentErrors = validatePageContentEditorState(content, reusableBlockIds);
+		const contentErrors = validatePageContentEditorState(content, reusableBlocks);
 		if (Object.keys(contentErrors).length > 0) {
 			return fail(400, { error: 'Page content is invalid' });
 		}
@@ -187,8 +186,7 @@ export const actions = {
 		}
 
 		const reusableBlocks = await getReusableBlocks();
-		const reusableBlockIds = new Set(reusableBlocks.map((block) => block.id));
-		const contentErrors = validatePageContentEditorState(draftVersion.content, reusableBlockIds);
+		const contentErrors = validatePageContentEditorState(draftVersion.content, reusableBlocks);
 		if (Object.keys(contentErrors).length > 0) {
 			return fail(400, { error: 'Current draft is not ready to publish' });
 		}

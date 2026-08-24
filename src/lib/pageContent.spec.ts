@@ -16,10 +16,11 @@ describe('block registry', () => {
 			'hero',
 			'section'
 		]);
-		expect(getBlockDefinition('hero')?.fields.map((field) => field.type)).toEqual([
-			'string',
-			'date',
-			'number'
+		expect(getBlockDefinition('hero')?.fields.map((field) => field.key)).toEqual([
+			'heading',
+			'description',
+			'publishedOn',
+			'priority'
 		]);
 	});
 });
@@ -31,7 +32,7 @@ describe('page content helpers', () => {
 		expect(parsePageContent({ version: 2, layout: null, blocks: [] })).toEqual(EMPTY_PAGE_CONTENT);
 	});
 
-	it('parses typed page content with primitive fields and nested blocks', () => {
+	it('parses typed page content with primitive fields and nested content references', () => {
 		const content = {
 			version: 1,
 			layout: null,
@@ -52,11 +53,9 @@ describe('page content helpers', () => {
 						title: 'Highlights',
 						items: [
 							{
-								id: 'text-1',
-								type: 'text',
-								fields: {
-									body: 'Nested copy'
-								}
+								id: 'ref-1',
+								type: 'reusable',
+								reusableBlockId: 'block-123'
 							}
 						]
 					}
@@ -86,7 +85,7 @@ describe('page content helpers', () => {
 		expect(isPageContent(content)).toBe(true);
 	});
 
-	it('rejects unknown fields, invalid dates, and disallowed nested block types', () => {
+	it('rejects unknown fields, invalid dates, and inline blocks nested in a blocks field', () => {
 		expect(
 			isPageContent({
 				version: 1,
@@ -132,9 +131,9 @@ describe('page content helpers', () => {
 						fields: {
 							items: [
 								{
-									id: 'unknown-1',
-									type: 'cta',
-									fields: {}
+									id: 'text-1',
+									type: 'text',
+									fields: { body: 'Inline blocks are not allowed' }
 								}
 							]
 						}

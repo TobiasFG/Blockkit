@@ -19,19 +19,23 @@
     import { Input } from "$lib/components/ui/input/index.js";
     import { Label } from "$lib/components/ui/label/index.js";
     import { Textarea } from "$lib/components/ui/textarea/index.js";
-    import BlockListEditor from "$lib/components/cms/BlockListEditor.svelte";
-    import type { BlockListLocation, BlockPath } from "$lib/pageContentEditor";
-    import type { BlockInstance, BlockValue } from "$lib/pageContent";
+    import BlockReferenceListEditor from "$lib/components/cms/BlockReferenceListEditor.svelte";
+    import type { BlockListLocation } from "$lib/blockContentEditor";
+    import type {
+        BlockInstance,
+        BlockValue,
+        ReusableBlockReference,
+    } from "$lib/pageContent";
     import {
         getReusableBlockPublishState,
         reusableBlockHasDraftChanges,
     } from "$lib/reusableBlockStatus";
     import { createDefaultBlockInstance } from "$lib/reusableBlocks";
     import {
-        addNestedReusableBlockAtPath,
         createEditableReusableBlockContent,
-        moveNestedReusableBlock,
-        removeNestedReusableBlockAtPath,
+        insertNestedReferenceAtIndex,
+        moveNestedReference,
+        removeNestedReferenceAtIndex,
         updateReusableBlockFieldValue,
         validateReusableBlockEditorState,
     } from "$lib/reusableBlockEditor";
@@ -62,7 +66,6 @@
         createDefaultBlockInstance("text", "placeholder-reusable-block"),
     );
     let validationErrors = $state<Record<string, string>>({});
-    let draggingPath = $state<string | null>(null);
     let saving = $state(false);
     let publishing = $state(false);
     let prefersReducedMotion = $state(false);
@@ -195,7 +198,6 @@
             revertTargetLabel: getRevertTargetLabel(data.block),
         };
         validationErrors = {};
-        draggingPath = null;
     });
     $effect(() => {
         if (!browser) return;
@@ -223,8 +225,13 @@
 
     const getRootFieldError = (fieldKey: string) =>
         validationErrors[`root:${fieldKey}`] ?? "";
-    const getNestedBlocks = (value: BlockValue | undefined): BlockInstance[] =>
-        Array.isArray(value) ? value : [];
+    const getNestedReferences = (
+        value: BlockValue | undefined,
+    ): ReusableBlockReference[] => (Array.isArray(value) ? value : []);
+    /** A content item can never contain itself. */
+    const insertableBlocks = $derived(
+        (data.reusableBlocks ?? []).filter((entry) => entry.id !== block.id),
+    );
     const formatTimestamp = (value?: string | null) =>
         value ? new Date(value).toLocaleString() : "—";
 
@@ -247,7 +254,10 @@
     };
 
     const syncValidation = (next: typeof contentDraft) => {
-        validationErrors = validateReusableBlockEditorState(next);
+        validationErrors = validateReusableBlockEditorState(
+            next,
+            data.reusableBlocks ?? [],
+        );
         return next;
     };
 
@@ -260,41 +270,38 @@
         );
     };
 
-    const handleAddBlock = (location: BlockListLocation, type: string) => {
-        if (location.parentPath === null || location.fieldKey === null) return;
+    const handleInsertReference = (
+        location: BlockListLocation,
+        reusableBlockId: string,
+        index: number,
+    ) => {
         contentDraft = syncValidation(
-            addNestedReusableBlockAtPath(
+            insertNestedReferenceAtIndex(
                 contentDraft,
                 location,
-                type,
+                reusableBlockId,
                 crypto.randomUUID(),
+                index,
             ),
         );
     };
 
-    const insertReusableReference = () => {
-        // Reusable block editors do not allow nested reusable references.
-    };
-
-    const handleRemoveBlock = (path: BlockPath) => {
-        contentDraft = syncValidation(
-            removeNestedReusableBlockAtPath(contentDraft, path),
-        );
-    };
-
-    const handleMoveBlock = (path: BlockPath, toIndex: number) => {
-        contentDraft = syncValidation(
-            moveNestedReusableBlock(contentDraft, path, toIndex),
-        );
-    };
-
-    const handleNestedFieldUpdate = (
-        path: BlockPath,
-        fieldKey: string,
-        value: BlockValue | undefined,
+    const handleRemoveReference = (
+        location: BlockListLocation,
+        index: number,
     ) => {
         contentDraft = syncValidation(
-            updateReusableBlockFieldValue(contentDraft, path, fieldKey, value),
+            removeNestedReferenceAtIndex(contentDraft, location, index),
+        );
+    };
+
+    const handleMoveReference = (
+        location: BlockListLocation,
+        fromIndex: number,
+        toIndex: number,
+    ) => {
+        contentDraft = syncValidation(
+            moveNestedReference(contentDraft, location, fromIndex, toIndex),
         );
     };
 
@@ -307,7 +314,6 @@
             loadedSnapshot.content,
         );
         validationErrors = {};
-        draggingPath = null;
     };
 </script>
 
@@ -399,7 +405,6 @@
                             revertTargetLabel: getRevertTargetLabel(block),
                         };
                         validationErrors = {};
-                        draggingPath = null;
                         if (browser) {
                             reusableBlocksStore.update((current) =>
                                 current
@@ -614,30 +619,26 @@
                                     </label>
                                 {:else}
                                     <div class="border-t border-border pt-4">
-                                        <BlockListEditor
-                                            blocks={getNestedBlocks(
+                                        <BlockReferenceListEditor
+                                            references={getNestedReferences(
                                                 contentDraft.fields[field.key],
                                             )}
                                             location={{
                                                 parentPath: [],
                                                 fieldKey: field.key,
                                             }}
-                                            allowedTypes={field.blocks
-                                                ?.allowedTypes ?? null}
-                                            pathPrefix={[]}
+                                            allowedTypes={field.type ===
+                                            "blocks"
+                                                ? (field.blocks
+                                                      ?.allowedTypes ?? null)
+                                                : null}
+                                            reusableBlocks={insertableBlocks}
                                             title={field.label}
-                                            description="Nested content stays inside this content item."
+                                            errorKeyPrefix={`root:${field.key}`}
                                             errors={validationErrors}
-                                            {draggingPath}
-                                            onInsertReusableBlockReference={insertReusableReference}
-                                            onAddBlock={handleAddBlock}
-                                            onRemoveBlock={handleRemoveBlock}
-                                            onMoveBlock={handleMoveBlock}
-                                            onUpdateField={handleNestedFieldUpdate}
-                                            onStartDrag={(path: number[]) =>
-                                                (draggingPath = path.join("."))}
-                                            onEndDrag={() =>
-                                                (draggingPath = null)}
+                                            onInsert={handleInsertReference}
+                                            onRemove={handleRemoveReference}
+                                            onMove={handleMoveReference}
                                         />
                                     </div>
                                 {/if}

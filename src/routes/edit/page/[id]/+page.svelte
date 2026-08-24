@@ -19,20 +19,17 @@
     import { buildPagePathPreview, isRootPage } from "$lib/pagePath";
     import { getPagePublishState, pageHasDraftChanges } from "$lib/pageStatus";
     import type {
-        BlockListLocation,
         BlockPath,
         PageContentValidationErrors,
     } from "$lib/pageContentEditor";
     import {
-        addBlockAtPath,
         createEditablePageContent,
         insertReusableBlockReferenceAtIndex,
         moveBlock,
         removeBlockAtPath,
-        updateBlockFieldValue,
         validatePageContentEditorState,
     } from "$lib/pageContentEditor";
-    import type { BlockValue, PageContent } from "$lib/pageContent";
+    import type { PageContent } from "$lib/pageContent";
     import { EMPTY_PAGE_SEO_META, type PageSeoMeta } from "$lib/pageSeoMeta";
     import type { Page, ReusableBlock } from "$lib/types";
     import type { PageProps } from "./$types";
@@ -278,10 +275,7 @@
     });
 
     const syncContentErrors = () => {
-        contentErrors = validatePageContentEditorState(
-            content,
-            new Set(reusableBlocks.map((block) => block.id)),
-        );
+        contentErrors = validatePageContentEditorState(content, reusableBlocks);
         return Object.keys(contentErrors).length === 0;
     };
 
@@ -289,11 +283,6 @@
         typeof crypto !== "undefined" && "randomUUID" in crypto
             ? crypto.randomUUID()
             : `block-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
-
-    const addBlock = (location: BlockListLocation, type: string) => {
-        content = addBlockAtPath(content, location, type, createBlockId());
-        syncContentErrors();
-    };
 
     const insertReusableReference = (
         reusableBlockId: string,
@@ -315,15 +304,6 @@
 
     const reorderBlock = (path: BlockPath, toIndex: number) => {
         content = moveBlock(content, path, toIndex);
-        syncContentErrors();
-    };
-
-    const updateField = (
-        path: BlockPath,
-        fieldKey: string,
-        value: BlockValue | undefined,
-    ) => {
-        content = updateBlockFieldValue(content, path, fieldKey, value);
         syncContentErrors();
     };
 
@@ -630,20 +610,12 @@
                                 <div class="border-t border-border pt-5">
                                     <BlockListEditor
                                         blocks={content.blocks}
-                                        location={{
-                                            parentPath: null,
-                                            fieldKey: null,
-                                        }}
-                                        allowedTypes={null}
                                         errors={contentErrors}
                                         {draggingPath}
                                         {canDragBlocks}
-                                        allowInlineBlockCreation={false}
-                                        onAddBlock={addBlock}
                                         onInsertReusableBlockReference={insertReusableReference}
                                         onRemoveBlock={removeBlock}
                                         onMoveBlock={reorderBlock}
-                                        onUpdateField={updateField}
                                         {reusableBlocks}
                                         onStartDrag={(path: number[]) => {
                                             draggingPath = path.join(".");

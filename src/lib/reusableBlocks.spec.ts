@@ -15,7 +15,8 @@ describe('reusable block helpers', () => {
 			id: 'hero-1',
 			type: 'hero',
 			fields: {
-				heading: ''
+				heading: '',
+				description: ''
 			}
 		});
 	});

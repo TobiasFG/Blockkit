@@ -1,3 +1,4 @@
+import type { BlockType } from '$lib/blocks/registry';
 import type { PageContent } from '$lib/pageContent';
 import type { BlockInstance } from '$lib/pageContent';
 
@@ -55,7 +56,7 @@ export type ReusableBlock = {
 	id: string;
 	name: string;
 	folder_id: string | null;
-	block_type: string;
+	block_type: BlockType;
 	content: BlockInstance;
 	draft_version_id: string | null;
 	published_version_id: string | null;

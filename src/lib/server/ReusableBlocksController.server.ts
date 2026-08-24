@@ -87,7 +87,7 @@ const parseReusableBlock = (
 		id,
 		name: version.name,
 		folder_id: version.folder_id,
-		block_type: blockType,
+		block_type: content.type,
 		content,
 		draft_version_id: draftVersionId,
 		published_version_id: publishedVersionId,
@@ -260,7 +260,7 @@ export const createReusableBlock = async (
 			status: 'draft',
 			name,
 			folder_id: folderId,
-			block_type: type,
+			block_type: content.type,
 			content: toJsonInput(content),
 			revision: 1
 		},

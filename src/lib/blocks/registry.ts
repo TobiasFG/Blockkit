@@ -1,22 +1,29 @@
+export type BlockType = 'text' | 'hero' | 'section';
+
 export type BlockFieldType = 'string' | 'date' | 'number' | 'boolean' | 'blocks';
 
-export type BlockFieldDefinition = {
+type BlockFieldBase = {
 	key: string;
 	label: string;
-	type: BlockFieldType;
 	required?: boolean;
-	blocks?: {
-		allowedTypes?: string[];
-	};
 };
 
+export type BlockFieldDefinition =
+	| (BlockFieldBase & { type: 'string' | 'date' | 'number' | 'boolean' })
+	| (BlockFieldBase & {
+			type: 'blocks';
+			blocks?: {
+				allowedTypes?: BlockType[];
+			};
+	  });
+
 export type BlockDefinition = {
-	type: string;
+	type: BlockType;
 	label: string;
 	fields: BlockFieldDefinition[];
 };
 
-export const BLOCK_REGISTRY: Record<string, BlockDefinition> = {
+export const BLOCK_REGISTRY: Record<BlockType, BlockDefinition> = {
 	text: {
 		type: 'text',
 		label: 'Text',
@@ -27,6 +34,7 @@ export const BLOCK_REGISTRY: Record<string, BlockDefinition> = {
 		label: 'Hero',
 		fields: [
 			{ key: 'heading', label: 'Heading', type: 'string', required: true },
+			{ key: 'description', label: 'Description', type: 'string' },
 			{ key: 'publishedOn', label: 'Published on', type: 'date' },
 			{ key: 'priority', label: 'Priority', type: 'number' }
 		]
@@ -48,6 +56,9 @@ export const BLOCK_REGISTRY: Record<string, BlockDefinition> = {
 	}
 };
 
-export const getBlockDefinition = (type: string): BlockDefinition | null => BLOCK_REGISTRY[type] ?? null;
+export const isBlockType = (type: string): type is BlockType => type in BLOCK_REGISTRY;
+
+export const getBlockDefinition = (type: string): BlockDefinition | null =>
+	isBlockType(type) ? BLOCK_REGISTRY[type] : null;
 
 export const listBlockDefinitions = (): BlockDefinition[] => Object.values(BLOCK_REGISTRY);

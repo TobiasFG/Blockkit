@@ -227,10 +227,10 @@ export const createPage = async ({
 	urlName
 }: {
 	title: string;
-	parentPageId: string;
+	parentPageId: string | null;
 	urlName?: string | null;
 }): Promise<Page> => {
-	const pathSegment = derivePathSegment(title, urlName);
+	const pathSegment = parentPageId === null ? null : derivePathSegment(title, urlName);
 	const pageRow = await prisma.page.create({ data: {}, select: { id: true } });
 
 	const pageId = pageRow.id;

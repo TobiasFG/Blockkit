@@ -1,7 +1,6 @@
 import type { BlockValue, PageContent } from '$lib/pageContent';
 import { EMPTY_PAGE_CONTENT, isPageContent } from '$lib/pageContent';
 import {
-	addBlockToRoot,
 	cloneBlockList,
 	createReusableBlockReference,
 	moveBlockInRoot,
@@ -10,7 +9,8 @@ import {
 	validateBlockContentRoot,
 	type BlockContentValidationErrors,
 	type BlockListLocation,
-	type BlockPath
+	type BlockPath,
+	type ReusableBlockSummary
 } from '$lib/blockContentEditor';
 
 export type { BlockListLocation, BlockPath };
@@ -27,21 +27,6 @@ export const parseSubmittedPageContent = (value: string): PageContent | null => 
 
 export const createEditablePageContent = (content: PageContent | null | undefined): PageContent =>
 	content ? { version: 1, layout: null, blocks: cloneBlockList(content.blocks) } : { ...EMPTY_PAGE_CONTENT };
-
-export const addBlockAtPath = (
-	content: PageContent,
-	location: BlockListLocation,
-	type: string,
-	id: string
-): PageContent => {
-	const result = addBlockToRoot(
-		{ kind: 'list', blocks: createEditablePageContent(content).blocks },
-		location,
-		type,
-		id
-	);
-	return { version: 1, layout: null, blocks: result.kind === 'list' ? result.blocks : [] };
-};
 
 export const addReusableBlockReference = (
 	content: PageContent,
@@ -98,9 +83,9 @@ export const updateBlockFieldValue = (
 
 export const validatePageContentEditorState = (
 	content: PageContent,
-	reusableBlockIds: Set<string> | null = null
+	reusableBlocks: ReusableBlockSummary[] | null = null
 ): PageContentValidationErrors =>
 	validateBlockContentRoot(
 		{ kind: 'list', blocks: content.blocks },
-		{ rootMode: 'page', reusableBlockIds }
+		{ rootMode: 'page', reusableBlocks }
 	);

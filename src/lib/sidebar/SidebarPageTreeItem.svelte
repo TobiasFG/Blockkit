@@ -132,8 +132,10 @@
                     </DropdownMenu.Item>
                     <DropdownMenu.Item>
                         {#snippet child({ props })}
-                            <a href="/#create" {...props} onclick={onClose}
-                                >Create child page</a
+                            <a
+                                href={`/?create=${encodeURIComponent(node.page.id)}`}
+                                {...props}
+                                onclick={onClose}>Create child page</a
                             >
                         {/snippet}
                     </DropdownMenu.Item>

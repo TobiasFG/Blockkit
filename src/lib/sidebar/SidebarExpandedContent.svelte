@@ -125,7 +125,7 @@
                     variant="ghost"
                     size="icon-sm"
                     aria-label="Create page"
-                    href="/#create"
+                    href="/?create"
                     onclick={onClose}
                 >
                     <Plus class="size-4" />

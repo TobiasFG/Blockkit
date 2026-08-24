@@ -1,4 +1,4 @@
-import { getBlockDefinition, type BlockFieldDefinition } from '$lib/blocks/registry';
+import { getBlockDefinition, type BlockFieldDefinition, type BlockType } from '$lib/blocks/registry';
 import type {
 	BlockInstance,
 	BlockValue,
@@ -6,7 +6,6 @@ import type {
 	ReusableBlockReference
 } from '$lib/pageContent';
 import { isReusableBlockReference } from '$lib/pageContent';
-import { createDefaultBlockInstance } from '$lib/reusableBlocks';
 
 export type BlockPath = number[];
 export type BlockListLocation =
@@ -18,115 +17,139 @@ export type BlockEditorRoot =
 	| { kind: 'list'; blocks: PageBlockNode[] }
 	| { kind: 'block'; block: BlockInstance };
 
-type BlockList = PageBlockNode[] | BlockInstance[];
+export type ReusableBlockSummary = { id: string; block_type: BlockType };
 
 type ValidateOptions = {
 	rootMode: 'page' | 'reusable';
-	reusableBlockIds?: Set<string> | null;
+	reusableBlocks?: ReusableBlockSummary[] | null;
 };
+
+const cloneReference = (reference: ReusableBlockReference): ReusableBlockReference => ({
+	...reference
+});
 
 const cloneBlock = (block: BlockInstance): BlockInstance => ({
 	...block,
 	fields: Object.fromEntries(
 		Object.entries(block.fields).map(([key, value]) => [
 			key,
-			Array.isArray(value) ? value.map((item) => cloneBlock(item)) : value
+			Array.isArray(value) ? value.map((item) => cloneReference(item)) : value
 		])
 	) as Record<string, BlockValue>
 });
 
 const clonePageNode = (node: PageBlockNode): PageBlockNode =>
-	isReusableBlockReference(node) ? { ...node } : cloneBlock(node);
+	isReusableBlockReference(node) ? cloneReference(node) : cloneBlock(node);
 
 export const cloneBlockList = (blocks: PageBlockNode[]): PageBlockNode[] =>
 	blocks.map((block) => clonePageNode(block));
 
 export const cloneBlockRoot = (block: BlockInstance): BlockInstance => cloneBlock(block);
 
-const firstNestedListContainingIndex = (block: BlockInstance, index: number): BlockInstance[] | null => {
-	const definition = getBlockDefinition(block.type);
-	if (!definition) return null;
-
-	for (const field of definition.fields) {
-		if (field.type !== 'blocks') continue;
-		const value = block.fields[field.key];
-		if (!Array.isArray(value)) continue;
-		if (value[index]) return value;
-	}
-
-	return null;
-};
+const cloneRoot = (root: BlockEditorRoot): BlockEditorRoot =>
+	root.kind === 'list'
+		? { kind: 'list', blocks: cloneBlockList(root.blocks) }
+		: { kind: 'block', block: cloneBlockRoot(root.block) };
 
 const getBlockAtPath = (root: BlockEditorRoot, path: BlockPath): BlockInstance | null => {
-	if (root.kind === 'list') {
-		if (path.length === 0) return null;
-		const parentList = getParentList(root, path);
-		const block = parentList?.[path[path.length - 1]] ?? null;
-		return block && !isReusableBlockReference(block) ? block : null;
+	if (root.kind === 'block') {
+		return path.length === 0 ? root.block : null;
 	}
 
-	let current: BlockInstance | null = root.block;
-	for (const index of path) {
-		if (!current) return null;
-		current = firstNestedListContainingIndex(current, index)?.[index] ?? null;
-	}
-	return current;
+	if (path.length !== 1) return null;
+	const block = root.blocks[path[0]];
+	return block && !isReusableBlockReference(block) ? block : null;
 };
 
-const getParentList = (root: BlockEditorRoot, path: BlockPath): BlockList | null => {
-	if (path.length === 0) return null;
-	if (root.kind === 'list' && path.length === 1) return root.blocks;
+const getRootList = (root: BlockEditorRoot, path: BlockPath): PageBlockNode[] | null =>
+	root.kind === 'list' && path.length === 1 ? root.blocks : null;
 
-	const parentPath = path.slice(0, -1);
-	const parent =
-		root.kind === 'block' && parentPath.length === 0 ? root.block : getBlockAtPath(root, parentPath);
-	if (!parent) return null;
-
-	return firstNestedListContainingIndex(parent, path[path.length - 1]);
-};
-
-const getBlocksList = (root: BlockEditorRoot, location: BlockListLocation): BlockList | null => {
-	if (root.kind === 'list' && location.parentPath === null) return root.blocks;
+/** Resolves the reference list held by a `blocks` field of the block at `location.parentPath`. */
+const getReferenceList = (
+	root: BlockEditorRoot,
+	location: BlockListLocation
+): ReusableBlockReference[] | null => {
 	if (location.parentPath === null || location.fieldKey === null) return null;
 
-	const parent =
-		root.kind === 'block' && location.parentPath.length === 0
-			? root.block
-			: getBlockAtPath(root, location.parentPath);
+	const parent = getBlockAtPath(root, location.parentPath);
 	if (!parent) return null;
 
 	const definition = getBlockDefinition(parent.type);
-	if (!definition) return null;
-
-	const field = definition.fields.find(
+	const field = definition?.fields.find(
 		(candidate) => candidate.type === 'blocks' && candidate.key === location.fieldKey
 	);
 	if (!field) return null;
 
 	const value = parent.fields[field.key];
-	return Array.isArray(value) ? value : null;
+	if (Array.isArray(value)) return value;
+
+	parent.fields = { ...parent.fields, [field.key]: [] };
+	return parent.fields[field.key] as ReusableBlockReference[];
 };
 
-export const addBlockToRoot = (
+export const createReusableBlockReference = (
+	reusableBlockId: string,
+	id: string
+): ReusableBlockReference => ({
+	id,
+	type: 'reusable',
+	reusableBlockId
+});
+
+export const insertReferenceInRoot = (
 	root: BlockEditorRoot,
 	location: BlockListLocation,
-	type: string,
-	id: string
+	reusableBlockId: string,
+	id: string,
+	index: number
 ): BlockEditorRoot => {
 	const next = cloneRoot(root);
-	const list = getBlocksList(next, location);
+	const list = getReferenceList(next, location);
 	if (!list) return next;
 
-	list.push(createDefaultBlockInstance(type, id));
+	const target = Math.min(Math.max(index, 0), list.length);
+	list.splice(target, 0, createReusableBlockReference(reusableBlockId, id));
+	return next;
+};
+
+export const removeReferenceFromRoot = (
+	root: BlockEditorRoot,
+	location: BlockListLocation,
+	index: number
+): BlockEditorRoot => {
+	const next = cloneRoot(root);
+	const list = getReferenceList(next, location);
+	if (!list || !list[index]) return next;
+
+	list.splice(index, 1);
+	return next;
+};
+
+export const moveReferenceInRoot = (
+	root: BlockEditorRoot,
+	location: BlockListLocation,
+	fromIndex: number,
+	toIndex: number
+): BlockEditorRoot => {
+	const next = cloneRoot(root);
+	const list = getReferenceList(next, location);
+	if (!list) return next;
+
+	if (toIndex < 0 || toIndex > list.length - 1 || toIndex === fromIndex) return next;
+
+	const [moved] = list.splice(fromIndex, 1);
+	if (!moved) return next;
+
+	list.splice(toIndex, 0, moved);
 	return next;
 };
 
 export const removeBlockFromRoot = (root: BlockEditorRoot, path: BlockPath): BlockEditorRoot => {
 	const next = cloneRoot(root);
-	const parentList = getParentList(next, path);
-	if (!parentList) return next;
+	const list = getRootList(next, path);
+	if (!list) return next;
 
-	parentList.splice(path[path.length - 1], 1);
+	list.splice(path[0], 1);
 	return next;
 };
 
@@ -137,19 +160,19 @@ export const moveBlockInRoot = (
 	{ allowMoveToEnd }: { allowMoveToEnd: boolean }
 ): BlockEditorRoot => {
 	const next = cloneRoot(root);
-	const parentList = getParentList(next, from);
-	if (!parentList) return next;
+	const list = getRootList(next, from);
+	if (!list) return next;
 
-	const fromIndex = from[from.length - 1];
-	const maxTarget = allowMoveToEnd ? parentList.length : parentList.length - 1;
+	const fromIndex = from[0];
+	const maxTarget = allowMoveToEnd ? list.length : list.length - 1;
 	if (toIndex < 0 || toIndex > maxTarget || toIndex === fromIndex) {
 		return next;
 	}
 
-	const [moved] = parentList.splice(fromIndex, 1);
+	const [moved] = list.splice(fromIndex, 1);
 	if (!moved) return next;
 
-	parentList.splice(toIndex, 0, moved);
+	list.splice(toIndex, 0, moved);
 	return next;
 };
 
@@ -160,8 +183,7 @@ export const updateBlockFieldInRoot = (
 	value: BlockValue | undefined
 ): BlockEditorRoot => {
 	const next = cloneRoot(root);
-	const block =
-		next.kind === 'block' && path.length === 0 ? next.block : getBlockAtPath(next, path);
+	const block = getBlockAtPath(next, path);
 	if (!block) return next;
 
 	const fields = { ...block.fields };
@@ -174,11 +196,6 @@ export const updateBlockFieldInRoot = (
 	block.fields = fields;
 	return next;
 };
-
-const cloneRoot = (root: BlockEditorRoot): BlockEditorRoot =>
-	root.kind === 'list'
-		? { kind: 'list', blocks: cloneBlockList(root.blocks) }
-		: { kind: 'block', block: cloneBlockRoot(root.block) };
 
 const validateFieldValue = (
 	value: BlockValue | undefined,
@@ -208,44 +225,21 @@ const validateFieldValue = (
 		case 'boolean':
 			return typeof value === 'boolean' ? null : `${field.label} must be true or false.`;
 		case 'blocks':
-			return Array.isArray(value) ? null : `${field.label} must be a list of blocks.`;
+			return Array.isArray(value) ? null : `${field.label} must be a list of content items.`;
 	}
 };
+
+/** Error key for a `blocks` field entry, so the editor can point at the offending row. */
+export const referenceErrorKey = (pathKey: string, fieldKey: string, index: number) =>
+	`${pathKey || 'root'}:${fieldKey}.${index}`;
 
 export const validateBlockContentRoot = (
 	root: BlockEditorRoot,
 	options: ValidateOptions
 ): BlockContentValidationErrors => {
 	const errors: BlockContentValidationErrors = {};
-
-	const visitList = (
-		blocks: PageBlockNode[] | BlockInstance[],
-		listLocation: string,
-		allowReusableReferences: boolean
-	) => {
-		blocks.forEach((block, index) => {
-			const pathKey = listLocation ? `${listLocation}.${index}` : String(index);
-
-			if (isReusableBlockReference(block)) {
-				if (!allowReusableReferences) {
-					errors[pathKey] = 'Reusable block references are only allowed at the top level.';
-					return;
-				}
-
-				if (options.reusableBlockIds && !options.reusableBlockIds.has(block.reusableBlockId)) {
-					errors[pathKey] = 'Referenced reusable block no longer exists.';
-				}
-				return;
-			}
-
-			if (options.rootMode === 'page' && !listLocation) {
-				errors[pathKey] = 'Top-level page content must come from Content library.';
-				return;
-			}
-
-			visitBlock(block, pathKey);
-		});
-	};
+	const blocksById = new Map((options.reusableBlocks ?? []).map((block) => [block.id, block]));
+	const knowsReusableBlocks = Boolean(options.reusableBlocks);
 
 	const visitBlock = (block: BlockInstance, pathKey: string) => {
 		const definition = getBlockDefinition(block.type);
@@ -261,38 +255,48 @@ export const validateBlockContentRoot = (
 				errors[`${pathKey || 'root'}:${field.key}`] = fieldError;
 			}
 
-			if (field.type === 'blocks' && Array.isArray(value)) {
-				const allowedTypes = new Set(field.blocks?.allowedTypes ?? []);
-				value.forEach((nestedBlock, nestedIndex) => {
-					const nestedPathKey =
-						options.rootMode === 'page'
-							? `${pathKey}:${field.key}.${nestedIndex}`
-							: pathKey
-								? `${pathKey}:${field.key}.${nestedIndex}`
-								: `${nestedIndex}`;
-					if (allowedTypes.size > 0 && !allowedTypes.has(nestedBlock.type)) {
-						errors[nestedPathKey] = `${nestedBlock.type} is not allowed in ${field.label}.`;
-					}
-				});
-				visitList(value, pathKey ? `${pathKey}:${field.key}` : '', false);
-			}
+			if (field.type !== 'blocks' || !Array.isArray(value)) continue;
+
+			const allowedTypes = new Set<string>(field.blocks?.allowedTypes ?? []);
+			value.forEach((entry, index) => {
+				const key = referenceErrorKey(pathKey, field.key, index);
+				if (!isReusableBlockReference(entry)) {
+					errors[key] = `${field.label} can only hold content library items.`;
+					return;
+				}
+
+				if (!knowsReusableBlocks) return;
+
+				const referenced = blocksById.get(entry.reusableBlockId);
+				if (!referenced) {
+					errors[key] = 'Referenced content item no longer exists.';
+					return;
+				}
+
+				if (allowedTypes.size > 0 && !allowedTypes.has(referenced.block_type)) {
+					errors[key] = `${referenced.block_type} is not allowed in ${field.label}.`;
+				}
+			});
 		}
 	};
 
-	if (root.kind === 'list') {
-		visitList(root.blocks, '', true);
-	} else {
+	if (root.kind === 'block') {
 		visitBlock(root.block, '');
+		return errors;
 	}
+
+	root.blocks.forEach((block, index) => {
+		const pathKey = String(index);
+
+		if (!isReusableBlockReference(block)) {
+			errors[pathKey] = 'Top-level page content must come from Content library.';
+			return;
+		}
+
+		if (knowsReusableBlocks && !blocksById.has(block.reusableBlockId)) {
+			errors[pathKey] = 'Referenced reusable block no longer exists.';
+		}
+	});
 
 	return errors;
 };
-
-export const createReusableBlockReference = (
-	reusableBlockId: string,
-	id: string
-): ReusableBlockReference => ({
-	id,
-	type: 'reusable',
-	reusableBlockId
-});

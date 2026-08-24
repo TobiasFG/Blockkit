@@ -1,31 +1,32 @@
 import { describe, expect, it } from 'vitest';
-import type { BlockInstance } from '$lib/pageContent';
+import type { BlockInstance, ReusableBlockReference } from '$lib/pageContent';
 import {
-	addNestedReusableBlockAtPath,
 	createEditableReusableBlockContent,
-	moveNestedReusableBlock,
+	insertNestedReferenceAtIndex,
+	moveNestedReference,
 	parseSubmittedReusableBlockContent,
-	removeNestedReusableBlockAtPath,
+	removeNestedReferenceAtIndex,
 	updateReusableBlockFieldValue,
 	validateReusableBlockEditorState
 } from '$lib/reusableBlockEditor';
+
+const ITEMS_LOCATION = { parentPath: [] as number[], fieldKey: 'items' };
+
+const KNOWN_BLOCKS = [
+	{ id: 'block-1', block_type: 'text' as const },
+	{ id: 'block-2', block_type: 'text' as const }
+];
 
 const BASE_BLOCK: BlockInstance = {
 	id: 'section-1',
 	type: 'section',
 	fields: {
 		title: 'Highlights',
-		items: [
-			{
-				id: 'text-1',
-				type: 'text',
-				fields: {
-					body: 'Nested copy'
-				}
-			}
-		]
+		items: [{ id: 'ref-1', type: 'reusable', reusableBlockId: 'block-1' }]
 	}
 };
+
+const items = (block: BlockInstance) => block.fields.items as ReusableBlockReference[];
 
 describe('reusable block editor helpers', () => {
 	it('creates an editable clone', () => {
@@ -35,65 +36,59 @@ describe('reusable block editor helpers', () => {
 		expect(next.fields).not.toBe(BASE_BLOCK.fields);
 	});
 
-	it('adds, updates, removes, and reorders nested blocks', () => {
-		const added = addNestedReusableBlockAtPath(
-			BASE_BLOCK,
-			{ parentPath: [], fieldKey: 'items' },
-			'text',
-			'text-2'
-		);
-		expect((added.fields.items as BlockInstance[])).toHaveLength(2);
-
-		const updated = updateReusableBlockFieldValue(added, [1], 'body', 'Updated nested copy');
-		expect(((updated.fields.items as BlockInstance[])[1].fields.body)).toBe('Updated nested copy');
-
-		const moved = moveNestedReusableBlock(updated, [1], 0);
-		expect((moved.fields.items as BlockInstance[]).map((block) => block.id)).toEqual([
-			'text-2',
-			'text-1'
+	it('inserts, reorders, and removes nested content references', () => {
+		const added = insertNestedReferenceAtIndex(BASE_BLOCK, ITEMS_LOCATION, 'block-2', 'ref-2', 1);
+		expect(items(added).map((reference) => reference.reusableBlockId)).toEqual([
+			'block-1',
+			'block-2'
 		]);
 
-		const removed = removeNestedReusableBlockAtPath(moved, [1]);
-		expect((removed.fields.items as BlockInstance[]).map((block) => block.id)).toEqual(['text-2']);
+		const moved = moveNestedReference(added, ITEMS_LOCATION, 1, 0);
+		expect(items(moved).map((reference) => reference.id)).toEqual(['ref-2', 'ref-1']);
+
+		const removed = removeNestedReferenceAtIndex(moved, ITEMS_LOCATION, 1);
+		expect(items(removed).map((reference) => reference.id)).toEqual(['ref-2']);
 	});
 
-	it('validates root and nested fields', () => {
+	it('updates root fields', () => {
+		const updated = updateReusableBlockFieldValue(BASE_BLOCK, [], 'title', 'Updated');
+		expect(updated.fields.title).toBe('Updated');
+	});
+
+	it('validates root fields and nested references', () => {
 		const errors = validateReusableBlockEditorState({
 			id: 'hero-root',
 			type: 'hero',
-			fields: {
-				heading: ''
-			}
+			fields: { heading: '' }
 		});
 
 		expect(errors['root:heading']).toBe('Heading is required.');
 
-		const nestedErrors = validateReusableBlockEditorState({
-			...BASE_BLOCK,
-			fields: {
-				title: 'Container',
-				items: [
-					{
-						id: 'text-1',
-						type: 'text',
-						fields: {
-							body: ''
-						}
-					}
-				]
-			}
-		});
+		const missingReference = validateReusableBlockEditorState(
+			{
+				...BASE_BLOCK,
+				fields: {
+					title: 'Container',
+					items: [{ id: 'ref-9', type: 'reusable', reusableBlockId: 'missing' }]
+				}
+			},
+			KNOWN_BLOCKS
+		);
 
-		expect(nestedErrors['0:body']).toBe('Body is required.');
+		expect(missingReference['root:items.0']).toBe('Referenced content item no longer exists.');
+	});
+
+	it('rejects nested content whose type is not allowed by the field', () => {
+		const errors = validateReusableBlockEditorState(BASE_BLOCK, [
+			{ id: 'block-1', block_type: 'text' }
+		]);
+
+		expect(errors).toEqual({});
 	});
 
 	it('parses submitted reusable block content JSON and rejects invalid payloads', () => {
 		expect(parseSubmittedReusableBlockContent(JSON.stringify(BASE_BLOCK))).toEqual(BASE_BLOCK);
-		expect(
-			parseSubmittedReusableBlockContent(
-				'{"id":"x","type":"text","fields":{}}'
-			)
-		).toBeNull();
+		expect(parseSubmittedReusableBlockContent('{"id":"x","type":"text","fields":{}}')).toBeNull();
 		expect(parseSubmittedReusableBlockContent('not-json')).toBeNull();
 	});
 });

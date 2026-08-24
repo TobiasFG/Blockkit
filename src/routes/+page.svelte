@@ -1,7 +1,14 @@
 <script lang="ts">
+    import { enhance } from "$app/forms";
+    import { goto } from "$app/navigation";
+    import { page as currentPage } from "$app/stores";
+    import ActionModal from "$lib/components/cms/ActionModal.svelte";
     import CmsEmptyState from "$lib/components/cms/CmsEmptyState.svelte";
     import { Badge } from "$lib/components/ui/badge/index.js";
     import { Button } from "$lib/components/ui/button/index.js";
+    import { Input } from "$lib/components/ui/input/index.js";
+    import { Label } from "$lib/components/ui/label/index.js";
+    import { isRootPage } from "$lib/pagePath";
     import {
         CircleAlert,
         ExternalLink,
@@ -13,9 +20,37 @@
     } from "$lib/icons";
     import type { PageProps } from "./$types";
 
-    let { data }: PageProps = $props();
+    let { data, form }: PageProps = $props();
 
     const pages = $derived(data.pages ?? []);
+    const rootPage = $derived(pages.find((entry) => isRootPage(entry)) ?? null);
+
+    let createOpen = $state(false);
+    let createParentId = $state("");
+    let createTitle = $state("");
+    let createUrlName = $state("");
+    let creating = $state(false);
+
+    const openCreatePage = (parentPageId?: string) => {
+        createTitle = "";
+        createUrlName = "";
+        createParentId = parentPageId ?? rootPage?.id ?? "";
+        createOpen = true;
+    };
+
+    const closeCreatePage = () => {
+        createOpen = false;
+        if ($currentPage.url.searchParams.has("create")) {
+            void goto("/", { replaceState: true, noScroll: true, keepFocus: true });
+        }
+    };
+
+    // The sidebar links here with `?create=<parentId>` to start a new page.
+    $effect(() => {
+        const requested = $currentPage.url.searchParams.get("create");
+        if (requested === null || createOpen) return;
+        openCreatePage(requested || undefined);
+    });
     const reusableBlocks = $derived(data.reusableBlocks ?? []);
     const blockFolders = $derived(data.blockFolders ?? []);
     const unpublishedPages = $derived(
@@ -149,9 +184,12 @@
                 View site
                 <ExternalLink />
             </Button>
-            <Button href="/content" class="rounded-lg">
+            <Button
+                class="rounded-lg"
+                onclick={() => openCreatePage()}
+            >
                 <Plus />
-                New
+                New page
             </Button>
         </div>
     </section>
@@ -201,6 +239,10 @@
                         title="Create a root page to begin."
                         description="Pages become site structure. After first page exists, recent edits appear here."
                     />
+                    <Button class="mt-4 rounded-lg" onclick={() => openCreatePage()}>
+                        <Plus />
+                        New page
+                    </Button>
                 </div>
             {:else}
                 <div class="divide-y divide-border">
@@ -312,3 +354,79 @@
         </div>
     </section>
 </main>
+
+<ActionModal
+    open={createOpen}
+    title="Create page"
+    description={createParentId
+        ? "The new page is added under the selected parent."
+        : "No pages exist yet, so this becomes the root page."}
+    onClose={closeCreatePage}
+>
+    <form
+        method="POST"
+        action="?/createPage"
+        class="space-y-4"
+        use:enhance={() => {
+            creating = true;
+            return async ({ update }) => {
+                creating = false;
+                await update();
+            };
+        }}
+    >
+        <div class="space-y-1">
+            <Label for="create-page-title">Title</Label>
+            <Input
+                id="create-page-title"
+                name="title"
+                bind:value={createTitle}
+                required
+            />
+        </div>
+
+        {#if createParentId}
+            <div class="space-y-1">
+                <Label for="create-page-url-name">URL name</Label>
+                <Input
+                    id="create-page-url-name"
+                    name="urlName"
+                    placeholder="Derived from title"
+                    bind:value={createUrlName}
+                />
+            </div>
+
+            <div class="space-y-1">
+                <Label for="create-page-parent">Parent page</Label>
+                <select
+                    id="create-page-parent"
+                    name="parentPageId"
+                    bind:value={createParentId}
+                    class="border-input bg-background focus-visible:border-ring focus-visible:ring-ring/50 w-full rounded-md border px-3 py-2 text-sm outline-none focus-visible:ring-3"
+                >
+                    {#each pages as parent (parent.id)}
+                        <option value={parent.id}
+                            >{parent.title} ({displayPath(parent.path)})</option
+                        >
+                    {/each}
+                </select>
+            </div>
+        {/if}
+
+        {#if form?.error}
+            <p class="text-sm text-red-700">{form.error}</p>
+        {/if}
+
+        <div class="flex items-center justify-end gap-2">
+            <Button type="button" variant="outline" onclick={closeCreatePage}>
+                Cancel
+            </Button>
+            <Button
+                type="submit"
+                disabled={creating || createTitle.trim().length === 0}
+            >
+                {creating ? "Creating..." : "Create page"}
+            </Button>
+        </div>
+    </form>
+</ActionModal>

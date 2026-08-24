@@ -1,12 +1,17 @@
+import type { BlockType } from '$lib/blocks/registry';
 import { isValidBlockInstance } from '$lib/reusableBlocks';
 
 export type BlockInstance = {
 	id: string;
-	type: string;
+	type: BlockType;
 	fields: Record<string, BlockValue>;
 };
 
-export type BlockValue = string | number | boolean | null | BlockInstance[];
+/**
+ * A `blocks` field holds references to content-library items only. Blocks are never
+ * authored inline inside another block.
+ */
+export type BlockValue = string | number | boolean | null | ReusableBlockReference[];
 
 export type ReusableBlockReference = {
 	id: string;

@@ -1,13 +1,18 @@
 import { listBlockDefinitions } from '$lib/blocks/registry';
-import { parseSubmittedReusableBlockContent } from '$lib/reusableBlockEditor';
+import {
+	parseSubmittedReusableBlockContent,
+	validateReusableBlockEditorState
+} from '$lib/reusableBlockEditor';
 import { requireAuthenticatedUser } from '$lib/server/auth';
 import {
 	getBlockFolders,
 	getReusableBlockById,
+	getReusableBlocks,
 	publishReusableBlock,
 	updateBlockFolder,
 	updateReusableBlock
 } from '$lib/server/ReusableBlocksController.server';
+import type { BlockInstance } from '$lib/pageContent';
 import { error, fail, redirect } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
 
@@ -35,9 +40,17 @@ export const load: PageServerLoad = async ({ params }) => {
 	return {
 		block,
 		blockFolders: await getBlockFolders(),
-		blockDefinitions: listBlockDefinitions()
+		blockDefinitions: listBlockDefinitions(),
+		reusableBlocks: await getReusableBlocks()
 	};
 };
+
+const referencesBlock = (content: BlockInstance, reusableBlockId: string) =>
+	Object.values(content.fields).some(
+		(value) =>
+			Array.isArray(value) &&
+			value.some((reference) => reference.reusableBlockId === reusableBlockId)
+	);
 
 export const actions = {
 	updateReusableBlock: async (event) => {
@@ -60,6 +73,16 @@ export const actions = {
 
 		if (!name || !content || content.type !== current.block_type) {
 			return fail(400, { error: 'Invalid block payload' });
+		}
+
+		const reusableBlocks = await getReusableBlocks();
+		if (referencesBlock(content, current.id)) {
+			return fail(400, { error: 'Content cannot reference itself' });
+		}
+
+		const contentErrors = validateReusableBlockEditorState(content, reusableBlocks);
+		if (Object.keys(contentErrors).length > 0) {
+			return fail(400, { error: 'Content is invalid' });
 		}
 
 		try {

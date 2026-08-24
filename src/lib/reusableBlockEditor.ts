@@ -1,15 +1,16 @@
 import type { BlockInstance, BlockValue } from '$lib/pageContent';
 import { isValidBlockInstance } from '$lib/reusableBlocks';
 import {
-	addBlockToRoot,
 	cloneBlockRoot,
-	moveBlockInRoot,
-	removeBlockFromRoot,
+	insertReferenceInRoot,
+	moveReferenceInRoot,
+	removeReferenceFromRoot,
 	updateBlockFieldInRoot,
 	validateBlockContentRoot,
 	type BlockContentValidationErrors,
 	type BlockListLocation,
-	type BlockPath
+	type BlockPath,
+	type ReusableBlockSummary
 } from '$lib/blockContentEditor';
 
 export type ReusableBlockValidationErrors = BlockContentValidationErrors;
@@ -36,39 +37,49 @@ export const updateReusableBlockFieldValue = (
 	return result.kind === 'block' ? result.block : content;
 };
 
-export const addNestedReusableBlockAtPath = (
+export const insertNestedReferenceAtIndex = (
 	content: BlockInstance,
 	location: BlockListLocation,
-	type: string,
-	id: string
+	reusableBlockId: string,
+	id: string,
+	index: number
 ): BlockInstance => {
-	const result = addBlockToRoot({ kind: 'block', block: content }, location, type, id);
+	const result = insertReferenceInRoot(
+		{ kind: 'block', block: content },
+		location,
+		reusableBlockId,
+		id,
+		index
+	);
 	return result.kind === 'block' ? result.block : content;
 };
 
-export const removeNestedReusableBlockAtPath = (
+export const removeNestedReferenceAtIndex = (
 	content: BlockInstance,
-	path: BlockPath
+	location: BlockListLocation,
+	index: number
 ): BlockInstance => {
-	const result = removeBlockFromRoot({ kind: 'block', block: content }, path);
+	const result = removeReferenceFromRoot({ kind: 'block', block: content }, location, index);
 	return result.kind === 'block' ? result.block : content;
 };
 
-export const moveNestedReusableBlock = (
+export const moveNestedReference = (
 	content: BlockInstance,
-	from: BlockPath,
+	location: BlockListLocation,
+	fromIndex: number,
 	toIndex: number
 ): BlockInstance => {
-	const result = moveBlockInRoot(
+	const result = moveReferenceInRoot(
 		{ kind: 'block', block: content },
-		from,
-		toIndex,
-		{ allowMoveToEnd: false }
+		location,
+		fromIndex,
+		toIndex
 	);
 	return result.kind === 'block' ? result.block : content;
 };
 
 export const validateReusableBlockEditorState = (
-	content: BlockInstance
+	content: BlockInstance,
+	reusableBlocks: ReusableBlockSummary[] | null = null
 ): ReusableBlockValidationErrors =>
-	validateBlockContentRoot({ kind: 'block', block: content }, { rootMode: 'reusable' });
+	validateBlockContentRoot({ kind: 'block', block: content }, { rootMode: 'reusable', reusableBlocks });
